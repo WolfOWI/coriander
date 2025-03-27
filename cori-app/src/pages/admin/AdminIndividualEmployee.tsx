@@ -6,7 +6,7 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 
 // Import Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Col, Container, Row } from "react-bootstrap";
+import WorkIcon from "@mui/icons-material/Work";
 
 const AdminIndividualEmployee: React.FC = () => {
   return (
@@ -34,7 +34,25 @@ const AdminIndividualEmployee: React.FC = () => {
       {/* Page Body */}
       <div className="flex gap-4">
         <div className="w-1/2 flex flex-col gap-4">
-          <div className="bg-warmstone-50 p-4 rounded-2xl">Emp Details</div>
+          <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col">
+            <div className="flex gap-4">
+              <img
+                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Employee"
+                className="bg-green-50 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
+              />
+              <div className="flex flex-col gap-2">
+                <p className="text-sm text-zinc-500">Employee ID 002123</p>
+                <h2 className="text-zinc-900 font-bold text-3xl">Lettie Dlamnini</h2>
+                <div className="flex gap-2 items-center">
+                  <WorkIcon />
+                  <p className="text-zinc-900">Accountant</p>
+                  <p className="text-zinc-900">•</p>
+                  <p className="text-zinc-500">Finance Department</p>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="w-full flex flex-col gap-2 items-center">
             <h2 className="text-zinc-500 font-semibold">Payroll</h2>
             <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
