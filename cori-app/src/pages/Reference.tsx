@@ -1,5 +1,3 @@
-import React from "react";
-
 // Import components
 import CoriBtn from "../components/buttons/CoriBtn";
 
@@ -10,7 +8,7 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 function ReferencePage() {
   return (
     <div className="max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Custom Components Reference Page</h1>
+      <h1 className="text-3xl font-bold mb-6 text-zinc-900">Custom Components Reference</h1>
 
       {/* CoriBtns */}
       <h3 className="text-xl font-bold mb-2">CoriBtn</h3>
@@ -40,8 +38,6 @@ function ReferencePage() {
           </div>
         </div>
       </div>
-
-      {/* <h3 className="text-xl font-bold mb-2">CoriInput</h3> */}
     </div>
   );
 }

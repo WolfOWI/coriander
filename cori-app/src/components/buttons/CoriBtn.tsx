@@ -1,6 +1,7 @@
 // Wolf Botha - 27/03/2025
 
 import React from "react";
+import "../../styles/buttons.css";
 import { Button } from "react-bootstrap";
 
 // PrimaryBtn Properties
@@ -10,13 +11,15 @@ interface PrimaryBtnProps {
   className?: string;
   hierarchy?: "primary" | "secondary";
   style?: "default" | "black" | "red";
+  type?: "button" | "submit";
 }
 
 // Add props using destructuring
-const CoriBtn = ({ onClick, children, className, hierarchy, style }: PrimaryBtnProps) => {
-  // Button Styles (depending on hierarchy and style)
-  let btnStyles = "";
-  let btnVariant = "";
+const CoriBtn = ({ onClick, children, className, hierarchy, style, type }: PrimaryBtnProps) => {
+  // Default styles
+  let btnStyles =
+    "bg-corigreen-500 text-white border-2 border-corigreen-500 hover:bg-corigreen-600 hover:border-corigreen-600 active:!bg-corigreen-600";
+  let btnVariant = "primary";
 
   if (hierarchy === "primary") {
     btnVariant = "primary";
@@ -43,7 +46,7 @@ const CoriBtn = ({ onClick, children, className, hierarchy, style }: PrimaryBtnP
     switch (style) {
       case "default":
         btnStyles =
-          "border-2 border-corigreen-500 text-corigreen-500 hover:bg-corigreen-500 hover:text-white hover:border-corigreen-500";
+          "border-2 border-corigreen-500 text-corigreen-500 hover:bg-corigreen-500 hover:text-white hover:border-corigreen-500 ";
         break;
       case "black":
         btnStyles =
@@ -64,7 +67,8 @@ const CoriBtn = ({ onClick, children, className, hierarchy, style }: PrimaryBtnP
     <Button
       variant={btnVariant}
       onClick={onClick}
-      className={`${btnStyles} flex items-center gap-2 h-12 rounded-lg ${className} `}
+      type={type}
+      className={`${btnStyles} flex items-center gap-2 h-12 rounded-lg cori-btn ${className} `}
     >
       {children}
     </Button>

@@ -7,7 +7,7 @@ const Navigation: React.FC = () => {
       {/* Sidebar */}
       <div className="bg-zinc-900 text-white w-fit rounded-3xl h-full">
         <div className="p-10">
-          <h5 className="mb-4 pb-2">Coriander Logo</h5>
+          <h1 className="text-2xl font-bold mb-4">Coriander</h1>
 
           {/* Auth Links */}
           <div className="mb-4">
@@ -60,7 +60,7 @@ const Navigation: React.FC = () => {
           <div className="mb-4">
             <small className="text-corigreen-500 text-uppercase">Reference</small>
             <Link to="/reference" className="nav-link text-white">
-              Reference
+              Custom Stuffies
             </Link>
           </div>
         </div>

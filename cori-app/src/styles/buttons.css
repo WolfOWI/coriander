@@ -1,0 +1,37 @@
+/* Manual Override for Active States of CoriButtons */
+/* (Overriding bootstrap's default active state) */
+
+/* Primary Buttons */
+.btn.cori-btn.btn-primary[class*="bg-corigreen"]:active {
+  background-color: #b5c89f !important; /* corigreen-300 */
+  border-color: #b5c89f !important;
+}
+
+.btn.cori-btn.btn-primary[class*="bg-zinc"]:active {
+  background-color: #71717a !important; /* zinc-400 */
+  border-color: #71717a !important;
+}
+
+.btn.cori-btn.btn-primary[class*="bg-red"]:active {
+  background-color: #fca5a5 !important; /* red-300 */
+  border-color: #fca5a5 !important;
+}
+
+/* Secondary Buttons */
+.btn.cori-btn.btn-outline-primary[class*="border-corigreen"]:active {
+  background-color: #b5c89f !important; /* corigreen-300 */
+  border-color: #b5c89f !important;
+  color: #fafafa !important;
+}
+
+.btn.cori-btn.btn-outline-primary[class*="border-zinc"]:active {
+  background-color: #71717a !important; /* zinc-400 */
+  border-color: #71717a !important;
+  color: #fafafa !important;
+}
+
+.btn.cori-btn.btn-outline-primary[class*="border-red"]:active {
+  background-color: #fca5a5 !important; /* red-300 */
+  border-color: #fca5a5 !important;
+  color: #fafafa !important;
+}
