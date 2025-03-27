@@ -14,6 +14,7 @@ import AdminEmployeeManagement from "./pages/admin/AdminEmployeeManagement";
 import AdminCreateEmployee from "./pages/admin/AdminCreateEmployee";
 import AdminIndividualEmployee from "./pages/admin/AdminIndividualEmployee";
 import AdminLeaveRequests from "./pages/admin/AdminLeaveRequests";
+import ReferencePage from "./pages/Reference";
 
 const App: React.FC = () => {
   return (
@@ -38,6 +39,10 @@ const App: React.FC = () => {
             <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
             <Route path="/admin/individual-employee" element={<AdminIndividualEmployee />} />
             <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
+
+            {/* Temporary Reference Route */}
+            {/* TODO: Delete this later */}
+            <Route path="/reference" element={<ReferencePage />} />
           </Routes>
         </main>
       </div>

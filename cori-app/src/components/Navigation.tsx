@@ -11,7 +11,7 @@ const Navigation: React.FC = () => {
 
           {/* Auth Links */}
           <div className="mb-4">
-            <small className="text-muted text-uppercase">Authentication</small>
+            <small className="text-corigreen-500 text-uppercase">Authentication</small>
             <Link to="/" className="nav-link text-white">
               Login
             </Link>
@@ -25,7 +25,7 @@ const Navigation: React.FC = () => {
 
           {/* Employee Links */}
           <div className="mb-4">
-            <small className="text-muted text-uppercase">Employee</small>
+            <small className="text-corigreen-500 text-uppercase">Employee</small>
             <Link to="/employee/home" className="nav-link text-white">
               Employee Home
             </Link>
@@ -39,7 +39,7 @@ const Navigation: React.FC = () => {
 
           {/* Admin Links */}
           <div className="mb-4">
-            <small className="text-muted text-uppercase">Admin</small>
+            <small className="text-corigreen-500 text-uppercase">Admin</small>
             <Link to="/admin/dashboard" className="nav-link text-white">
               Admin Dashboard
             </Link>
@@ -54,6 +54,13 @@ const Navigation: React.FC = () => {
             </Link>
             <Link to="/admin/leave-requests" className="nav-link text-white">
               Leave Requests
+            </Link>
+          </div>
+
+          <div className="mb-4">
+            <small className="text-corigreen-500 text-uppercase">Reference</small>
+            <Link to="/reference" className="nav-link text-white">
+              Reference
             </Link>
           </div>
         </div>
