@@ -5,7 +5,7 @@ const Navigation: React.FC = () => {
   return (
     <div className="flex-grow-0 mr-8">
       {/* Sidebar */}
-      <div className="bg-zinc-900 text-white w-fit rounded-3xl h-full">
+      <div className="bg-zinc-900 text-white w-[260px] rounded-3xl h-full">
         <div className="p-10">
           <h1 className="text-2xl font-bold mb-4">Coriander</h1>
 

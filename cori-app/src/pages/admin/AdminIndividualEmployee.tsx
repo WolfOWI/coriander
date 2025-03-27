@@ -1,5 +1,6 @@
 // Wolf Botha
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { empUserAPI } from "../../services/api.service";
 
 // Import Components
 import CoriBtn from "../../components/buttons/CoriBtn";
@@ -9,6 +10,50 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import WorkIcon from "@mui/icons-material/Work";
 
 const AdminIndividualEmployee: React.FC = () => {
+  // State to store the employee data
+  const [empUser, setEmpUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        // Call the API endpoint
+        const response = await empUserAPI.getAllEmpUsers();
+
+        // Update the state with the employee data
+        setEmpUser(response.data.$values[0]);
+      } finally {
+        // Set loading to false when done
+        setLoading(false);
+      }
+    };
+
+    // Call the fetch function when component mounts
+    fetchEmployee();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (!empUser)
+    return (
+      <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
+        <h2 className="text-zinc-900 font-bold text-3xl text-center">Backend Not Connected</h2>
+        <h3 className="text-zinc-900 font-bold text-xl text-center">Hey Ruan / Ine / Kayla</h3>
+        <p className="text-zinc-500 text-center">
+          This page is very basically connected to the backend. If you are seeing this message, it
+          means your front-end is not connecting to the backend.
+          <br />
+          <br />
+          First, you'll need to create a ".env" file in the root of this project (in cori-app).
+          Inside it, add this line: VITE_API_URL=http://localhost:5121/api
+          <br />
+          <br />
+          Secondly, you'll actually need to run the backend on your computer. (Open our coriander
+          backend project in your VSCode, cd into CoriCore, and then 'dotnet run' so that swagger is
+          open and running.)
+        </p>
+      </div>
+    );
+
   return (
     <div className="max-w-7xl mx-auto">
       {/* Top Heading with buttons */}
@@ -42,13 +87,13 @@ const AdminIndividualEmployee: React.FC = () => {
                 className="bg-green-50 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
               />
               <div className="flex flex-col gap-2">
-                <p className="text-sm text-zinc-500">Employee ID 002123</p>
-                <h2 className="text-zinc-900 font-bold text-3xl">Lettie Dlamnini</h2>
+                <p className="text-sm text-zinc-500">Employee ID {empUser.employeeId}</p>
+                <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
                 <div className="flex gap-2 items-center">
                   <WorkIcon />
-                  <p className="text-zinc-900">Accountant</p>
+                  <p className="text-zinc-900">{empUser.jobTitle}</p>
                   <p className="text-zinc-900">•</p>
-                  <p className="text-zinc-500">Finance Department</p>
+                  <p className="text-zinc-500">{empUser.department}</p>
                 </div>
               </div>
             </div>
@@ -84,6 +129,9 @@ const AdminIndividualEmployee: React.FC = () => {
               </div>
               <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
                 Leave 5
+              </div>
+              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
+                Leave 6
               </div>
             </div>
             <div className="w-9/12 flex flex-col gap-4 ">
