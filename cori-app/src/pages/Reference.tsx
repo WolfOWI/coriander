@@ -4,6 +4,7 @@ import CoriBtn from "../components/buttons/CoriBtn";
 // Import Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function ReferencePage() {
   return (
@@ -15,24 +16,27 @@ function ReferencePage() {
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
-            <CoriBtn hierarchy="primary" style="default">
+            <CoriBtn primary style="default">
               Primary Default
             </CoriBtn>
-            <CoriBtn hierarchy="primary" style="black">
+            <CoriBtn primary style="black">
               Primary Black
             </CoriBtn>
-            <CoriBtn hierarchy="primary" style="red">
+            <CoriBtn primary style="red">
               Primary Red with Icon <DeleteIcon />
+            </CoriBtn>
+            <CoriBtn primary iconOnly>
+              <ArrowBackIcon />
             </CoriBtn>
           </div>
           <div className="flex gap-2">
-            <CoriBtn hierarchy="secondary">
+            <CoriBtn secondary>
               <InsertEmoticonIcon /> Secondary Default with Icon
             </CoriBtn>
-            <CoriBtn hierarchy="secondary" style="black">
+            <CoriBtn secondary style="black">
               Secondary Black
             </CoriBtn>
-            <CoriBtn hierarchy="secondary" style="red">
+            <CoriBtn secondary style="red">
               Secondary Red
             </CoriBtn>
           </div>
