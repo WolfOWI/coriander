@@ -20,7 +20,7 @@ const App: React.FC = () => {
     <Router>
       <div className="flex m-4 min-h-[calc(98vh-32px)]">
         <Navigation />
-        <main className="flex-grow-1">
+        <main className="flex-grow-1 my-4">
           <Routes>
             {/* Auth Routes */}
             <Route path="/" element={<Login />} />
