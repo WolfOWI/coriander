@@ -2,7 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { empUserAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
-// Import Components
+
+// Import 3rd party components
+import GaugeComponent from "react-gauge-component";
+
+// Import Custom Components
 import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import CoriBadge from "../../components/CoriBadge";
@@ -220,9 +224,33 @@ const AdminIndividualEmployee: React.FC = () => {
             <div className="w-9/12 flex flex-col gap-4 ">
               <div className="w-full flex flex-col gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Rating</h2>
-                <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                  Rating Chart
-                </div>
+                <GaugeComponent
+                  value={50}
+                  type="radial"
+                  labels={{
+                    tickLabels: {
+                      type: "inner",
+                      ticks: [
+                        { value: 20 },
+                        { value: 40 },
+                        { value: 60 },
+                        { value: 80 },
+                        { value: 100 },
+                      ],
+                    },
+                  }}
+                  arc={{
+                    colorArray: ["#5BE12C", "#EA4228"],
+                    subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+                    padding: 0.02,
+                    width: 0.3,
+                  }}
+                  pointer={{
+                    elastic: true,
+                    animationDelay: 0,
+                  }}
+                />
+                {/* <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center"></div> */}
               </div>
               <div className="w-full flex flex-col gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Performance Reviews</h2>
