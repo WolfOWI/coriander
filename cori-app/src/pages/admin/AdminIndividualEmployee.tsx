@@ -275,8 +275,9 @@ const AdminIndividualEmployee: React.FC = () => {
                   <PerfReviewBox />
                   <PerfReviewBox />
                   <PerfReviewBox />
-                  <div className="py-10 w-full bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0">
-                    .
+                  {/* Empty Spacer Overlay (for fade out effect) */}
+                  <div className="py-10 w-full bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0 text-transparent">
+                    _
                   </div>
                 </div>
               </div>
