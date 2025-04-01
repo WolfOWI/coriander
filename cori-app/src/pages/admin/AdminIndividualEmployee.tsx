@@ -1,7 +1,7 @@
 // Wolf Botha
 import React, { useEffect, useState } from "react";
 import { empUserAPI } from "../../services/api.service";
-
+import { useNavigate } from "react-router-dom";
 // Import Components
 import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
@@ -26,6 +26,9 @@ const AdminIndividualEmployee: React.FC = () => {
   // State to store the employee data (just a placeholder for now)
   const [empUser, setEmpUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // Navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployee = async () => {
@@ -72,7 +75,7 @@ const AdminIndividualEmployee: React.FC = () => {
       {/* Top Heading with buttons */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-4 items-center">
-          <CoriBtn style="black" iconOnly>
+          <CoriBtn style="black" iconOnly onClick={() => navigate("/admin/employees")}>
             <ArrowBackIcon />
           </CoriBtn>
           <h1 className="text-3xl font-bold text-zinc-900">Employee Details</h1>

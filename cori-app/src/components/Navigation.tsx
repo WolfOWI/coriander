@@ -43,7 +43,7 @@ const Navigation: React.FC = () => {
             <Link to="/admin/dashboard" className="nav-link text-white">
               Admin Dashboard
             </Link>
-            <Link to="/admin/employee-management" className="nav-link text-white">
+            <Link to="/admin/employees" className="nav-link text-white">
               Employee Management
             </Link>
             <Link to="/admin/create-employee" className="nav-link text-white">

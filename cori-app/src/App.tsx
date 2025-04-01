@@ -35,7 +35,7 @@ const App: React.FC = () => {
 
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/employee-management" element={<AdminEmployeeManagement />} />
+            <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
             <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
             <Route path="/admin/individual-employee" element={<AdminIndividualEmployee />} />
             <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
