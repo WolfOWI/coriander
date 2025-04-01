@@ -12,7 +12,12 @@ import HeadsetIcon from "@mui/icons-material/Headset";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 import EditIcon from "@mui/icons-material/Edit";
 
-function EquipmentListItem(device: object) {
+interface EquipmentListItemProps {
+  device: object | null;
+  onEdit: () => void;
+}
+
+function EquipmentListItem({ device, onEdit }: EquipmentListItemProps) {
   let deviceIcon: JSX.Element;
 
   return (
@@ -32,7 +37,7 @@ function EquipmentListItem(device: object) {
       </div>
       <p className="text-zinc-500 text-sm">1 Jan 2025</p>
       <CoriBadge text="Good" size="small" color="blue" />
-      <CoriCircleBtn style="black" icon={<EditIcon />} />
+      <CoriCircleBtn style="black" icon={<EditIcon />} onClick={onEdit} />
     </div>
   );
 }
