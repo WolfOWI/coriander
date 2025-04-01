@@ -12,6 +12,7 @@ import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import CoriBadge from "../../components/CoriBadge";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
+import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 
 // Import Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -210,6 +211,7 @@ const AdminIndividualEmployee: React.FC = () => {
         </div>
         <div className="w-1/2">
           <div className="flex gap-4">
+            {/* Leave Balances */}
             <div className="w-3/12 flex flex-col items-center gap-2">
               <h2 className="text-zinc-500 font-semibold">Leave</h2>
               {/* TODO: Add dynamic leave balance blocks */}
@@ -222,6 +224,7 @@ const AdminIndividualEmployee: React.FC = () => {
                 <LeaveBalanceBlock />
               </div>
             </div>
+            {/* Rating & Performance Reviews */}
             <div className="w-9/12 flex flex-col gap-4 max-w-9/12">
               <div className="w-full flex flex-col gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Rating</h2>
@@ -264,16 +267,17 @@ const AdminIndividualEmployee: React.FC = () => {
                 </div>
                 {/* <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center"></div> */}
               </div>
-              <div className="w-full flex flex-col gap-2 items-center">
+              <div className="w-full flex flex-col items-center gap-2">
                 <h2 className="text-zinc-500 font-semibold">Performance Reviews</h2>
-                <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                  Performance Review 1
-                </div>
-                <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                  Performance Review 2
-                </div>
-                <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                  Performance Review 3
+                <div className="w-full h-[580px] overflow-y-auto gap-4 flex flex-col rounded-2xl relative scrollbar-hide [&::-webkit-scrollbar]:hidden">
+                  {/* TODO: Add dynamic performance review boxes */}
+                  <PerfReviewBox />
+                  <PerfReviewBox />
+                  <PerfReviewBox />
+                  <PerfReviewBox />
+                  <div className="py-10 w-full bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0">
+                    .
+                  </div>
                 </div>
               </div>
             </div>

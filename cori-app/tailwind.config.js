@@ -44,7 +44,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ["Epilogue", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
       },
     },
   },
