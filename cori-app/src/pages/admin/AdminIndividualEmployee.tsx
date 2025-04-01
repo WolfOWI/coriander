@@ -8,6 +8,13 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 // Import Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import WorkIcon from "@mui/icons-material/Work";
+import EmailIcon from "@mui/icons-material/Email";
+import FemaleIcon from "@mui/icons-material/Female";
+import CakeIcon from "@mui/icons-material/Cake";
+import PhoneIcon from "@mui/icons-material/PhoneAndroid";
+import AssistantPhotoIcon from "@mui/icons-material/AssistantPhoto";
+import PayIcon from "@mui/icons-material/Payments";
+import UndoIcon from "@mui/icons-material/Undo";
 
 const AdminIndividualEmployee: React.FC = () => {
   // State to store the employee data
@@ -97,11 +104,71 @@ const AdminIndividualEmployee: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            <div className="flex flex-col gap-4 mt-8">
+              <div className="flex">
+                <div className="flex flex-grow flex-col gap-4">
+                  <div className="flex gap-2 items-center">
+                    <FemaleIcon className="text-pink-500" />
+                    <p className="text-zinc-500">Female</p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <CakeIcon />
+                    <p className="text-zinc-500">01 January 2025</p>
+                  </div>
+                </div>
+                <div className="flex flex-grow flex-col gap-4">
+                  <div className="flex gap-2 items-center">
+                    <PhoneIcon />
+                    <p className="text-zinc-500">+27 (12) 345 6789</p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <EmailIcon />
+                    <p className="text-zinc-500">email@email.com</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <AssistantPhotoIcon />
+                <p className="text-zinc-500">
+                  Employed for 2 Years, 3 Months, 10 Days{" "}
+                  <span className="text-zinc-400 text-sm">(1 Jan 2025)</span>
+                </p>
+              </div>
+            </div>
           </div>
           <div className="w-full flex flex-col gap-2 items-center">
             <h2 className="text-zinc-500 font-semibold">Payroll</h2>
             <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-              Payroll Details
+              <p className="text-zinc-500 text-sm mb-1">Salary</p>
+              <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
+                <p className="text-zinc-900 text-xl">R12,345.00</p>
+                <p className="text-zinc-500 text-sm">monthly</p>
+              </div>
+              <div className="flex w-full mt-2 gap-2">
+                <div className="flex flex-col flex-grow items-center">
+                  <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
+                  <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
+                    <p className="text-zinc-900">01 Jan 2025</p>
+                  </div>
+                </div>
+                <div className="flex flex-col flex-grow items-center">
+                  <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
+                  <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
+                    <p className="text-zinc-900">01 Feb 2025</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-between w-full mt-4">
+                <CoriBtn secondary style="black">
+                  <UndoIcon />
+                  Undo Payment
+                </CoriBtn>
+                <CoriBtn secondary style="black">
+                  Pay Now
+                  <PayIcon />
+                </CoriBtn>
+              </div>
             </div>
           </div>
           <div className="w-full flex flex-col gap-2 items-center">
