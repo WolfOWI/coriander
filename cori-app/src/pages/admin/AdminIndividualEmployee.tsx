@@ -25,6 +25,7 @@ import PayIcon from "@mui/icons-material/Payments";
 import UndoIcon from "@mui/icons-material/Undo";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
 
 const AdminIndividualEmployee: React.FC = () => {
   // State to store the employee data (just a placeholder for now)
@@ -221,35 +222,46 @@ const AdminIndividualEmployee: React.FC = () => {
                 <LeaveBalanceBlock />
               </div>
             </div>
-            <div className="w-9/12 flex flex-col gap-4 ">
+            <div className="w-9/12 flex flex-col gap-4 max-w-9/12">
               <div className="w-full flex flex-col gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Rating</h2>
-                <GaugeComponent
-                  value={50}
-                  type="radial"
-                  labels={{
-                    tickLabels: {
-                      type: "inner",
-                      ticks: [
-                        { value: 20 },
-                        { value: 40 },
-                        { value: 60 },
-                        { value: 80 },
-                        { value: 100 },
-                      ],
-                    },
-                  }}
-                  arc={{
-                    colorArray: ["#5BE12C", "#EA4228"],
-                    subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
-                    padding: 0.02,
-                    width: 0.3,
-                  }}
-                  pointer={{
-                    elastic: true,
-                    animationDelay: 0,
-                  }}
-                />
+                {/* TODO: Decide on graph design */}
+                {/* <div className="flex gap-2 items-center">
+                  <StarRoundedIcon />
+                  <p className="text-zinc-900 text-2xl font-bold">3.23</p>
+                </div> */}
+                <div className="w-full p-4 bg-warmstone-50 rounded-2xl">
+                  <GaugeComponent
+                    minValue={0}
+                    maxValue={500}
+                    value={291}
+                    type="semicircle"
+                    labels={{
+                      valueLabel: {
+                        formatTextValue: (value) => `${value / 100}`,
+                        style: { fontSize: "32px", fill: "#18181b" },
+                      },
+                      tickLabels: {
+                        hideMinMax: false,
+                        defaultTickValueConfig: {
+                          formatTextValue: (value) => `${value / 100}`,
+                          style: { fontSize: "16px", fill: "#18181b" },
+                        },
+                      },
+                    }}
+                    arc={{
+                      nbSubArcs: 5,
+                      colorArray: ["#d32f2f", "#f57c00", "#fbc02d", "#388e3c", "#1976d2"],
+                      padding: 0.02,
+                      width: 0.2,
+                    }}
+                    pointer={{
+                      // animationDelay: 1000,
+                      type: "arrow",
+                      animationDuration: 1000,
+                    }}
+                  />
+                </div>
                 {/* <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center"></div> */}
               </div>
               <div className="w-full flex flex-col gap-2 items-center">
