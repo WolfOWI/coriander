@@ -204,12 +204,15 @@ const AdminIndividualEmployee: React.FC = () => {
           <div className="flex gap-4">
             <div className="w-3/12 flex flex-col items-center gap-2">
               <h2 className="text-zinc-500 font-semibold">Leave</h2>
-              <LeaveBalanceBlock />
-              <LeaveBalanceBlock />
-              <LeaveBalanceBlock />
-              <LeaveBalanceBlock />
-              <LeaveBalanceBlock />
-              <LeaveBalanceBlock />
+              {/* TODO: Add dynamic leave balance blocks */}
+              <div className="flex flex-col gap-3">
+                <LeaveBalanceBlock />
+                <LeaveBalanceBlock />
+                <LeaveBalanceBlock />
+                <LeaveBalanceBlock />
+                <LeaveBalanceBlock />
+                <LeaveBalanceBlock />
+              </div>
             </div>
             <div className="w-9/12 flex flex-col gap-4 ">
               <div className="w-full flex flex-col gap-2 items-center">
