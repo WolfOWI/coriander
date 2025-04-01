@@ -4,6 +4,8 @@ import { empUserAPI } from "../../services/api.service";
 
 // Import Components
 import CoriBtn from "../../components/buttons/CoriBtn";
+import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
+import CoriBadge from "../../components/CoriBadge";
 
 // Import Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -15,6 +17,8 @@ import PhoneIcon from "@mui/icons-material/PhoneAndroid";
 import AssistantPhotoIcon from "@mui/icons-material/AssistantPhoto";
 import PayIcon from "@mui/icons-material/Payments";
 import UndoIcon from "@mui/icons-material/Undo";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 
 const AdminIndividualEmployee: React.FC = () => {
   // State to store the employee data
@@ -86,6 +90,7 @@ const AdminIndividualEmployee: React.FC = () => {
       {/* Page Body */}
       <div className="flex gap-4">
         <div className="w-1/2 flex flex-col gap-4">
+          {/* Employee Details */}
           <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col">
             <div className="flex gap-4">
               <img
@@ -101,6 +106,8 @@ const AdminIndividualEmployee: React.FC = () => {
                   <p className="text-zinc-900">{empUser.jobTitle}</p>
                   <p className="text-zinc-900">•</p>
                   <p className="text-zinc-500">{empUser.department}</p>
+                  {/* TODO: Add dynamic work-type badge */}
+                  <CoriBadge text="Full-Time" size="small" />
                 </div>
               </div>
             </div>
@@ -114,7 +121,9 @@ const AdminIndividualEmployee: React.FC = () => {
                   </div>
                   <div className="flex gap-2 items-center">
                     <CakeIcon />
-                    <p className="text-zinc-500">01 January 2025</p>
+                    <p className="text-zinc-500">
+                      01 Jan 2025 <span className="text-zinc-400 text-sm">(32 years old)</span>
+                    </p>
                   </div>
                 </div>
                 <div className="flex flex-grow flex-col gap-4">
@@ -137,6 +146,8 @@ const AdminIndividualEmployee: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Payroll Information */}
           <div className="w-full flex flex-col gap-2 items-center">
             <h2 className="text-zinc-500 font-semibold">Payroll</h2>
             <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
@@ -148,14 +159,16 @@ const AdminIndividualEmployee: React.FC = () => {
               <div className="flex w-full mt-2 gap-2">
                 <div className="flex flex-col flex-grow items-center">
                   <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
-                  <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
+                  <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl">
                     <p className="text-zinc-900">01 Jan 2025</p>
+                    <CoriCircleBtn style="black" icon={<EditIcon />} />
                   </div>
                 </div>
                 <div className="flex flex-col flex-grow items-center">
                   <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
-                  <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
-                    <p className="text-zinc-900">01 Feb 2025</p>
+                  <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl">
+                    <p className="text-zinc-900">01 Jan 2025</p>
+                    <CoriBadge color="white" text="4 days to go" size="medium" />
                   </div>
                 </div>
               </div>
@@ -171,8 +184,13 @@ const AdminIndividualEmployee: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Equipment */}
           <div className="w-full flex flex-col gap-2 items-center">
-            <h2 className="text-zinc-500 font-semibold">Equipment</h2>
+            <div className="flex gap-2 items-center">
+              <h2 className="text-zinc-500 font-semibold">Equipment</h2>
+              <CoriCircleBtn icon={<AddIcon />} />
+            </div>
             <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
               Equipment List
             </div>
