@@ -6,6 +6,8 @@ import { empUserAPI } from "../../services/api.service";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import CoriBadge from "../../components/CoriBadge";
+import EquipmentListItem from "../../components/equipment/EquipmentListItem";
+import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 
 // Import Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -21,7 +23,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 
 const AdminIndividualEmployee: React.FC = () => {
-  // State to store the employee data
+  // State to store the employee data (just a placeholder for now)
   const [empUser, setEmpUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -156,19 +158,19 @@ const AdminIndividualEmployee: React.FC = () => {
                 <p className="text-zinc-900 text-xl">R12,345.00</p>
                 <p className="text-zinc-500 text-sm">monthly</p>
               </div>
-              <div className="flex w-full mt-2 gap-2">
+              <div className="flex w-full mt-2 gap-2 h-fit">
                 <div className="flex flex-col flex-grow items-center">
                   <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
-                  <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl">
+                  <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl  h-ful">
                     <p className="text-zinc-900">01 Jan 2025</p>
                     <CoriCircleBtn style="black" icon={<EditIcon />} />
                   </div>
                 </div>
                 <div className="flex flex-col flex-grow items-center">
                   <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
-                  <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl">
+                  <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
                     <p className="text-zinc-900">01 Jan 2025</p>
-                    <CoriBadge color="white" text="4 days to go" size="medium" />
+                    <CoriBadge text="4 days to go" size="x-small" />
                   </div>
                 </div>
               </div>
@@ -191,8 +193,10 @@ const AdminIndividualEmployee: React.FC = () => {
               <h2 className="text-zinc-500 font-semibold">Equipment</h2>
               <CoriCircleBtn icon={<AddIcon />} />
             </div>
-            <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-              Equipment List
+            <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
+              {/* TODO: Add dynamic equipment list items */}
+              <EquipmentListItem />
+              <EquipmentListItem />
             </div>
           </div>
         </div>
@@ -200,24 +204,12 @@ const AdminIndividualEmployee: React.FC = () => {
           <div className="flex gap-4">
             <div className="w-3/12 flex flex-col items-center gap-2">
               <h2 className="text-zinc-500 font-semibold">Leave</h2>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                Leave 1
-              </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                Leave 2
-              </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                Leave 3
-              </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                Leave 4
-              </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                Leave 5
-              </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
-                Leave 6
-              </div>
+              <LeaveBalanceBlock />
+              <LeaveBalanceBlock />
+              <LeaveBalanceBlock />
+              <LeaveBalanceBlock />
+              <LeaveBalanceBlock />
+              <LeaveBalanceBlock />
             </div>
             <div className="w-9/12 flex flex-col gap-4 ">
               <div className="w-full flex flex-col gap-2 items-center">
