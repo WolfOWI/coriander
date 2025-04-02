@@ -235,7 +235,7 @@ const AdminIndividualEmployee: React.FC = () => {
               {/* Rating & Performance Reviews */}
               <div className="w-9/12 flex flex-col gap-4 max-w-9/12">
                 <div className="w-full flex flex-col gap-2 items-center">
-                  <h2 className="text-zinc-500 font-semibold">Rating</h2>
+                  <h2 className="text-zinc-500 font-semibold">Average Rating</h2>
                   {/* TODO: Decide on graph design */}
                   {/* <div className="flex gap-2 items-center">
                   <StarRoundedIcon />
@@ -245,7 +245,7 @@ const AdminIndividualEmployee: React.FC = () => {
                     <GaugeComponent
                       minValue={0}
                       maxValue={500}
-                      value={291}
+                      value={425}
                       type="semicircle"
                       labels={{
                         valueLabel: {

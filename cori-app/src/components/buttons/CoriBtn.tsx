@@ -79,8 +79,8 @@ const CoriBtn = ({
       variant={btnVariant}
       onClick={onClick}
       type={type}
-      className={`${btnStyles} flex items-center justify-center h-14 px-3 gap-2 rounded-2xl cori-btn ${className}
-      ${iconOnly ? "w-14" : ""}`}
+      className={`${btnStyles} text-[14px] flex items-center justify-center h-10 px-3 gap-2 rounded-xl cori-btn ${className}
+      ${iconOnly ? "w-10" : ""}`}
     >
       {children}
     </Button>

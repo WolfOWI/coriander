@@ -8,6 +8,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCartRounded";
 
 function ReferencePage() {
   return (
@@ -66,6 +67,9 @@ function ReferencePage() {
           </div>
         </div>
       </div>
+      <CoriBtn secondary style="red" iconOnly>
+        <ShoppingCartIcon />
+      </CoriBtn>
     </div>
   );
 }
