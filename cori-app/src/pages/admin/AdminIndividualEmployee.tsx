@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
-import { DatePicker } from "antd";
+import { Avatar, DatePicker } from "antd";
 import dayjs, { Dayjs } from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -167,11 +167,26 @@ const AdminIndividualEmployee: React.FC = () => {
             {/* Employee Details */}
             <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col">
               <div className="flex gap-4">
-                <img
-                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt="Employee"
-                  className="bg-green-50 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
-                />
+                {empUser.profilePicture ? (
+                  <Avatar
+                    src={empUser.profilePicture}
+                    size={96}
+                    className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
+                  />
+                ) : (
+                  <Avatar
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${empUser.fullName}`}
+                    size={96}
+                    className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
+                  />
+                )}
+
+                {/* <img
+                  // src={empUser.profilePicture}
+                  src=""
+                  alt={`Pic`}
+                  className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
+                /> */}
                 <div className="flex flex-col gap-2">
                   <p className="text-sm text-zinc-500">Employee ID {empUser.employeeId}</p>
                   <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
@@ -180,7 +195,6 @@ const AdminIndividualEmployee: React.FC = () => {
                     <p className="text-zinc-900">{empUser.jobTitle}</p>
                     <p className="text-zinc-900">•</p>
                     <p className="text-zinc-500">{empUser.department}</p>
-                    {/* TODO: Add dynamic work-type badge */}
                     {empUser.isSuspended ? (
                       <EmployTypeBadge status="suspended" />
                     ) : (
