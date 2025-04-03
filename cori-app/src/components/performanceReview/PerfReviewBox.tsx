@@ -1,11 +1,17 @@
 import React from "react";
 
+// Import React Components
+import CoriBtn from "../buttons/CoriBtn";
+
+// Import 3rd party components
+import { Button, Dropdown } from "antd";
+
 // Import Google Icons
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import TextSnippetRoundedIcon from "@mui/icons-material/TextSnippetRounded";
-import CoriBtn from "../buttons/CoriBtn";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import { Button } from "react-bootstrap";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface PerfReviewBoxProps {
   showPerson?: boolean;
@@ -70,9 +76,38 @@ function PerfReviewBox({ showPerson = true }: PerfReviewBoxProps) {
         <CoriBtn primary style="black">
           Join
         </CoriBtn>
-        <Button variant="link" className="p-0">
-          <MoreVertRoundedIcon className="text-zinc-500" />
-        </Button>
+        <Dropdown
+          menu={{
+            items: [
+              {
+                key: "1",
+                label: "Edit Meeting",
+                icon: <EditIcon />,
+                onClick: () => {
+                  console.log("Edit");
+                },
+              },
+              {
+                key: "2",
+                label: "Remove",
+                icon: <DeleteIcon />,
+                danger: true,
+                onClick: () => {
+                  console.log("Remove");
+                },
+              },
+            ],
+          }}
+          placement="bottomRight"
+          trigger={["click"]}
+          dropdownRender={(menu) => (
+            <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
+          )}
+        >
+          <Button className="p-0 border-none bg-transparent">
+            <MoreVertRoundedIcon className="text-zinc-500" />
+          </Button>
+        </Dropdown>
       </div>
     </div>
   );

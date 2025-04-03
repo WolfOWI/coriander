@@ -317,6 +317,7 @@ const AdminIndividualEmployee: React.FC = () => {
         </div>
       </div>
       <>
+        {/* MODALS */}
         {/* Edit Details Modal */}
         <AdminEditEmpDetailsModal
           showModal={showEditDetailsModal}

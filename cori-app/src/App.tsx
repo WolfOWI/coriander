@@ -128,6 +128,9 @@ const App: React.FC = () => {
             controlHeight: 48,
             borderRadiusLG: 8,
           },
+          Dropdown: {
+            borderRadiusLG: 16,
+          },
         },
       }}
     >
