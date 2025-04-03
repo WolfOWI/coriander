@@ -2,11 +2,12 @@
 
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import { PayCycle } from "../types/common";
 
 dayjs.extend(duration);
 
 // Get the duration of employment in years, months, and days (E.g. "1 year, 2 months, 3 days")
-const formatEmploymentDuration = (startDate: string) => {
+const formatEmploymentDuration = (startDate: string): string => {
   const start = dayjs(startDate);
   const now = dayjs();
   const diff = dayjs.duration(now.diff(start));
@@ -23,4 +24,24 @@ const formatEmploymentDuration = (startDate: string) => {
   return parts.join(", ");
 };
 
-export { formatEmploymentDuration };
+// Calculate the next pay day
+const calculateNextPayDay = (payCycle: PayCycle, lastPaidDate: string): string => {
+  // Format the last paid date (just in case)
+  const lastPaid = dayjs(lastPaidDate);
+
+  if (payCycle === PayCycle.Monthly) {
+    return lastPaid.add(1, "month").format("DD MMM YYYY");
+  }
+
+  if (payCycle === PayCycle.BiWeekly) {
+    return lastPaid.add(2, "week").format("DD MMM YYYY");
+  }
+
+  if (payCycle === PayCycle.Weekly) {
+    return lastPaid.add(1, "week").format("DD MMM YYYY");
+  } else {
+    return "Invalid Pay Cycle";
+  }
+};
+
+export { formatEmploymentDuration, calculateNextPayDay };

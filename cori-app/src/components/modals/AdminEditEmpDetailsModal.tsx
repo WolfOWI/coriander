@@ -1,15 +1,52 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Button, Form, Input, Select, DatePicker } from "antd";
+import dayjs from "dayjs";
+import { Gender, EmployType, PayCycle } from "../../types/common";
 
 interface AdminEditEmpDetailsModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
+  employee: {
+    fullName: string;
+    gender: Gender;
+    dateOfBirth: string;
+    phoneNumber: string;
+    jobTitle: string;
+    department: string;
+    employType: EmployType;
+    employDate: string;
+    salaryAmount: number;
+    payCycle: PayCycle;
+  } | null;
 }
 
-function AdminEditEmpDetailsModal({ showModal, setShowModal }: AdminEditEmpDetailsModalProps) {
+function AdminEditEmpDetailsModal({
+  showModal,
+  setShowModal,
+  employee,
+}: AdminEditEmpDetailsModalProps) {
+  const [form] = Form.useForm();
+
+  // Update form values when employee data changes
+  useEffect(() => {
+    if (employee) {
+      form.setFieldsValue({
+        gender: employee.gender,
+        dob: dayjs(employee.dateOfBirth),
+        phoneNumber: employee.phoneNumber,
+        jobTitle: employee.jobTitle,
+        department: employee.department,
+        employType: employee.employType,
+        employDate: dayjs(employee.employDate),
+        salaryAmount: employee.salaryAmount,
+        payCycle: employee.payCycle,
+      });
+    }
+  }, [employee, form]);
+
   return (
     <Modal
-      title={<h2 className="text-zinc-900 font-bold text-3xl">Edit Lettie Dlamini</h2>}
+      title={<h2 className="text-zinc-900 font-bold text-3xl">Edit {employee?.fullName}</h2>}
       open={showModal}
       onCancel={() => setShowModal(false)}
       width={1200}
@@ -37,15 +74,15 @@ function AdminEditEmpDetailsModal({ showModal, setShowModal }: AdminEditEmpDetai
         </Button>,
       ]}
     >
-      <Form layout="vertical" variant="filled" className="flex gap-4">
+      <Form form={form} layout="vertical" variant="filled" className="flex gap-4">
         {/* Personal Details */}
         <div className="flex flex-col w-full">
           <h2 className="text-zinc-500 font-bold mb-3">Personal Details</h2>
           <Form.Item name="gender" label="Gender">
             <Select>
-              <Select.Option value="male">Male</Select.Option>
-              <Select.Option value="female">Female</Select.Option>
-              <Select.Option value="other">Other</Select.Option>
+              <Select.Option value={Gender.Male}>Male</Select.Option>
+              <Select.Option value={Gender.Female}>Female</Select.Option>
+              <Select.Option value={Gender.Other}>Other</Select.Option>
             </Select>
           </Form.Item>
           {/* Date of Birth */}
@@ -60,27 +97,18 @@ function AdminEditEmpDetailsModal({ showModal, setShowModal }: AdminEditEmpDetai
         {/* Employment Details */}
         <div className="flex flex-col w-full">
           <h2 className="text-zinc-500 font-bold mb-3">Employment</h2>
-          <Form.Item
-            label="Job Title"
-            name="jobTitle"
-            // rules={[{ required: true, message: "Job title cannot be empty" }]}
-          >
+          <Form.Item label="Job Title" name="jobTitle">
             <Input type="text" />
           </Form.Item>
-          <Form.Item
-            label="Department"
-            name="department"
-            // rules={[{ required: true, message: "Job title cannot be empty" }]}
-          >
+          <Form.Item label="Department" name="department">
             <Input type="text" />
           </Form.Item>
           <Form.Item name="employType" label="Employment Type">
             <Select>
-              {/* FullTime = 0, PartTime = 1, Contractor = 2, Intern = 3 */}
-              <Select.Option value="0">Full-Time</Select.Option>
-              <Select.Option value="1">Part-Time</Select.Option>
-              <Select.Option value="2">Contractor</Select.Option>
-              <Select.Option value="3">Intern</Select.Option>
+              <Select.Option value={EmployType.FullTime}>Full-Time</Select.Option>
+              <Select.Option value={EmployType.PartTime}>Part-Time</Select.Option>
+              <Select.Option value={EmployType.Contract}>Contractor</Select.Option>
+              <Select.Option value={EmployType.Intern}>Intern</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item name="employDate" label="Date of Employment">
@@ -95,10 +123,9 @@ function AdminEditEmpDetailsModal({ showModal, setShowModal }: AdminEditEmpDetai
           </Form.Item>
           <Form.Item name="payCycle" label="Pay Cycle">
             <Select>
-              {/* Monthly = 0, BiWeekly = 1, Weekly = 2 */}
-              <Select.Option value="0">Monthly</Select.Option>
-              <Select.Option value="1">Bi-Weekly</Select.Option>
-              <Select.Option value="2">Weekly</Select.Option>
+              <Select.Option value={PayCycle.Monthly}>Monthly</Select.Option>
+              <Select.Option value={PayCycle.BiWeekly}>Bi-Weekly</Select.Option>
+              <Select.Option value={PayCycle.Weekly}>Weekly</Select.Option>
             </Select>
           </Form.Item>
         </div>

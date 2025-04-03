@@ -1,13 +1,12 @@
 // Wolf Botha
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { empUserAPI } from "../../services/api.service";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
-import { Modal } from "react-bootstrap";
-import { DatePicker, Space } from "antd";
-import dayjs from "dayjs"; // For simple date formatting
+import { DatePicker } from "antd";
+import dayjs, { Dayjs } from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 
 // Extend dayjs with plugins
@@ -38,15 +37,43 @@ import UndoIcon from "@mui/icons-material/Undo";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import MaleIcon from "@mui/icons-material/Male";
+import TransgenderIcon from "@mui/icons-material/Transgender";
 
 // Import Utils
-import { formatEmploymentDuration } from "../../utils/dateUtils";
+import { calculateNextPayDay, formatEmploymentDuration } from "../../utils/dateUtils";
 import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
+import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
+
+// Types
+import { EmployType, Gender, PayCycle } from "../../types/common";
+
+// EmpUser Data Interface
+interface EmpUser {
+  userId: number;
+  fullName: string;
+  email: string;
+  profilePicture: string;
+  role: number;
+  employeeId: number;
+  gender: Gender;
+  dateOfBirth: string;
+  phoneNumber: string;
+  jobTitle: string;
+  department: string;
+  salaryAmount: number;
+  payCycle: PayCycle;
+  lastPaidDate: string;
+  employType: EmployType;
+  employDate: string;
+  isSuspended: boolean;
+}
 
 const AdminIndividualEmployee: React.FC = () => {
-  // State to store the employee data
-  const [empUser, setEmpUser] = useState<any>(null);
+  // State to store the employee data with proper typing
+  const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [nextPayDay, setNextPayDay] = useState<string | null>(null);
   const { employeeId } = useParams();
 
   // Modal States
@@ -58,35 +85,22 @@ const AdminIndividualEmployee: React.FC = () => {
   // Navigation
   const navigate = useNavigate();
 
+  // On page load, fetch the employee data
   useEffect(() => {
-    // TODO: Temporary get all employees, then get the specific employee by ID (will be changed to get by ID directly)
     const fetchEmployee = async () => {
       try {
-        // Call the API endpoint
-        const response = await empUserAPI.getAllEmpUsers();
-
-        let employee;
         if (employeeId) {
-          // Find the specific employee by ID
-          employee = response.data.$values.find(
-            (emp: any) => emp.employeeId === Number(employeeId)
-          );
+          // Fetch the specific employee by ID
+          const response = await empUserAPI.getEmpUserById(employeeId);
+          setEmpUser(response.data);
         } else {
-          // If no ID provided, use the first employee
-          employee = response.data.$values[0];
-          // Update the URL to include the first employee's ID
-          if (employee) {
-            navigate(`/admin/individual-employee/${employee.employeeId}`, { replace: true });
-          }
+          // If no ID provided, redirect to employee management page
+          navigate("/admin/employees");
         }
-
-        if (employee) {
-          setEmpUser(employee);
-        } else {
-          // Handle case where no employees are found
-          console.error("No employees found");
-          return <div>Something went wrong</div>;
-        }
+      } catch (error) {
+        console.error("Error fetching employee:", error);
+        // Handle error case
+        return <div>Something went wrong</div>;
       } finally {
         setLoading(false);
       }
@@ -94,6 +108,13 @@ const AdminIndividualEmployee: React.FC = () => {
 
     fetchEmployee();
   }, [employeeId, navigate]);
+
+  // Calculate the next pay day & store it in state
+  useEffect(() => {
+    if (empUser) {
+      setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate));
+    }
+  }, [empUser]);
 
   if (loading) return <div>Loading...</div>;
   if (!empUser)
@@ -168,15 +189,27 @@ const AdminIndividualEmployee: React.FC = () => {
                 <div className="flex">
                   <div className="flex flex-grow flex-col gap-4">
                     <div className="flex gap-2 items-center">
-                      <FemaleIcon className="text-pink-500" />
-                      <p className="text-zinc-500">Female</p>
+                      {empUser.gender === Gender.Female ? (
+                        <FemaleIcon className="text-pink-500" />
+                      ) : empUser.gender === Gender.Male ? (
+                        <MaleIcon className="text-blue-500" />
+                      ) : (
+                        <TransgenderIcon className="text-purple-500" />
+                      )}
+                      <p className="text-zinc-500">
+                        {empUser.gender === Gender.Female
+                          ? "Female"
+                          : empUser.gender === Gender.Male
+                          ? "Male"
+                          : "Other"}
+                      </p>
                     </div>
                     <div className="flex gap-2 items-center">
                       <CakeIcon />
                       <p className="text-zinc-500">
-                        01 Jan 1998{" "}
+                        {empUser.dateOfBirth}
                         <span className="text-zinc-400 text-sm ml-2">
-                          {dayjs("01-01-1998").fromNow(true)} old
+                          {dayjs(empUser.dateOfBirth).fromNow(true)} old
                         </span>
                       </p>
                     </div>
@@ -184,19 +217,21 @@ const AdminIndividualEmployee: React.FC = () => {
                   <div className="flex flex-grow flex-col gap-4">
                     <div className="flex gap-2 items-center">
                       <PhoneIcon />
-                      <p className="text-zinc-500">+27 (12) 345 6789</p>
+                      <p className="text-zinc-500">{formatPhone(empUser.phoneNumber)}</p>
                     </div>
                     <div className="flex gap-2 items-center">
                       <EmailIcon />
-                      <p className="text-zinc-500">email@email.com</p>
+                      <p className="text-zinc-500">{empUser.email}</p>
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <AssistantPhotoIcon />
                   <p className="text-zinc-500">
-                    Employed for {formatEmploymentDuration("2024-01-01")}
-                    <span className="text-zinc-400 text-sm ml-2">(1 Jan 2024)</span>
+                    Employed for {formatEmploymentDuration(empUser.employDate)}
+                    <span className="text-zinc-400 text-sm ml-2">
+                      ({dayjs(empUser.employDate).format("DD MMM YYYY")})
+                    </span>
                   </p>
                 </div>
               </div>
@@ -208,15 +243,21 @@ const AdminIndividualEmployee: React.FC = () => {
               <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
                 <p className="text-zinc-500 text-sm mb-1">Salary</p>
                 <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
-                  <p className="text-zinc-900 text-xl">R12,345.00</p>
-                  <p className="text-zinc-500 text-sm">monthly</p>
+                  <p className="text-zinc-900 text-xl">{formatRandAmount(empUser.salaryAmount)}</p>
+                  <p className="text-zinc-500 text-sm">
+                    {empUser.payCycle === PayCycle.Monthly
+                      ? "monthly"
+                      : empUser.payCycle === PayCycle.BiWeekly
+                      ? "bi-weekly"
+                      : "weekly"}
+                  </p>
                 </div>
                 <div className="flex w-full mt-2 gap-2 h-fit">
                   <div className="flex flex-col w-1/2 items-center">
                     <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
                     <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
                       <DatePicker
-                        defaultValue={dayjs("2025-01-01")}
+                        value={dayjs(empUser.lastPaidDate)}
                         format="DD MMM YYYY"
                         suffixIcon={<CoriCircleBtn style="black" icon={<EditIcon />} />}
                         allowClear={false}
@@ -228,8 +269,8 @@ const AdminIndividualEmployee: React.FC = () => {
                   <div className="flex flex-col w-1/2 items-center">
                     <p className="text-zinc-500 text-sm mb-1">Next Pay Day</p>
                     <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                      <p className="text-zinc-900">01 Feb 2025</p>
-                      <CoriBadge text="4 days to go" size="x-small" />
+                      <p className="text-zinc-900">{nextPayDay}</p>
+                      <CoriBadge text={`${dayjs(nextPayDay).fromNow()}`} size="x-small" />
                     </div>
                   </div>
                 </div>
@@ -342,6 +383,7 @@ const AdminIndividualEmployee: React.FC = () => {
         <AdminEditEmpDetailsModal
           showModal={showEditDetailsModal}
           setShowModal={setShowEditDetailsModal}
+          employee={empUser}
         />
 
         {/* New Equipment Modal */}
