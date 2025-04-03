@@ -15,7 +15,7 @@ dayjs.extend(relativeTime);
 // Import React Components
 import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
-import CoriBadge from "../../components/CoriBadge";
+import CoriBadge from "../../components/badges/CoriBadge";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";

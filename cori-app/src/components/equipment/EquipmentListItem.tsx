@@ -1,7 +1,7 @@
 import React, { JSX } from "react";
 
 // Import Components
-import CoriBadge from "../CoriBadge";
+import CoriBadge from "../badges/CoriBadge";
 import CoriCircleBtn from "../buttons/CoriCircleBtn";
 
 // Import Icons

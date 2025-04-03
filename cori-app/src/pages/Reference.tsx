@@ -1,7 +1,7 @@
 // Import components
 import CoriBtn from "../components/buttons/CoriBtn";
 import CoriCircleBtn from "../components/buttons/CoriCircleBtn";
-import CoriBadge from "../components/CoriBadge";
+import CoriBadge from "../components/badges/CoriBadge";
 
 // Import Icons
 import DeleteIcon from "@mui/icons-material/Delete";
