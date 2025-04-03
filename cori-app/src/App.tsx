@@ -1,6 +1,13 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ConfigProvider, theme } from "antd";
+import dayjs from "dayjs";
+import "dayjs/locale/en";
 import Navigation from "./components/Navigation";
+import "antd/dist/reset.css";
+
+// Configure day.js
+dayjs.locale("en");
 
 // Import all pages
 import Login from "./pages/auth/Login";
@@ -18,35 +25,127 @@ import ReferencePage from "./pages/Reference";
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <div className="flex m-4 min-h-[calc(98vh-32px)]">
-        <Navigation />
-        <main className="flex-grow-1 my-4">
-          <Routes>
-            {/* Auth Routes */}
-            <Route path="/" element={<Login />} />
-            <Route path="/employee/signup" element={<EmployeeSignUp />} />
-            <Route path="/admin/signup" element={<AdminSignUp />} />
+    <ConfigProvider
+      theme={{
+        algorithm: theme.defaultAlgorithm,
+        token: {
+          // Primary Colors
+          colorPrimary: "#88A764",
+          colorPrimaryHover: "#6D8650",
+          colorPrimaryActive: "#52643C",
+          colorPrimaryText: "#1B2114",
+          colorPrimaryTextHover: "#1B2114",
+          colorPrimaryTextActive: "#1B2114",
 
-            {/* Employee Routes */}
-            <Route path="/employee/home" element={<EmployeeHome />} />
-            <Route path="/employee/leave-overview" element={<EmployeeLeaveOverview />} />
-            <Route path="/employee/profile" element={<EmployeeProfile />} />
+          // Text Colors
+          colorText: "#18181b", // zinc-900
+          colorTextSecondary: "#71717a", // zinc-500
+          colorTextTertiary: "#a1a1aa", // zinc-400
 
-            {/* Admin Routes */}
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
-            <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
-            <Route path="/admin/individual-employee" element={<AdminIndividualEmployee />} />
-            <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
+          // Background Colors
+          colorBgContainer: "#fafaf9", // warmstone-50
+          colorBgElevated: "#f5f5f4", // warmstone-100
+          colorBgLayout: "#e7e5e4", // warmstone-200
 
-            {/* Temporary Reference Route */}
-            {/* TODO: Delete this later */}
-            <Route path="/reference" element={<ReferencePage />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+          // Border Colors
+          colorBorder: "#d4d4d8", // zinc-300
+          colorBorderSecondary: "#e4e4e7", // zinc-200
+
+          // Component Specific
+          borderRadius: 16, // rounded-2xl
+          borderRadiusLG: 24,
+          borderRadiusSM: 8,
+          borderRadiusXS: 4,
+
+          // Font
+          fontFamily: "Inter, sans-serif",
+          fontSize: 16,
+          fontSizeLG: 16,
+          fontSizeSM: 12,
+          fontSizeXL: 20,
+          fontSizeHeading1: 24,
+          fontSizeHeading2: 20,
+          fontSizeHeading3: 16,
+          fontSizeHeading4: 14,
+          fontSizeHeading5: 12,
+
+          // Padding
+          padding: 16,
+          paddingLG: 24,
+          paddingSM: 12,
+          paddingXS: 8,
+          paddingXXS: 4,
+
+          // Margin
+          margin: 16,
+          marginLG: 24,
+          marginSM: 12,
+          marginXS: 8,
+          marginXXS: 4,
+
+          // Control
+          controlHeight: 40,
+          controlHeightLG: 48,
+          controlHeightSM: 32,
+        },
+        components: {
+          Button: {
+            borderRadius: 8,
+            controlHeight: 40,
+            controlHeightLG: 48,
+            controlHeightSM: 32,
+            paddingInline: 16,
+            paddingBlock: 8,
+          },
+          DatePicker: {
+            borderRadius: 8,
+            controlHeight: 40,
+            paddingBlock: 8,
+            paddingInline: 12,
+          },
+          Modal: {
+            borderRadius: 16,
+            paddingContentHorizontal: 32,
+            paddingContentVertical: 24,
+            titleFontSize: 24,
+          },
+          Card: {
+            borderRadius: 16,
+            padding: 24,
+          },
+        },
+      }}
+    >
+      <Router>
+        <div className="flex m-4 min-h-[calc(98vh-32px)]">
+          <Navigation />
+          <main className="flex-grow-1 my-4">
+            <Routes>
+              {/* Auth Routes */}
+              <Route path="/" element={<Login />} />
+              <Route path="/employee/signup" element={<EmployeeSignUp />} />
+              <Route path="/admin/signup" element={<AdminSignUp />} />
+
+              {/* Employee Routes */}
+              <Route path="/employee/home" element={<EmployeeHome />} />
+              <Route path="/employee/leave-overview" element={<EmployeeLeaveOverview />} />
+              <Route path="/employee/profile" element={<EmployeeProfile />} />
+
+              {/* Admin Routes */}
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
+              <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
+              <Route path="/admin/individual-employee" element={<AdminIndividualEmployee />} />
+              <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
+
+              {/* Temporary Reference Route */}
+              {/* TODO: Delete this later */}
+              <Route path="/reference" element={<ReferencePage />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </ConfigProvider>
   );
 };
 

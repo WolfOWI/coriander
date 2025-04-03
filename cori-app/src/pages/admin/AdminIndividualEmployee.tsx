@@ -1,11 +1,13 @@
 // Wolf Botha
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { empUserAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
 import { Modal } from "react-bootstrap";
+import { DatePicker, Space } from "antd";
+import dayjs from "dayjs"; // For simple date formatting
 
 // Import Custom Components
 import CoriBtn from "../../components/buttons/CoriBtn";
@@ -96,13 +98,11 @@ const AdminIndividualEmployee: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <CoriBtn secondary style="black" onClick={() => setShowEditDetailsModal(true)}>
+              <EditIcon />
               Edit Details
             </CoriBtn>
-            <CoriBtn primary style="black">
-              Suspend
-            </CoriBtn>
-            <CoriBtn primary style="red" onClick={() => setShowTerminateEmployeeModal(true)}>
-              Terminate
+            <CoriBtn style="red" onClick={() => setShowTerminateEmployeeModal(true)}>
+              Terminate Employee
             </CoriBtn>
           </div>
         </div>
@@ -176,17 +176,22 @@ const AdminIndividualEmployee: React.FC = () => {
                   <p className="text-zinc-500 text-sm">monthly</p>
                 </div>
                 <div className="flex w-full mt-2 gap-2 h-fit">
-                  <div className="flex flex-col flex-grow items-center">
-                    <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
-                    <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl  h-ful">
-                      <p className="text-zinc-900">01 Jan 2025</p>
-                      <CoriCircleBtn style="black" icon={<EditIcon />} />
-                    </div>
-                  </div>
-                  <div className="flex flex-col flex-grow items-center">
+                  <div className="flex flex-col w-1/2 items-center">
                     <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
                     <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                      <p className="text-zinc-900">01 Jan 2025</p>
+                      <DatePicker
+                        defaultValue={dayjs("2025-01-01")}
+                        format="DD MMM YYYY"
+                        suffixIcon={<CoriCircleBtn style="black" icon={<EditIcon />} />}
+                        allowClear={false}
+                        variant="borderless"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col w-1/2 items-center">
+                    <p className="text-zinc-500 text-sm mb-1">Next Pay Day</p>
+                    <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
+                      <p className="text-zinc-900">01 Feb 2025</p>
                       <CoriBadge text="4 days to go" size="x-small" />
                     </div>
                   </div>
