@@ -23,6 +23,7 @@ import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 import AdminAddEquipItemModal from "../../components/modals/AdminAddEquipItemModal";
+import AdminManageEquipItemModal from "../../components/modals/AdminManageEquipItemModal";
 
 // Import Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -328,32 +329,10 @@ const AdminIndividualEmployee: React.FC = () => {
         />
 
         {/* Manage Equipment Modal */}
-        <Modal show={showManageEquipmentModal} onHide={() => setShowManageEquipmentModal(false)}>
-          <Modal.Header closeButton className="border-0 p-8 bg-warmstone-100">
-            <Modal.Title>
-              <h2 className="text-zinc-900 font-bold text-3xl">Manage Equipment</h2>
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-8">Text fields here</Modal.Body>
-          <Modal.Footer className="border-0 p-8">
-            <div className="flex gap-2 w-full">
-              <CoriBtn
-                secondary
-                style="black"
-                onClick={() => setShowManageEquipmentModal(false)}
-                className="w-full"
-              >
-                Cancel
-              </CoriBtn>
-              <CoriBtn style="red" className="w-full">
-                Delete
-              </CoriBtn>
-              <CoriBtn className="w-full" onClick={() => setShowManageEquipmentModal(false)}>
-                Save
-              </CoriBtn>
-            </div>
-          </Modal.Footer>
-        </Modal>
+        <AdminManageEquipItemModal
+          showModal={showManageEquipmentModal}
+          setShowModal={setShowManageEquipmentModal}
+        />
 
         {/* Terminate Employee Modal */}
         <Modal
