@@ -6,6 +6,7 @@ import CoriCircleBtn from "../buttons/CoriCircleBtn";
 
 // Import Icons
 import PhoneIcon from "@mui/icons-material/PhoneAndroid";
+import TabletIcon from "@mui/icons-material/TabletAndroid";
 import LaptopIcon from "@mui/icons-material/Laptop";
 import MonitorIcon from "@mui/icons-material/Monitor";
 import HeadsetIcon from "@mui/icons-material/Headset";
@@ -22,6 +23,8 @@ function EquipmentListItem({ device, onEdit }: EquipmentListItemProps) {
 
   return (
     // TODO: Change deviceIcon depending on the device type (when adding dynamic data)
+    // <PhoneIcon fontSize="large" />
+    // <TabletIcon fontSize="large" />
     // <LaptopIcon fontSize="large" />
     // <MonitorIcon fontSize="large" />
     // <HeadsetIcon fontSize="large" />

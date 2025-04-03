@@ -22,6 +22,7 @@ import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
+import AdminAddEquipItemModal from "../../components/modals/AdminAddEquipItemModal";
 
 // Import Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -36,6 +37,8 @@ import UndoIcon from "@mui/icons-material/Undo";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
+
+// Import Utils
 import { formatEmploymentDuration } from "../../utils/dateUtils";
 
 const AdminIndividualEmployee: React.FC = () => {
@@ -318,36 +321,11 @@ const AdminIndividualEmployee: React.FC = () => {
           setShowModal={setShowEditDetailsModal}
         />
 
-        {/* <Modal show={showEditDetailsModal} onHide={() => setShowEditDetailsModal(false)} size="xl">
-          <Modal.Header closeButton className="border-0 p-8 bg-warmstone-100">
-            <Modal.Title>
-              <h2 className="text-zinc-900 font-bold text-3xl">Edit Lettie Dlamini</h2>
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-8">Editing fields here</Modal.Body>
-          <Modal.Footer className="border-0 p-8">
-            <CoriBtn secondary style="red" onClick={() => setShowEditDetailsModal(false)}>
-              Cancel
-            </CoriBtn>
-            <CoriBtn onClick={() => setShowEditDetailsModal(false)}>Update Info</CoriBtn>
-          </Modal.Footer>
-        </Modal> */}
-
         {/* New Equipment Modal */}
-        <Modal show={showNewEquipmentModal} onHide={() => setShowNewEquipmentModal(false)}>
-          <Modal.Header closeButton className="border-0 p-8 bg-warmstone-100">
-            <Modal.Title>
-              <h2 className="text-zinc-900 font-bold text-3xl">New Equipment Item</h2>
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-8">Creation fields here</Modal.Body>
-          <Modal.Footer className="border-0 p-8">
-            <CoriBtn secondary style="red" onClick={() => setShowNewEquipmentModal(false)}>
-              Cancel
-            </CoriBtn>
-            <CoriBtn onClick={() => setShowNewEquipmentModal(false)}>Create Equipment</CoriBtn>
-          </Modal.Footer>
-        </Modal>
+        <AdminAddEquipItemModal
+          showModal={showNewEquipmentModal}
+          setShowModal={setShowNewEquipmentModal}
+        />
 
         {/* Manage Equipment Modal */}
         <Modal show={showManageEquipmentModal} onHide={() => setShowManageEquipmentModal(false)}>
