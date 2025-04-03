@@ -13,13 +13,15 @@ import relativeTime from "dayjs/plugin/relativeTime";
 // Extend dayjs with plugins
 dayjs.extend(relativeTime);
 
-// Import Custom Components
+// Import React Components
 import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import CoriBadge from "../../components/CoriBadge";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
+// Modals
+import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 
 // Import Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -311,7 +313,12 @@ const AdminIndividualEmployee: React.FC = () => {
       </div>
       <>
         {/* Edit Details Modal */}
-        <Modal show={showEditDetailsModal} onHide={() => setShowEditDetailsModal(false)} size="xl">
+        <AdminEditEmpDetailsModal
+          showModal={showEditDetailsModal}
+          setShowModal={setShowEditDetailsModal}
+        />
+
+        {/* <Modal show={showEditDetailsModal} onHide={() => setShowEditDetailsModal(false)} size="xl">
           <Modal.Header closeButton className="border-0 p-8 bg-warmstone-100">
             <Modal.Title>
               <h2 className="text-zinc-900 font-bold text-3xl">Edit Lettie Dlamini</h2>
@@ -324,7 +331,7 @@ const AdminIndividualEmployee: React.FC = () => {
             </CoriBtn>
             <CoriBtn onClick={() => setShowEditDetailsModal(false)}>Update Info</CoriBtn>
           </Modal.Footer>
-        </Modal>
+        </Modal> */}
 
         {/* New Equipment Modal */}
         <Modal show={showNewEquipmentModal} onHide={() => setShowNewEquipmentModal(false)}>

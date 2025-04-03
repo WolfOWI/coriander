@@ -99,7 +99,7 @@ const App: React.FC = () => {
             lineHeight: 1.5,
           },
           Modal: {
-            borderRadius: 16,
+            borderRadiusLG: 32,
             paddingContentHorizontal: 32,
             paddingContentVertical: 24,
             titleFontSize: 24,
@@ -113,7 +113,20 @@ const App: React.FC = () => {
           Typography: {
             margin: 0,
             padding: 0,
-            lineHeight: 1.5,
+          },
+          Form: {
+            labelFontSize: 12,
+            labelColor: "#71717a", // zinc-500
+            verticalLabelPadding: 2,
+          },
+          Input: {
+            borderRadius: 8,
+            controlHeight: 48,
+          },
+          Select: {
+            borderRadius: 8,
+            controlHeight: 48,
+            borderRadiusLG: 8,
           },
         },
       }}
