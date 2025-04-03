@@ -41,6 +41,7 @@ import StarRoundedIcon from "@mui/icons-material/StarRounded";
 
 // Import Utils
 import { formatEmploymentDuration } from "../../utils/dateUtils";
+import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 
 const AdminIndividualEmployee: React.FC = () => {
   // State to store the employee data (just a placeholder for now)
@@ -335,42 +336,10 @@ const AdminIndividualEmployee: React.FC = () => {
         />
 
         {/* Terminate Employee Modal */}
-        <Modal
-          show={showTerminateEmployeeModal}
-          onHide={() => setShowTerminateEmployeeModal(false)}
-        >
-          <Modal.Header closeButton className="border-0 p-8 bg-warmstone-100 flex">
-            <Modal.Title>
-              <h2 className="text-zinc-900 font-bold text-3xl">Warning!</h2>
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-8">
-            <div className="flex flex-col gap-2 text-center">
-              <h2 className="text-red-600 font-bold text-2xl">
-                You're about to delete Lettie Dlamini.
-              </h2>
-              <p className="text-zinc-500 text-sm">
-                All associated records (equipment, performance reviews, leave requests, and
-                balances) will also be deleted. The user's account will remain, but access to this
-                management system will be revoked.
-              </p>
-            </div>
-          </Modal.Body>
-          <Modal.Footer className="border-0 p-8">
-            <div className="flex gap-2 w-full">
-              <CoriBtn
-                secondary
-                onClick={() => setShowTerminateEmployeeModal(false)}
-                className="w-full"
-              >
-                Cancel
-              </CoriBtn>
-              <CoriBtn style="red" className="w-full">
-                Delete
-              </CoriBtn>
-            </div>
-          </Modal.Footer>
-        </Modal>
+        <TerminateEmployeeModal
+          showModal={showTerminateEmployeeModal}
+          setShowModal={setShowTerminateEmployeeModal}
+        />
       </>
     </>
   );
