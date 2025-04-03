@@ -60,33 +60,26 @@ const App: React.FC = () => {
           // Font
           fontFamily: "Inter, sans-serif",
           fontSize: 16,
-          fontSizeLG: 16,
-          fontSizeSM: 12,
-          fontSizeXL: 20,
-          fontSizeHeading1: 24,
-          fontSizeHeading2: 20,
-          fontSizeHeading3: 16,
-          fontSizeHeading4: 14,
-          fontSizeHeading5: 12,
-
-          // Padding
-          padding: 16,
-          paddingLG: 24,
-          paddingSM: 12,
-          paddingXS: 8,
-          paddingXXS: 4,
-
-          // Margin
-          margin: 16,
-          marginLG: 24,
-          marginSM: 12,
-          marginXS: 8,
-          marginXXS: 4,
+          fontWeightStrong: 600,
 
           // Control
           controlHeight: 40,
           controlHeightLG: 48,
           controlHeightSM: 32,
+          controlPaddingHorizontal: 16,
+          controlPaddingHorizontalSM: 12,
+
+          // Layout
+          margin: 16,
+          marginLG: 24,
+          marginSM: 12,
+          marginXS: 8,
+          marginXXS: 4,
+          padding: 16,
+          paddingLG: 24,
+          paddingSM: 12,
+          paddingXS: 8,
+          paddingXXS: 4,
         },
         components: {
           Button: {
@@ -96,22 +89,31 @@ const App: React.FC = () => {
             controlHeightSM: 32,
             paddingInline: 16,
             paddingBlock: 8,
+            lineHeight: 1.5,
           },
           DatePicker: {
             borderRadius: 8,
             controlHeight: 40,
             paddingBlock: 8,
             paddingInline: 12,
+            lineHeight: 1.5,
           },
           Modal: {
             borderRadius: 16,
             paddingContentHorizontal: 32,
             paddingContentVertical: 24,
             titleFontSize: 24,
+            lineHeight: 1.5,
           },
           Card: {
             borderRadius: 16,
             padding: 24,
+            lineHeight: 1.5,
+          },
+          Typography: {
+            margin: 0,
+            padding: 0,
+            lineHeight: 1.5,
           },
         },
       }}
