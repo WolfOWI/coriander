@@ -1,7 +1,7 @@
 // Wolf Botha
 import React, { useEffect, useState, useRef } from "react";
 import { empUserAPI } from "../../services/api.service";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
@@ -44,9 +44,10 @@ import { formatEmploymentDuration } from "../../utils/dateUtils";
 import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 
 const AdminIndividualEmployee: React.FC = () => {
-  // State to store the employee data (just a placeholder for now)
+  // State to store the employee data
   const [empUser, setEmpUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { employeeId } = useParams();
 
   // Modal States
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
@@ -58,22 +59,41 @@ const AdminIndividualEmployee: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // TODO: Temporary get all employees, then get the specific employee by ID (will be changed to get by ID directly)
     const fetchEmployee = async () => {
       try {
         // Call the API endpoint
         const response = await empUserAPI.getAllEmpUsers();
 
-        // Update the state with the employee data
-        setEmpUser(response.data.$values[0]);
+        let employee;
+        if (employeeId) {
+          // Find the specific employee by ID
+          employee = response.data.$values.find(
+            (emp: any) => emp.employeeId === Number(employeeId)
+          );
+        } else {
+          // If no ID provided, use the first employee
+          employee = response.data.$values[0];
+          // Update the URL to include the first employee's ID
+          if (employee) {
+            navigate(`/admin/individual-employee/${employee.employeeId}`, { replace: true });
+          }
+        }
+
+        if (employee) {
+          setEmpUser(employee);
+        } else {
+          // Handle case where no employees are found
+          console.error("No employees found");
+          return <div>Something went wrong</div>;
+        }
       } finally {
-        // Set loading to false when done
         setLoading(false);
       }
     };
 
-    // Call the fetch function when component mounts
     fetchEmployee();
-  }, []);
+  }, [employeeId, navigate]);
 
   if (loading) return <div>Loading...</div>;
   if (!empUser)

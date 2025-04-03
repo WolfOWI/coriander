@@ -153,7 +153,10 @@ const App: React.FC = () => {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
               <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
-              <Route path="/admin/individual-employee" element={<AdminIndividualEmployee />} />
+              <Route
+                path="/admin/individual-employee/:employeeId?"
+                element={<AdminIndividualEmployee />}
+              />
               <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
 
               {/* Temporary Reference Route */}
