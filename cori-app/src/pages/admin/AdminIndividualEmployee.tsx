@@ -19,6 +19,7 @@ import CoriBadge from "../../components/badges/CoriBadge";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
+import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 import AdminAddEquipItemModal from "../../components/modals/AdminAddEquipItemModal";
@@ -180,7 +181,11 @@ const AdminIndividualEmployee: React.FC = () => {
                     <p className="text-zinc-900">•</p>
                     <p className="text-zinc-500">{empUser.department}</p>
                     {/* TODO: Add dynamic work-type badge */}
-                    <CoriBadge text="Full-Time" size="small" />
+                    {empUser.isSuspended ? (
+                      <EmployTypeBadge status="suspended" />
+                    ) : (
+                      <EmployTypeBadge status={empUser.employType} />
+                    )}
                   </div>
                 </div>
               </div>
