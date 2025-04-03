@@ -8,6 +8,10 @@ import GaugeComponent from "react-gauge-component";
 import { Modal } from "react-bootstrap";
 import { DatePicker, Space } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
+import relativeTime from "dayjs/plugin/relativeTime";
+
+// Extend dayjs with plugins
+dayjs.extend(relativeTime);
 
 // Import Custom Components
 import CoriBtn from "../../components/buttons/CoriBtn";
@@ -30,6 +34,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import { formatEmploymentDuration } from "../../utils/dateUtils";
 
 const AdminIndividualEmployee: React.FC = () => {
   // State to store the employee data (just a placeholder for now)
@@ -101,8 +106,9 @@ const AdminIndividualEmployee: React.FC = () => {
               <EditIcon />
               Edit Details
             </CoriBtn>
+            <CoriBtn style="black">Suspend</CoriBtn>
             <CoriBtn style="red" onClick={() => setShowTerminateEmployeeModal(true)}>
-              Terminate Employee
+              Terminate
             </CoriBtn>
           </div>
         </div>
@@ -141,7 +147,10 @@ const AdminIndividualEmployee: React.FC = () => {
                     <div className="flex gap-2 items-center">
                       <CakeIcon />
                       <p className="text-zinc-500">
-                        01 Jan 2025 <span className="text-zinc-400 text-sm">(32 years old)</span>
+                        01 Jan 1998{" "}
+                        <span className="text-zinc-400 text-sm ml-2">
+                          {dayjs("01-01-1998").fromNow(true)} old
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -159,8 +168,8 @@ const AdminIndividualEmployee: React.FC = () => {
                 <div className="flex gap-2 items-center">
                   <AssistantPhotoIcon />
                   <p className="text-zinc-500">
-                    Employed for 2 Years, 3 Months, 10 Days{" "}
-                    <span className="text-zinc-400 text-sm">(1 Jan 2025)</span>
+                    Employed for {formatEmploymentDuration("2024-01-01")}
+                    <span className="text-zinc-400 text-sm ml-2">(1 Jan 2024)</span>
                   </p>
                 </div>
               </div>
@@ -185,6 +194,7 @@ const AdminIndividualEmployee: React.FC = () => {
                         suffixIcon={<CoriCircleBtn style="black" icon={<EditIcon />} />}
                         allowClear={false}
                         variant="borderless"
+                        className="hover:cursor-pointer"
                       />
                     </div>
                   </div>
