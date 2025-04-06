@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Modal, Button, Form, Input, Select, DatePicker, message } from "antd";
 import dayjs from "dayjs";
 import { Gender, EmployType, PayCycle } from "../../types/common";
-import { employeeAPI } from "../../services/api.service";
+import { empUserAPI } from "../../services/api.service";
 
 interface AdminEditEmpDetailsModalProps {
   showModal: boolean;
@@ -76,7 +76,7 @@ function AdminEditEmpDetailsModal({
       };
 
       // Update the employee details
-      await employeeAPI.editEmployeeById(employee.employeeId.toString(), updateData);
+      await empUserAPI.updateEmpUserById(employee.employeeId.toString(), updateData);
 
       // Success message if the update was successful
       messageApi.success("Details updated successfully");
@@ -147,6 +147,7 @@ function AdminEditEmpDetailsModal({
           {/* Personal Details */}
           <div className="flex flex-col w-full">
             <h2 className="text-zinc-500 font-bold mb-3">Personal Details</h2>
+            {/* TODO: Add name (if not google user) */}
             <Form.Item
               name="gender"
               label="Gender"

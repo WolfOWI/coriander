@@ -1,14 +1,16 @@
 import React, { useEffect } from "react";
-import { Modal, Button, Form, Input, Select, DatePicker, message } from "antd";
+import { Modal, Button, Form, Input, Select, DatePicker, message, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { Gender } from "../../types/common";
-import { employeeAPI } from "../../services/api.service";
+import { empUserAPI } from "../../services/api.service";
 
 interface AdminEditEmpDetailsModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   employee: {
     employeeId: number;
+    fullName: string;
+    googleId: string | null;
     gender: Gender;
     dateOfBirth: string;
     phoneNumber: string;
@@ -35,6 +37,7 @@ function EmpEditEmpDetailsModal({
   useEffect(() => {
     if (employee) {
       form.setFieldsValue({
+        fullName: employee.fullName,
         gender: employee.gender,
         dob: dayjs(employee.dateOfBirth),
         phoneNumber: employee.phoneNumber,
@@ -57,13 +60,14 @@ function EmpEditEmpDetailsModal({
 
       // Prepare the data to be sent
       const updateData = {
+        fullName: values.fullName,
         gender: values.gender,
         dateOfBirth: values.dob.format("YYYY-MM-DD"),
         phoneNumber: values.phoneNumber,
       };
 
       // Update the employee details
-      await employeeAPI.editEmployeeById(employee.employeeId.toString(), updateData);
+      await empUserAPI.updateEmpUserById(employee.employeeId.toString(), updateData);
 
       // Success message if the update was successful
       // .success() displays a green success message
@@ -86,6 +90,7 @@ function EmpEditEmpDetailsModal({
     // Reset the form values to the original values
     if (employee) {
       form.setFieldsValue({
+        fullName: employee.fullName,
         gender: employee.gender,
         dob: dayjs(employee.dateOfBirth),
         phoneNumber: employee.phoneNumber,
@@ -133,11 +138,32 @@ function EmpEditEmpDetailsModal({
         <Form form={form} layout="vertical" variant="filled" className="flex gap-4">
           {/* Personal Details */}
           <div className="flex flex-col w-full">
-            <Form.Item
-              name="gender"
-              label="Gender"
-              rules={[{ required: true, message: "Please select a gender" }]}
-            >
+            {/* If not google user (name editable) */}
+            {employee?.googleId === null ? (
+              <Form.Item
+                name="fullName"
+                label="Name"
+                rules={[{ required: true, message: "Please enter a name" }]}
+              >
+                <Input type="text" />
+              </Form.Item>
+            ) : (
+              // If google user (name NOT editable)
+              <div className="relative">
+                <Tooltip title="Since you've signed up with Google, you can't change your name.">
+                  <div>
+                    <Form.Item
+                      name="fullName"
+                      label="Name"
+                      rules={[{ required: true, message: "Please enter a name" }]}
+                    >
+                      <Input type="text" disabled={employee?.googleId !== null} />
+                    </Form.Item>
+                  </div>
+                </Tooltip>
+              </div>
+            )}
+            <Form.Item name="gender" label="Gender">
               <Select>
                 <Select.Option value={Gender.Male}>Male</Select.Option>
                 <Select.Option value={Gender.Female}>Female</Select.Option>

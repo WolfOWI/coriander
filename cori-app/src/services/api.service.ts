@@ -95,19 +95,17 @@ export const empUserAPI = {
    * @returns Promise containing the API response
    */
   getEmpUserById: (id: string): Promise<AxiosResponse> => apiClient.get(`/EmpUser/${id}`),
-};
 
-// Employee API Service Methods
-export const employeeAPI = {
   /**
-   * Edits an employee by their ID
+   * Edit an emp user by their ID
    * @param id - The employee's ID (must be a number)
    * @param data - The data object to update the employee with
    * @returns Promise containing the API response
    */
-  editEmployeeById: (id: string, data: object): Promise<AxiosResponse> =>
-    apiClient.put(`/Employee/edit-by-id/${id}`, data),
+  updateEmpUserById: (id: string, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/EmpUser/edit-by-id/${id}`, data),
 };
+
 // ------------------------------------------------------------
 
 // Export the configured axios instance for direct use if needed
