@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
-
+import EmpEditEmpDetailsModal from "../../components/modals/EmpEditEmpDetailsModal";
 // Import Google Icons
 import EditIcon from "@mui/icons-material/Edit";
 import WorkIcon from "@mui/icons-material/Work";
@@ -58,6 +58,9 @@ const EmployeeProfile: React.FC = () => {
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Modal States
+  const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
+
   // TODO Temporary set employee ID (TODO: Fetch from URL)
   const employeeId = 8;
 
@@ -88,162 +91,169 @@ const EmployeeProfile: React.FC = () => {
 
   if (!empUser) return <div>No employee found</div>;
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Top buttons */}
-      <div className="flex justify-end items-center mb-[-32px]">
-        <div className="flex gap-2">
-          <CoriBtn secondary style="black">
-            <EditIcon />
-            Edit Details
-          </CoriBtn>
-          <CoriBtn style="black">Export Payroll Info</CoriBtn>
+    <>
+      <div className="max-w-7xl mx-auto">
+        {/* Top buttons */}
+        <div className="flex justify-end items-center ">
+          <div className="flex gap-2 z-10">
+            <CoriBtn secondary style="black" onClick={() => setShowEditDetailsModal(true)}>
+              <EditIcon />
+              Edit Details
+            </CoriBtn>
+            <CoriBtn style="black">Export Payroll Info</CoriBtn>
+          </div>
         </div>
-      </div>
-      {/* Page Content */}
-      <div className="flex flex-col items-center gap-3">
-        <div className="flex flex-col gap-7 items-center w-2/3">
-          {/* Profile Picture & Name */}
-          <div className="flex flex-col gap-3 items-center">
-            {empUser.profilePicture ? (
-              <div className="relative">
-                <Avatar
-                  src={empUser.profilePicture}
-                  size={128}
-                  className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
-                />
-                <CoriCircleBtn icon={<EditIcon />} className="absolute bottom-0 right-0" />
-              </div>
-            ) : (
-              <div className="relative">
-                <Avatar
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${empUser.fullName}`}
-                  size={128}
-                  className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
-                />
-                <CoriCircleBtn icon={<AddIcon />} className="absolute bottom-0 right-0" />
-              </div>
-            )}
-            <div className="flex gap-3 items-center">
-              <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
-              <div className="flex items-center gap-1">
-                <StarIcon className="text-yellow-500" />
-                <p className="text-zinc-500 text-xl">X.XX</p>
+        {/* Page Content */}
+        <div className="flex flex-col items-center gap-3 z-0">
+          <div className="flex flex-col gap-7 items-center w-2/3">
+            {/* Profile Picture & Name */}
+            <div className="flex flex-col gap-3 items-center">
+              {empUser.profilePicture ? (
+                <div className="relative">
+                  <Avatar
+                    src={empUser.profilePicture}
+                    size={128}
+                    className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
+                  />
+                  <CoriCircleBtn icon={<EditIcon />} className="absolute bottom-0 right-0" />
+                </div>
+              ) : (
+                <div className="relative">
+                  <Avatar
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${empUser.fullName}`}
+                    size={128}
+                    className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
+                  />
+                  <CoriCircleBtn icon={<AddIcon />} className="absolute bottom-0 right-0" />
+                </div>
+              )}
+              <div className="flex gap-3 items-center">
+                <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
+                <div className="flex items-center gap-1">
+                  <StarIcon className="text-yellow-500" />
+                  <p className="text-zinc-500 text-xl">X.XX</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Personal Details */}
-          <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col w-full">
-            <div className="flex">
-              {/* Left Side */}
-              <div className="flex flex-grow flex-col gap-4 w-1/2">
-                <div className="flex gap-2 items-center">
-                  {empUser.gender === Gender.Female ? (
-                    <FemaleIcon className="text-pink-500" />
-                  ) : empUser.gender === Gender.Male ? (
-                    <MaleIcon className="text-blue-500" />
-                  ) : (
-                    <TransgenderIcon className="text-purple-500" />
-                  )}
-                  <p className="text-zinc-500">
-                    {empUser.gender === Gender.Female
-                      ? "Female"
-                      : empUser.gender === Gender.Male
-                      ? "Male"
-                      : "Other"}
-                  </p>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <CakeIcon />
-                  <p className="text-zinc-500">
-                    {dayjs(empUser.dateOfBirth).format("DD MMM YYYY")}
-                    <span className="text-zinc-400 text-sm ml-2">
-                      ({dayjs(empUser.dateOfBirth).fromNow(true)} old)
-                    </span>
-                  </p>
-                </div>
-              </div>
-              {/* Right Side */}
-              <div className="flex flex-grow flex-col gap-4 w-1/2">
-                <div className="flex gap-2 items-center">
-                  <PhoneIcon />
-                  <p className="text-zinc-500">{formatPhone(empUser.phoneNumber)}</p>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <EmailIcon />
-                  <p className="text-zinc-500">{empUser.email}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Employment & Payroll Info */}
-          <div className="flex flex-col gap-2 items-center w-full">
-            <div className="flex gap-2 items-center">
-              <h2 className="text-zinc-500 font-semibold">Employment & Payroll</h2>
-            </div>
+            {/* Personal Details */}
             <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col w-full">
-              <div className="flex flex-col gap-4">
-                <div className="flex">
-                  {/* Left Side */}
-                  <div className="flex flex-grow flex-col gap-4 w-1/2">
-                    <div className="flex gap-2 items-center">
-                      <WorkIcon />
-                      <p className="text-zinc-500">{empUser.jobTitle}</p>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <CorporateFareIcon />
-                      <p className="text-zinc-500">{empUser.department} Department</p>
-                    </div>
+              <div className="flex">
+                {/* Left Side */}
+                <div className="flex flex-grow flex-col gap-4 w-1/2">
+                  <div className="flex gap-2 items-center">
+                    {empUser.gender === Gender.Female ? (
+                      <FemaleIcon className="text-pink-500" />
+                    ) : empUser.gender === Gender.Male ? (
+                      <MaleIcon className="text-blue-500" />
+                    ) : (
+                      <TransgenderIcon className="text-purple-500" />
+                    )}
+                    <p className="text-zinc-500">
+                      {empUser.gender === Gender.Female
+                        ? "Female"
+                        : empUser.gender === Gender.Male
+                        ? "Male"
+                        : "Other"}
+                    </p>
                   </div>
-                  {/* Right Side */}
-                  <div className="flex flex-grow flex-col gap-4 w-1/2">
-                    <div className="flex gap-2 items-center">
-                      <ScheduleIcon />
-                      <p className="text-zinc-500">
-                        {empUser.employType === EmployType.FullTime
-                          ? "Full-Time"
-                          : empUser.employType === EmployType.PartTime
-                          ? "Part-Time"
-                          : empUser.employType === EmployType.Contract
-                          ? "Contract"
-                          : "Intern"}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <BadgeIcon />
-                      <p className="text-zinc-500">Employee ID {empUser.employeeId}</p>
-                    </div>
+                  <div className="flex gap-2 items-center">
+                    <CakeIcon />
+                    <p className="text-zinc-500">
+                      {dayjs(empUser.dateOfBirth).format("DD MMM YYYY")}
+                      <span className="text-zinc-400 text-sm ml-2">
+                        ({dayjs(empUser.dateOfBirth).fromNow(true)} old)
+                      </span>
+                    </p>
                   </div>
                 </div>
-                {/* Bottom Employed for */}
-                <div className="flex gap-2 items-center">
-                  <AssistantPhotoIcon />
-                  <p className="text-zinc-500">
-                    Employed for {formatEmploymentDuration(empUser.employDate)}
-                    <span className="text-zinc-400 text-sm ml-2">
-                      (Since {dayjs(empUser.employDate).format("DD MMM YYYY")})
-                    </span>
-                  </p>
+                {/* Right Side */}
+                <div className="flex flex-grow flex-col gap-4 w-1/2">
+                  <div className="flex gap-2 items-center">
+                    <PhoneIcon />
+                    <p className="text-zinc-500">{formatPhone(empUser.phoneNumber)}</p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <EmailIcon />
+                    <p className="text-zinc-500">{empUser.email}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Equipment */}
-          <div className="w-full flex flex-col gap-2 items-center">
-            <div className="flex gap-2 items-center">
-              <h2 className="text-zinc-500 font-semibold">Equipment</h2>
+            {/* Employment & Payroll Info */}
+            <div className="flex flex-col gap-2 items-center w-full">
+              <div className="flex gap-2 items-center">
+                <h2 className="text-zinc-500 font-semibold">Employment & Payroll</h2>
+              </div>
+              <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col w-full">
+                <div className="flex flex-col gap-4">
+                  <div className="flex">
+                    {/* Left Side */}
+                    <div className="flex flex-grow flex-col gap-4 w-1/2">
+                      <div className="flex gap-2 items-center">
+                        <WorkIcon />
+                        <p className="text-zinc-500">{empUser.jobTitle}</p>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <CorporateFareIcon />
+                        <p className="text-zinc-500">{empUser.department} Department</p>
+                      </div>
+                    </div>
+                    {/* Right Side */}
+                    <div className="flex flex-grow flex-col gap-4 w-1/2">
+                      <div className="flex gap-2 items-center">
+                        <ScheduleIcon />
+                        <p className="text-zinc-500">
+                          {empUser.employType === EmployType.FullTime
+                            ? "Full-Time"
+                            : empUser.employType === EmployType.PartTime
+                            ? "Part-Time"
+                            : empUser.employType === EmployType.Contract
+                            ? "Contract"
+                            : "Intern"}
+                        </p>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <BadgeIcon />
+                        <p className="text-zinc-500">Employee ID {empUser.employeeId}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Bottom Employed for */}
+                  <div className="flex gap-2 items-center">
+                    <AssistantPhotoIcon />
+                    <p className="text-zinc-500">
+                      Employed for {formatEmploymentDuration(empUser.employDate)}
+                      <span className="text-zinc-400 text-sm ml-2">
+                        (Since {dayjs(empUser.employDate).format("DD MMM YYYY")})
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
-              {/* TODO: Add dynamic equipment list items */}
-              <EquipmentListItem device={null} />
-              <EquipmentListItem device={null} />
+
+            {/* Equipment */}
+            <div className="w-full flex flex-col gap-2 items-center">
+              <div className="flex gap-2 items-center">
+                <h2 className="text-zinc-500 font-semibold">Equipment</h2>
+              </div>
+              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
+                {/* TODO: Add dynamic equipment list items */}
+                <EquipmentListItem device={null} />
+                <EquipmentListItem device={null} />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <EmpEditEmpDetailsModal
+        showModal={showEditDetailsModal}
+        setShowModal={setShowEditDetailsModal}
+        employee={empUser}
+      />
+    </>
   );
 };
 
