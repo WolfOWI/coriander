@@ -25,3 +25,42 @@ export enum EmployType {
   Contract = 2,
   Intern = 3,
 }
+
+/**
+ * Equipment Condition enum matching the backend values
+ */
+export enum EquipmentCondition {
+  New = 0,
+  Good = 1,
+  Decent = 2,
+  Used = 3,
+}
+
+/**
+ * Equipment Category enum matching the backend values
+ */
+export enum EquipmentCategory {
+  Cellphone = 1,
+  Tablet = 2,
+  Laptop = 3,
+  Monitor = 4,
+  Headset = 5,
+  Keyboard = 6,
+}
+/**
+ * Review Status enum matching the backend values
+ */
+export enum ReviewStatus {
+  Pending = 0,
+  Upcoming = 1,
+  Completed = 2,
+}
+
+/**
+ * User Role enum matching the backend values
+ */
+export enum UserRole {
+  Unassigned = 0,
+  Employee = 1,
+  Admin = 2,
+}
