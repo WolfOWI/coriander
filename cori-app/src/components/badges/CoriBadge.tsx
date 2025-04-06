@@ -4,9 +4,10 @@ interface BadgeProps {
   color?: "green" | "black" | "yellow" | "red" | "blue" | "white" | "orange";
   size?: "x-small" | "small" | "medium" | "large";
   text: string;
+  className?: string;
 }
 
-function CoriBadge({ color, size, text }: BadgeProps) {
+function CoriBadge({ color, size, text, className }: BadgeProps) {
   let textSize: string;
   let pSize: string;
   let bgColor = "bg-corigreen-500";
@@ -65,7 +66,7 @@ function CoriBadge({ color, size, text }: BadgeProps) {
 
   return (
     <div
-      className={`${bgColor} ${pSize} h-fit ${
+      className={`${bgColor} ${pSize} h-fit ${className} ${
         size === "medium" || size === "large" ? "rounded-xl" : "rounded-lg"
       }`}
     >

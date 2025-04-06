@@ -8,29 +8,44 @@ interface EmployTypeBadgeProps {
 
 function EmployTypeBadge({ status }: EmployTypeBadgeProps) {
   let component: JSX.Element;
+  let color: string;
+  let text: string;
 
   switch (status) {
     case "suspended":
-      component = <CoriBadge text="Suspended" color="red" size="small" />;
+      color = "red";
+      text = "Suspended";
       break;
     case EmployType.FullTime:
-      component = <CoriBadge text="Full Time" color="green" size="small" />;
+      color = "green";
+      text = "Full Time";
       break;
     case EmployType.PartTime:
-      component = <CoriBadge text="Part Time" color="orange" size="small" />;
+      color = "orange";
+      text = "Part Time";
       break;
     case EmployType.Contract:
-      component = <CoriBadge text="Contract" color="blue" size="small" />;
+      color = "blue";
+      text = "Contract";
       break;
     case EmployType.Intern:
-      component = <CoriBadge text="Intern" color="yellow" size="small" />;
+      color = "yellow";
+      text = "Intern";
       break;
     default:
-      component = <CoriBadge text="Unknown" color="white" size="small" />;
+      color = "white";
+      text = "Unknown";
       break;
   }
 
-  return component;
+  return (
+    <CoriBadge
+      text={text}
+      color={color as "red" | "green" | "orange" | "blue" | "yellow" | "white"}
+      size="small"
+      className="w-fit"
+    />
+  );
 }
 
 export default EmployTypeBadge;

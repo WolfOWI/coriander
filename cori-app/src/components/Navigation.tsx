@@ -49,9 +49,9 @@ const Navigation: React.FC = () => {
             <Link to="/admin/create-employee" className="nav-link text-white">
               Create Employee
             </Link>
-            <Link to="/admin/individual-employee" className="nav-link text-white">
+            {/* <Link to="/admin/individual-employee" className="nav-link text-white">
               Individual Employee
-            </Link>
+            </Link> */}
             <Link to="/admin/leave-requests" className="nav-link text-white">
               Leave Requests
             </Link>

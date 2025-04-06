@@ -6,11 +6,21 @@ import type { SorterResult } from "antd/es/table/interface";
 import { empUserAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 
+// Types
+import { Gender, PayCycle } from "../../types/common";
+
 // Import React Components
 import CoriBtn from "../../components/buttons/CoriBtn";
+import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 
 // Import Google Icons
 import AddIcon from "@mui/icons-material/Add";
+import FemaleIcon from "@mui/icons-material/Female";
+import MaleIcon from "@mui/icons-material/Male";
+import TransgenderIcon from "@mui/icons-material/Transgender";
+
+// Utility Functions
+import { formatRandAmount } from "../../utils/formatUtils";
 
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
@@ -22,10 +32,12 @@ interface DataType {
   jobTitle: string;
   department: string;
   // Average rating?
+  profilePicture: string | null;
   employType: number;
   salaryAmount: number;
   payCycle: number;
   lastPaidDate: string;
+  isSuspended: boolean;
   // Remaining Leave days?
 }
 
@@ -61,24 +73,36 @@ const columns: ColumnsType<DataType> = [
   {
     title: "Name",
     dataIndex: "fullName",
-    sorter: true,
-    render: (_, record) => (
+    sorter: true, // TODO: add sorting functionality
+    render: (value, record) => (
       <div className="flex items-center gap-2">
-        {/* TODO: Random Avatar generator for now */}
-        <Avatar src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${record.fullName}`} />
+        {record.profilePicture ? (
+          <Avatar
+            src={record.profilePicture}
+            className="bg-warmstone-600 h-12 w-12 rounded-full object-cover border-2 border-zinc-700"
+          />
+        ) : (
+          <Avatar
+            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${record.fullName}`}
+            className="bg-warmstone-600 h-12 w-12 rounded-full object-cover border-2 border-zinc-700"
+          />
+        )}
         <div className="flex flex-col">
-          <p className="font-medium">{record.fullName}</p>
+          <div className="flex items-center gap-1">
+            <p className="font-medium min-w-fit">{record.fullName}</p>
+            {parseInt(record.gender) === Gender.Female ? (
+              <FemaleIcon className="text-pink-500" />
+            ) : parseInt(record.gender) === Gender.Male ? (
+              <MaleIcon className="text-blue-500" />
+            ) : (
+              <TransgenderIcon className="text-purple-500" />
+            )}
+          </div>
           <p className="text-sm text-zinc-500">{record.employeeId}</p>
         </div>
       </div>
     ),
     width: "20%",
-  },
-  {
-    title: "Gender",
-    dataIndex: "gender",
-    sorter: true,
-    width: "10%",
   },
   {
     title: "Job Title",
@@ -97,36 +121,30 @@ const columns: ColumnsType<DataType> = [
     dataIndex: "employType",
     sorter: true,
     width: "15%",
-    render: (type) => {
-      const types = {
-        0: "Full-time",
-        1: "Part-time",
-        2: "Contract",
-        3: "Temporary",
-      };
-      return types[type as keyof typeof types] || "Unknown";
-    },
+    render: (_, record) =>
+      record.isSuspended ? (
+        <EmployTypeBadge status="suspended" />
+      ) : (
+        <EmployTypeBadge status={record.employType} />
+      ),
   },
   {
     title: "Salary",
     dataIndex: "salaryAmount",
     sorter: true,
     width: "15%",
-    render: (amount) => `R${amount.toLocaleString()}`,
-  },
-  {
-    title: "Pay Cycle",
-    dataIndex: "payCycle",
-    sorter: true,
-    width: "10%",
-    render: (cycle) => {
-      const cycles = {
-        0: "Monthly",
-        1: "Weekly",
-        2: "Bi-weekly",
-      };
-      return cycles[cycle as keyof typeof cycles] || "Unknown";
-    },
+    render: (_, record) => (
+      <div className="flex flex-col">
+        <p>{formatRandAmount(record.salaryAmount)}</p>
+        <p className="text-[12px] text-zinc-500">
+          {record.payCycle === PayCycle.Monthly
+            ? "monthly"
+            : record.payCycle === PayCycle.Weekly
+            ? "weekly"
+            : "bi-weekly"}
+        </p>
+      </div>
+    ),
   },
   {
     title: "Last Paid",
@@ -188,7 +206,7 @@ const AdminEmployeeManagement: React.FC = () => {
     <div className="max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold text-zinc-900">Employee Management</h1>
-        <CoriBtn style="black">
+        <CoriBtn style="black" onClick={() => navigate("/admin/create-employee")}>
           New
           <AddIcon />
         </CoriBtn>
