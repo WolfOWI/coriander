@@ -15,10 +15,11 @@ import EditIcon from "@mui/icons-material/Edit";
 
 interface EquipmentListItemProps {
   device: object | null;
-  onEdit: () => void;
+  onEdit?: () => void;
+  adminView?: boolean;
 }
 
-function EquipmentListItem({ device, onEdit }: EquipmentListItemProps) {
+function EquipmentListItem({ device, onEdit, adminView }: EquipmentListItemProps) {
   let deviceIcon: JSX.Element;
 
   return (
@@ -40,7 +41,7 @@ function EquipmentListItem({ device, onEdit }: EquipmentListItemProps) {
       </div>
       <p className="text-zinc-500 text-sm">1 Jan 2025</p>
       <CoriBadge text="Good" size="small" color="blue" />
-      <CoriCircleBtn style="black" icon={<EditIcon />} onClick={onEdit} />
+      {adminView && <CoriCircleBtn style="black" icon={<EditIcon />} onClick={onEdit} />}
     </div>
   );
 }
