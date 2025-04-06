@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Modal, Button, Form, Input, Select, DatePicker, message } from "antd";
+import { Modal, Button, Form, Input, Select, DatePicker, message, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { Gender, EmployType, PayCycle } from "../../types/common";
 import { empUserAPI } from "../../services/api.service";
@@ -10,6 +10,7 @@ interface AdminEditEmpDetailsModalProps {
   employee: {
     employeeId: number;
     fullName: string;
+    googleId: string | null;
     gender: Gender;
     dateOfBirth: string;
     phoneNumber: string;
@@ -38,6 +39,7 @@ function AdminEditEmpDetailsModal({
   useEffect(() => {
     if (employee) {
       form.setFieldsValue({
+        fullName: employee.fullName,
         gender: employee.gender,
         dob: dayjs(employee.dateOfBirth),
         phoneNumber: employee.phoneNumber,
@@ -64,6 +66,7 @@ function AdminEditEmpDetailsModal({
 
       // Prepare the data to be sent
       const updateData = {
+        fullName: values.fullName,
         gender: values.gender,
         dateOfBirth: values.dob.format("YYYY-MM-DD"),
         phoneNumber: values.phoneNumber,
@@ -97,6 +100,7 @@ function AdminEditEmpDetailsModal({
     // Reset the form values to the original values
     if (employee) {
       form.setFieldsValue({
+        fullName: employee.fullName,
         gender: employee.gender,
         dob: dayjs(employee.dateOfBirth),
         phoneNumber: employee.phoneNumber,
@@ -147,7 +151,31 @@ function AdminEditEmpDetailsModal({
           {/* Personal Details */}
           <div className="flex flex-col w-full">
             <h2 className="text-zinc-500 font-bold mb-3">Personal Details</h2>
-            {/* TODO: Add name (if not google user) */}
+            {/* If not google user (name editable) */}
+            {employee?.googleId === null ? (
+              <Form.Item
+                name="fullName"
+                label="Name"
+                rules={[{ required: true, message: "Please enter a name" }]}
+              >
+                <Input type="text" />
+              </Form.Item>
+            ) : (
+              // If google user (name NOT editable)
+              <div className="relative">
+                <Tooltip title="Since this employee signed up with Google, their name cannot be changed.">
+                  <div>
+                    <Form.Item
+                      name="fullName"
+                      label="Name"
+                      rules={[{ required: true, message: "Please enter a name" }]}
+                    >
+                      <Input type="text" disabled={employee?.googleId !== null} />
+                    </Form.Item>
+                  </div>
+                </Tooltip>
+              </div>
+            )}
             <Form.Item
               name="gender"
               label="Gender"

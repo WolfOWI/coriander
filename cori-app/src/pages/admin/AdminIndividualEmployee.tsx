@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
-import { Avatar, DatePicker } from "antd";
+import { Avatar, DatePicker, Tooltip } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -20,6 +20,7 @@ import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
+
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 import AdminAddEquipItemModal from "../../components/modals/AdminAddEquipItemModal";
@@ -40,6 +41,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
+
+// Import Assets
+import GoogleIcon from "../../assets/icons/googleIcon.png";
 
 // Import Utils
 import { calculateNextPayDay, formatEmploymentDuration } from "../../utils/dateUtils";
@@ -190,7 +194,14 @@ const AdminIndividualEmployee: React.FC = () => {
                 /> */}
                 <div className="flex flex-col gap-2">
                   <p className="text-sm text-zinc-500">Employee ID {empUser.employeeId}</p>
-                  <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
+                    {empUser.googleId && (
+                      <Tooltip title="Signed up with Google">
+                        <img src={GoogleIcon} alt="Google" className="w-5 h-5" />
+                      </Tooltip>
+                    )}
+                  </div>
                   <div className="flex gap-2 items-center">
                     <WorkIcon />
                     <p className="text-zinc-900">{empUser.jobTitle}</p>
