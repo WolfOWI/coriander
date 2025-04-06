@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 // Import React Components
 import CoriBtn from "../buttons/CoriBtn";
@@ -12,64 +12,193 @@ import TextSnippetRoundedIcon from "@mui/icons-material/TextSnippetRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import dayjs from "dayjs";
+import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUtils";
 
-interface PerfReviewBoxProps {
-  showPerson?: boolean;
+interface PerformanceReview {
+  reviewId: number;
+  adminId: number;
+  adminName: string;
+  employeeId: number;
+  employeeName: string;
+  isOnline: boolean;
+  meetLocation: string | null;
+  meetLink: string;
+  startDate: string;
+  endDate: string;
+  rating: number;
+  comment: string;
+  docUrl: string;
+  status: number;
 }
 
-// showPerson property is used to determine if the person's name is shown in the heading (for different screens)
-// TODO: Depending on data, it would show & hide different sections of this component (yet to be created)
-function PerfReviewBox({ showPerson = true }: PerfReviewBoxProps) {
+interface PerfReviewBoxProps {
+  review: PerformanceReview;
+  showPerson?: boolean; // showPerson property is used to determine if the person's name is shown in the heading (for different screens)
+}
+
+function PerfReviewBox({ review, showPerson = true }: PerfReviewBoxProps) {
   return (
     <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-3">
       {/* Heading Section */}
       <div className="w-full flex flex-col gap-1">
         <div className="w-full flex items-center justify-between">
           {showPerson ? (
-            <h2 className="text-zinc-800 font-bold">Meet with Jou Ma</h2>
+            <h2 className="text-zinc-800 font-bold">Meet with {review.adminName}</h2>
           ) : (
             <div className="w-full flex items-center gap-4 text-zinc-800 font-bold">
-              <p>24 Feb 2024</p>
+              <p>{formatTimestampToDate(review.startDate)}</p>
               <p>•</p>
-              <p>14:00 - 15:00</p>
+              <p>
+                {formatTimestampToTime(review.startDate)} - {formatTimestampToTime(review.endDate)}
+              </p>
             </div>
           )}
           <div className="flex items-center gap-2">
-            <p className="text-zinc-500 text-[12px]">Online</p>
-            <div className="bg-blue-300 rounded-full w-4 h-4"></div>
+            {/* Not Completed Status - Online / In Person */}
+            {review.status === 0 || review.status === 1 ? (
+              <>
+                <p className="text-zinc-500 text-[12px]">
+                  {review.isOnline ? "Online" : "In Person"}
+                </p>
+                <div
+                  className={`rounded-full w-4 h-4 ${
+                    review.isOnline ? "bg-blue-300" : "bg-purple-400"
+                  }`}
+                ></div>
+              </>
+            ) : (
+              // Completed Status
+              <>
+                <p className="text-zinc-500 text-[12px]">Completed</p>
+                <div className="rounded-full w-4 h-4 bg-corigreen-400"></div>
+              </>
+            )}
           </div>
         </div>
 
         {showPerson && (
           <div className="w-full flex items-center gap-4 text-zinc-500">
-            <p>24 Feb 2024</p>
+            <p>{formatTimestampToDate(review.startDate)}</p>
             <p>•</p>
-            <p>14:00 - 15:00</p>
+            <p>
+              {formatTimestampToTime(review.startDate)} - {formatTimestampToTime(review.endDate)}
+            </p>
           </div>
         )}
       </div>
       {/* Body Section (Comment, Rating, PDF Attachment) */}
       <div className="w-full flex flex-col gap-3">
         {/* Comment */}
-        <p className="text-zinc-500 text-[12px]">
-          Lettie consistently exceeds expectations in his role, demonstrating exceptional teamwork
-          and a strong work ethic.
-        </p>
+        {review.comment && <p className="text-zinc-500 text-[12px]">{review.comment}</p>}
         <div className="flex w-full items-center gap-4">
           {/* Rating */}
-          <div className="flex items-center gap-1">
-            <StarRoundedIcon className="text-amber-300" />
-            <p className="text-zinc-800 font-bold">4</p>
-          </div>
+          {review.rating > 0 && (
+            <div className="flex items-center gap-1">
+              <StarRoundedIcon className="text-amber-300" />
+              <p className="text-zinc-800 font-bold">{review.rating}</p>
+            </div>
+          )}
           {/* PDF Attachment */}
-          <div className="flex items-center gap-1">
-            <p className="text-zinc-500 text-[12px]">PDF Attached</p>
-            <TextSnippetRoundedIcon className="text-zinc-500" />
-          </div>
+          {review.docUrl && (
+            <div className="flex items-center gap-1">
+              <p className="text-zinc-500 text-[12px]">PDF Attached</p>
+              <TextSnippetRoundedIcon className="text-zinc-500" />
+            </div>
+          )}
         </div>
       </div>
       {/* Footer Section (Location / Action Buttons) */}
-      <div className="w-full flex items-center justify-between gap-3">
+      {review.isOnline ? (
+        // If meet is online
+        <div className="w-full flex items-center justify-between gap-3">
+          <div className="w-full h-full flex items-center justify-center bg-corigreen-100 rounded-xl">
+            <p className="text-corigreen-500 text-[12px]">{review.meetLink}</p>
+          </div>
+          <CoriBtn primary style="black">
+            Join
+          </CoriBtn>
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: "1",
+                  label: "Edit Meeting",
+                  icon: <EditIcon />,
+                  onClick: () => {
+                    console.log("Edit");
+                  },
+                },
+                {
+                  key: "2",
+                  label: "Remove",
+                  icon: <DeleteIcon />,
+                  danger: true,
+                  onClick: () => {
+                    console.log("Remove");
+                  },
+                },
+              ],
+            }}
+            placement="bottomRight"
+            trigger={["click"]}
+            dropdownRender={(menu) => (
+              <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
+            )}
+          >
+            <Button className="p-0 border-none bg-transparent">
+              <MoreVertRoundedIcon className="text-zinc-500" />
+            </Button>
+          </Dropdown>
+        </div>
+      ) : (
+        // If meet is in person
+        <div className="w-full flex items-center justify-between gap-3">
+          <div className="w-full h-full flex items-center justify-center bg-sakura-100 rounded-xl">
+            <p className="text-sakura-800 text-[12px]">{review.meetLocation}</p>
+          </div>
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: "1",
+                  label: "Edit Meeting",
+                  icon: <EditIcon />,
+                  onClick: () => {
+                    console.log("Edit");
+                  },
+                },
+                {
+                  key: "2",
+                  label: "Remove",
+                  icon: <DeleteIcon />,
+                  danger: true,
+                  onClick: () => {
+                    console.log("Remove");
+                  },
+                },
+              ],
+            }}
+            placement="bottomRight"
+            trigger={["click"]}
+            dropdownRender={(menu) => (
+              <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
+            )}
+          >
+            <Button className="p-0 border-none bg-transparent">
+              <MoreVertRoundedIcon className="text-zinc-500" />
+            </Button>
+          </Dropdown>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default PerfReviewBox;
+
+{
+  /* <div className="w-full flex items-center justify-between gap-3">
         <div className="w-full h-full flex items-center justify-center bg-corigreen-100 rounded-2xl">
           <p className="text-corigreen-500 text-[12px]">meet.google.com/pfh-akdk-pyo</p>
         </div>
@@ -108,9 +237,5 @@ function PerfReviewBox({ showPerson = true }: PerfReviewBoxProps) {
             <MoreVertRoundedIcon className="text-zinc-500" />
           </Button>
         </Dropdown>
-      </div>
-    </div>
-  );
+      </div> */
 }
-
-export default PerfReviewBox;

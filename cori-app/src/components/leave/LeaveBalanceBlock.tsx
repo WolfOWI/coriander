@@ -7,22 +7,52 @@ import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
+import { Tooltip } from "antd";
 
-function LeaveBalanceBlock() {
+interface LeaveBalanceBlockProps {
+  leaveType: string;
+  remainingDays: number;
+  totalDays: number;
+  description: string;
+}
+
+function LeaveBalanceBlock({
+  leaveType,
+  remainingDays,
+  totalDays,
+  description,
+}: LeaveBalanceBlockProps) {
+  const getLeaveIcon = () => {
+    switch (leaveType) {
+      case "Annual":
+        return <BeachAccessIcon />;
+      case "Sick":
+        return <SickIcon />;
+      case "Parental":
+        return <ChildFriendlyIcon />;
+      case "Family Responsibility":
+        return <FamilyRestroomIcon />;
+      case "Study":
+        return <MenuBookIcon />;
+      case "Compassionate":
+        return <HeartBrokenIcon />;
+      default:
+        return <BeachAccessIcon />;
+    }
+  };
+
   return (
-    <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 w-[136px]">
-      <div className="flex items-center gap-1 mb-2">
-        {/* TODO: Change icon depending on the leave type */}
-        <BeachAccessIcon />
-        {/* <SickIcon />
-        <ChildFriendlyIcon />
-        <FamilyRestroomIcon />
-        <MenuBookIcon />
-        <HeartBrokenIcon /> */}
-        <p className="text-zinc-900 text-2xl font-bold">15</p>
+    <Tooltip placement="right" title={description}>
+      <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 w-[136px]">
+        <div className="flex items-center gap-1 mb-2">
+          {getLeaveIcon()}
+          <p className="text-zinc-900 text-2xl font-bold">{remainingDays}</p>
+        </div>
+        <p className="text-zinc-500 text-[12px]">
+          {totalDays} {leaveType} Days
+        </p>
       </div>
-      <p className="text-zinc-500 text-[12px]">15 Annual Days</p>
-    </div>
+    </Tooltip>
   );
 }
 

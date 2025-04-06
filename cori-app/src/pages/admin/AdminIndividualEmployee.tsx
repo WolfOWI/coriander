@@ -1,6 +1,6 @@
 // Wolf Botha
 import React, { useEffect, useState } from "react";
-import { empUserAPI } from "../../services/api.service";
+import { empUserAPI, pageAPI } from "../../services/api.service";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
@@ -51,7 +51,69 @@ import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeMod
 import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 
 // Types
-import { EmployType, Gender, PayCycle } from "../../types/common";
+import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "../../types/common";
+
+// Equipment Interface
+interface Equipment {
+  equipmentId: number;
+  employeeId: number;
+  equipmentCatId: number;
+  equipmentCategoryName: string;
+  equipmentName: string;
+  assignedDate: string;
+  condition: EquipmentCondition;
+}
+
+// Leave Balance Interface
+interface LeaveBalance {
+  leaveBalanceId: number;
+  remainingDays: number;
+  leaveTypeName: string;
+  description: string;
+  defaultDays: number;
+}
+
+// Performance Review Interface
+interface PerformanceReview {
+  reviewId: number;
+  adminId: number;
+  adminName: string;
+  employeeId: number;
+  employeeName: string;
+  isOnline: boolean;
+  meetLocation: string | null;
+  meetLink: string;
+  startDate: string;
+  endDate: string;
+  rating: number;
+  comment: string;
+  docUrl: string;
+  status: ReviewStatus;
+}
+
+// Employee Rating Metrics Interface
+interface EmpUserRatingMetrics {
+  employeeId: number;
+  fullName: string;
+  averageRating: number;
+  numberOfRatings: number;
+  mostRecentRating: number;
+}
+
+// Admin Employee Details Page Response Interface
+interface AdminEmpDetailsResponse {
+  empUser: EmpUser;
+  equipment: {
+    $values: Equipment[];
+  };
+  leaveBalances: {
+    $values: LeaveBalance[];
+  };
+  empUserRatingMetrics: EmpUserRatingMetrics;
+  performanceReviews: {
+    $values: PerformanceReview[];
+  };
+}
 
 // EmpUser Data Interface
 interface EmpUser {
@@ -76,8 +138,14 @@ interface EmpUser {
 }
 
 const AdminIndividualEmployee: React.FC = () => {
-  // State to store the employee data with proper typing
+  // States
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
+  const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const [leaveBalances, setLeaveBalances] = useState<LeaveBalance[]>([]);
+  const [empUserRatingMetrics, setEmpUserRatingMetrics] = useState<EmpUserRatingMetrics | null>(
+    null
+  );
+  const [performanceReviews, setPerformanceReviews] = useState<PerformanceReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextPayDay, setNextPayDay] = useState<string | null>(null);
   const { employeeId } = useParams();
@@ -94,9 +162,16 @@ const AdminIndividualEmployee: React.FC = () => {
   const fetchEmployee = async () => {
     try {
       if (employeeId) {
-        // Fetch the specific employee by ID
-        const response = await empUserAPI.getEmpUserById(employeeId);
-        setEmpUser(response.data);
+        // Fetch the specific employee by ID using the new API endpoint
+        const response = await pageAPI.getAdminEmpDetails(employeeId);
+        const data: AdminEmpDetailsResponse = response.data;
+
+        setEmpUser(data.empUser);
+        setEquipment(data.equipment.$values);
+        // TODO Set leave balances in a specific order
+        setLeaveBalances(data.leaveBalances.$values);
+        setEmpUserRatingMetrics(data.empUserRatingMetrics);
+        setPerformanceReviews(data.performanceReviews.$values);
       } else {
         // If no ID provided, redirect to employee management page
         navigate("/admin/employees");
@@ -325,9 +400,18 @@ const AdminIndividualEmployee: React.FC = () => {
                 <CoriCircleBtn icon={<AddIcon />} onClick={() => setShowNewEquipmentModal(true)} />
               </div>
               <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
-                {/* TODO: Add dynamic equipment list items */}
-                <EquipmentListItem device={null} onEdit={() => setShowManageEquipmentModal(true)} />
-                <EquipmentListItem device={null} onEdit={() => setShowManageEquipmentModal(true)} />
+                {equipment.map((item) => (
+                  <EquipmentListItem
+                    key={item.equipmentId}
+                    item={item}
+                    onEdit={() => setShowManageEquipmentModal(true)}
+                    adminView
+                  />
+                ))}
+                {/* Empty Message */}
+                {equipment.length === 0 && (
+                  <p className="text-zinc-500 py-4">No Equipment Assigned</p>
+                )}
               </div>
             </div>
           </div>
@@ -336,30 +420,27 @@ const AdminIndividualEmployee: React.FC = () => {
               {/* Leave Balances */}
               <div className="w-3/12 flex flex-col items-center gap-2">
                 <h2 className="text-zinc-500 font-semibold">Leave</h2>
-                {/* TODO: Add dynamic leave balance blocks */}
                 <div className="flex flex-col gap-3">
-                  <LeaveBalanceBlock />
-                  <LeaveBalanceBlock />
-                  <LeaveBalanceBlock />
-                  <LeaveBalanceBlock />
-                  <LeaveBalanceBlock />
-                  <LeaveBalanceBlock />
+                  {leaveBalances.map((balance) => (
+                    <LeaveBalanceBlock
+                      key={balance.leaveBalanceId}
+                      leaveType={balance.leaveTypeName}
+                      remainingDays={balance.remainingDays}
+                      totalDays={balance.defaultDays}
+                      description={balance.description}
+                    />
+                  ))}
                 </div>
               </div>
               {/* Rating & Performance Reviews */}
               <div className="w-9/12 flex flex-col gap-4 max-w-9/12">
                 <div className="w-full flex flex-col gap-2 items-center">
                   <h2 className="text-zinc-500 font-semibold">Average Rating</h2>
-                  {/* TODO: Decide on graph design */}
-                  {/* <div className="flex gap-2 items-center">
-                  <StarRoundedIcon />
-                  <p className="text-zinc-900 text-2xl font-bold">3.23</p>
-                </div> */}
                   <div className="w-full p-4 bg-warmstone-50 rounded-2xl">
                     <GaugeComponent
                       minValue={0}
                       maxValue={500}
-                      value={425}
+                      value={empUserRatingMetrics ? empUserRatingMetrics.averageRating * 100 : 0}
                       type="semicircle"
                       labels={{
                         valueLabel: {
@@ -381,22 +462,32 @@ const AdminIndividualEmployee: React.FC = () => {
                         width: 0.2,
                       }}
                       pointer={{
-                        // animationDelay: 1000,
                         type: "arrow",
                         animationDuration: 1000,
                       }}
                     />
+                    {empUserRatingMetrics && (
+                      <div className="text-center mt-2">
+                        <p className="text-zinc-500 text-sm">
+                          Based on {empUserRatingMetrics.numberOfRatings} rating
+                          {empUserRatingMetrics.numberOfRatings !== 1 ? "s" : ""}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  {/* <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center"></div> */}
                 </div>
                 <div className="w-full flex flex-col items-center gap-2">
                   <h2 className="text-zinc-500 font-semibold">Performance Reviews</h2>
+                  {/* TODO Possibly create a performance review here? */}
                   <div className="w-full h-[580px] overflow-y-auto gap-4 flex flex-col rounded-2xl relative scrollbar-hide [&::-webkit-scrollbar]:hidden">
-                    {/* TODO: Add dynamic performance review boxes */}
-                    <PerfReviewBox />
-                    <PerfReviewBox />
-                    <PerfReviewBox />
-                    <PerfReviewBox />
+                    {performanceReviews.map((review) => (
+                      <PerfReviewBox key={review.reviewId} review={review} showPerson={true} />
+                    ))}
+                    {performanceReviews.length === 0 && (
+                      <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-3">
+                        <p className="text-zinc-500 text-center">No Performance Reviews Yet</p>
+                      </div>
+                    )}
                     {/* Empty Spacer Overlay (for fade out effect) */}
                     <div className="py-10 w-full bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0 text-transparent">
                       _

@@ -106,6 +106,17 @@ export const empUserAPI = {
     apiClient.put(`/EmpUser/edit-by-id/${id}`, data),
 };
 
+// Page Specific API Service Methods
+export const pageAPI = {
+  /**
+   * Fetches all details for an employee including equipment, leave balances, ratings, and performance reviews
+   * @param id - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAdminEmpDetails: (id: string): Promise<AxiosResponse> =>
+    apiClient.get(`/Page/admin-emp-details/${id}`),
+};
+
 // ------------------------------------------------------------
 
 // Export the configured axios instance for direct use if needed

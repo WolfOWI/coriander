@@ -282,8 +282,8 @@ const EmployeeProfile: React.FC = () => {
               </div>
               <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
                 {/* TODO: Add dynamic equipment list items */}
-                <EquipmentListItem device={null} />
-                <EquipmentListItem device={null} />
+                <EquipmentListItem item={null} />
+                <EquipmentListItem item={null} />
               </div>
             </div>
           </div>
