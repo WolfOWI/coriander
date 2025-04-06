@@ -20,6 +20,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import BadgeIcon from "@mui/icons-material/Badge";
+import GoogleIcon from "@mui/icons-material/Google";
 
 // Functionality
 import { empUserAPI } from "../../services/api.service";
@@ -38,6 +39,7 @@ interface EmpUser {
   userId: number;
   fullName: string;
   email: string;
+  googleId: string | null;
   profilePicture: string;
   role: number;
   employeeId: number;
@@ -87,6 +89,10 @@ const EmployeeProfile: React.FC = () => {
     fetchEmployee();
   }, []);
 
+  useEffect(() => {
+    console.log(empUser);
+  }, [empUser]);
+
   if (loading) return <div>Loading...</div>;
 
   if (!empUser) return <div>No employee found</div>;
@@ -107,7 +113,9 @@ const EmployeeProfile: React.FC = () => {
         <div className="flex flex-col items-center gap-3 z-0">
           <div className="flex flex-col gap-7 items-center w-2/3">
             {/* Profile Picture & Name */}
+            {/* {empUser.googleId === null ? <p>Google</p> : <p>Email</p>} */}
             <div className="flex flex-col gap-3 items-center">
+              {/* If user has a profile picture */}
               {empUser.profilePicture ? (
                 <div className="relative">
                   <Avatar
@@ -115,7 +123,16 @@ const EmployeeProfile: React.FC = () => {
                     size={128}
                     className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
                   />
-                  <CoriCircleBtn icon={<EditIcon />} className="absolute bottom-0 right-0" />
+                  {/* If user is not a google user */}
+                  {empUser.googleId === null ? (
+                    <CoriCircleBtn icon={<EditIcon />} className="absolute bottom-0 right-0" />
+                  ) : (
+                    <CoriCircleBtn
+                      icon={<GoogleIcon />}
+                      style="black"
+                      className="absolute bottom-0 right-0"
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="relative">
@@ -124,7 +141,20 @@ const EmployeeProfile: React.FC = () => {
                     size={128}
                     className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
                   />
-                  <CoriCircleBtn icon={<AddIcon />} className="absolute bottom-0 right-0" />
+                  {/* If user is not a google user */}
+                  {empUser.googleId === null ? (
+                    <CoriCircleBtn
+                      icon={<AddIcon />}
+                      style="black"
+                      className="absolute bottom-0 right-0"
+                    />
+                  ) : (
+                    <CoriCircleBtn
+                      icon={<GoogleIcon />}
+                      style="black"
+                      className="absolute bottom-0 right-0"
+                    />
+                  )}
                 </div>
               )}
               <div className="flex gap-3 items-center">
