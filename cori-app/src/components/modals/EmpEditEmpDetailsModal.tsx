@@ -13,7 +13,7 @@ interface AdminEditEmpDetailsModalProps {
     dateOfBirth: string;
     phoneNumber: string;
   } | null;
-  onUpdate?: () => void; // Callback function to be called after successful update
+  onUpdate?: () => void; // Callback function after successful update
 }
 
 function EmpEditEmpDetailsModal({
@@ -82,6 +82,18 @@ function EmpEditEmpDetailsModal({
     }
   };
 
+  const handleCancel = () => {
+    // Reset the form values to the original values
+    if (employee) {
+      form.setFieldsValue({
+        gender: employee.gender,
+        dob: dayjs(employee.dateOfBirth),
+        phoneNumber: employee.phoneNumber,
+      });
+    }
+    setShowModal(false);
+  };
+
   return (
     <>
       {/* 
@@ -110,7 +122,7 @@ function EmpEditEmpDetailsModal({
           },
         }}
         footer={[
-          <Button key="cancel" onClick={() => setShowModal(false)}>
+          <Button key="cancel" onClick={handleCancel}>
             Cancel
           </Button>,
           <Button key="update" type="primary" onClick={handleSubmit}>

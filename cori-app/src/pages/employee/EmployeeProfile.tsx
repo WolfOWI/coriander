@@ -65,7 +65,7 @@ const EmployeeProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   // const { employeeId } = useParams();
   // TODO Temporary set employee ID (TODO: Fetch from URL)
-  const employeeId = "5";
+  const employeeId = "8";
   const navigate = useNavigate();
 
   // Modal States
@@ -99,9 +99,9 @@ const EmployeeProfile: React.FC = () => {
     fetchEmployee();
   }, [employeeId, navigate]);
 
-  useEffect(() => {
-    console.log(empUser);
-  }, [empUser]);
+  // useEffect(() => {
+  //   console.log(empUser);
+  // }, [empUser]);
 
   if (loading) return <div>Loading...</div>;
 

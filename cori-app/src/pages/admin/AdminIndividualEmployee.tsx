@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
 import { Avatar, DatePicker } from "antd";
-import dayjs, { Dayjs } from "dayjs"; // For simple date formatting
+import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 
 // Extend dayjs with plugins
@@ -54,6 +54,7 @@ interface EmpUser {
   userId: number;
   fullName: string;
   email: string;
+  googleId: string | null;
   profilePicture: string;
   role: number;
   employeeId: number;
@@ -86,27 +87,27 @@ const AdminIndividualEmployee: React.FC = () => {
   // Navigation
   const navigate = useNavigate();
 
-  // On page load, fetch the employee data
-  useEffect(() => {
-    const fetchEmployee = async () => {
-      try {
-        if (employeeId) {
-          // Fetch the specific employee by ID
-          const response = await empUserAPI.getEmpUserById(employeeId);
-          setEmpUser(response.data);
-        } else {
-          // If no ID provided, redirect to employee management page
-          navigate("/admin/employees");
-        }
-      } catch (error) {
-        console.error("Error fetching employee:", error);
-        // Handle error case
-        return <div>Something went wrong</div>;
-      } finally {
-        setLoading(false);
+  const fetchEmployee = async () => {
+    try {
+      if (employeeId) {
+        // Fetch the specific employee by ID
+        const response = await empUserAPI.getEmpUserById(employeeId);
+        setEmpUser(response.data);
+      } else {
+        // If no ID provided, redirect to employee management page
+        navigate("/admin/employees");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching employee:", error);
+      // Handle error case
+      return <div>Something went wrong</div>;
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // On page load (fetch employee data)
+  useEffect(() => {
     fetchEmployee();
   }, [employeeId, navigate]);
 
@@ -403,6 +404,7 @@ const AdminIndividualEmployee: React.FC = () => {
           showModal={showEditDetailsModal}
           setShowModal={setShowEditDetailsModal}
           employee={empUser}
+          onUpdate={fetchEmployee}
         />
 
         {/* New Equipment Modal */}
