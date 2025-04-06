@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 // Custom React Components
 import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import EmpEditEmpDetailsModal from "../../components/modals/EmpEditEmpDetailsModal";
+
+// 3rd Party Components
+import { Avatar, message } from "antd";
+
 // Import Google Icons
 import EditIcon from "@mui/icons-material/Edit";
 import WorkIcon from "@mui/icons-material/Work";
@@ -28,10 +33,9 @@ import dayjs from "dayjs";
 
 // Types
 import { EmployType, Gender, PayCycle } from "../../types/common";
-import { Avatar } from "antd";
 
 // Utility Functions
-import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
+import { formatPhone } from "../../utils/formatUtils";
 import { formatEmploymentDuration } from "../../utils/dateUtils";
 
 // EmpUser Data Interface
@@ -59,35 +63,41 @@ interface EmpUser {
 const EmployeeProfile: React.FC = () => {
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [loading, setLoading] = useState(true);
+  // const { employeeId } = useParams();
+  // TODO Temporary set employee ID (TODO: Fetch from URL)
+  const employeeId = "5";
+  const navigate = useNavigate();
 
   // Modal States
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
 
-  // TODO Temporary set employee ID (TODO: Fetch from URL)
-  const employeeId = 8;
+  // Message System
+  const [messageApi, contextHolder] = message.useMessage();
+
+  // Function to fetch employee data
+  const fetchEmployee = async () => {
+    try {
+      if (employeeId) {
+        // Fetch the specific employee by ID
+        const response = await empUserAPI.getEmpUserById(employeeId);
+        setEmpUser(response.data);
+      } else {
+        // Show an error message if no ID provided
+        messageApi.error("No ID provided - can't display employee details");
+      }
+    } catch (error) {
+      console.error("Error fetching employee:", error);
+      // Show an error message if something went wrong
+      messageApi.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // On page load, fetch the employee data
   useEffect(() => {
-    const fetchEmployee = async () => {
-      try {
-        if (employeeId) {
-          // Fetch the specific employee by ID
-          const response = await empUserAPI.getEmpUserById(employeeId.toString());
-          setEmpUser(response.data);
-        } else {
-          return <div>No id provided</div>;
-        }
-      } catch (error) {
-        console.error("Error fetching employee:", error);
-        // Handle error case
-        return <div>Something went wrong</div>;
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEmployee();
-  }, []);
+  }, [employeeId, navigate]);
 
   useEffect(() => {
     console.log(empUser);
@@ -98,6 +108,7 @@ const EmployeeProfile: React.FC = () => {
   if (!empUser) return <div>No employee found</div>;
   return (
     <>
+      {contextHolder}
       <div className="max-w-7xl mx-auto">
         {/* Top buttons */}
         <div className="flex justify-end items-center ">
@@ -282,6 +293,7 @@ const EmployeeProfile: React.FC = () => {
         showModal={showEditDetailsModal}
         setShowModal={setShowEditDetailsModal}
         employee={empUser}
+        onUpdate={fetchEmployee}
       />
     </>
   );
