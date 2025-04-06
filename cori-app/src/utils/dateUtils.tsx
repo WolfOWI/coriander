@@ -2,9 +2,11 @@
 
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import utc from "dayjs/plugin/utc";
 import { PayCycle } from "../types/common";
 
 dayjs.extend(duration);
+dayjs.extend(utc);
 
 // Get the duration of employment in years, months, and days (E.g. "1 year, 2 months, 3 days")
 const formatEmploymentDuration = (startDate: string): string => {
@@ -44,4 +46,30 @@ const calculateNextPayDay = (payCycle: PayCycle, lastPaidDate: string): string =
   }
 };
 
-export { formatEmploymentDuration, calculateNextPayDay };
+// Formats a timestamp to a date string (e.g. "01 Apr 2025")
+const formatTimestampToDate = (timestamp: string): string => {
+  return dayjs.utc(timestamp).format("DD MMM YYYY");
+};
+
+// Formats a timestamp to a time string (e.g. "12:30")
+const formatTimestampToTime = (timestamp: string): string => {
+  return dayjs.utc(timestamp).format("HH:mm");
+};
+
+// Combines a date and time into a UTC timestamp
+const combineDateTimeToTimestamp = (date: string, time: string): string => {
+  const [hours, minutes] = time.split(":");
+  return dayjs(date)
+    .hour(parseInt(hours))
+    .minute(parseInt(minutes))
+    .utc()
+    .format("YYYY-MM-DD HH:mm:ss.SSS[+00]");
+};
+
+export {
+  formatEmploymentDuration,
+  calculateNextPayDay,
+  formatTimestampToDate,
+  formatTimestampToTime,
+  combineDateTimeToTimestamp,
+};
