@@ -76,6 +76,7 @@ const columns: ColumnsType<DataType> = [
     title: "Name",
     dataIndex: "fullName",
     sorter: true, // TODO: add sorting functionality
+    width: "24%",
     render: (value, record) => (
       <div className="flex items-center gap-2">
         {record.profilePicture ? (
@@ -104,13 +105,11 @@ const columns: ColumnsType<DataType> = [
         </div>
       </div>
     ),
-    width: "20%",
   },
   {
-    title: "Job Title",
+    title: "Job",
     dataIndex: "jobTitle",
     sorter: true,
-    width: "15%",
     render: (_, record) => (
       <div className="flex flex-col">
         <p className="">{record.jobTitle}</p>
@@ -119,10 +118,9 @@ const columns: ColumnsType<DataType> = [
     ),
   },
   {
-    title: "Performance",
+    title: "Ratings",
     dataIndex: "averageRating",
     sorter: true,
-    width: "15%",
     render: (_, record) => (
       <>
         {record.averageRating ? (
@@ -141,7 +139,6 @@ const columns: ColumnsType<DataType> = [
     title: "Employment",
     dataIndex: "employType",
     sorter: true,
-    width: "15%",
     render: (_, record) =>
       record.isSuspended ? (
         <EmployTypeBadge status="suspended" />
@@ -153,7 +150,6 @@ const columns: ColumnsType<DataType> = [
     title: "Salary",
     dataIndex: "salaryAmount",
     sorter: true,
-    width: "15%",
     render: (_, record) => (
       <div className="flex flex-col">
         <p>{formatRandAmount(record.salaryAmount)}</p>
@@ -178,7 +174,6 @@ const columns: ColumnsType<DataType> = [
     title: "Leave",
     dataIndex: "totalRemainingDays",
     sorter: true,
-    width: "15%",
     render: (_, record) => (
       <div className="flex flex-col items-center">
         <p>{record.totalRemainingDays}</p>
