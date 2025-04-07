@@ -28,7 +28,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import GoogleIcon from "@mui/icons-material/Google";
 
 // Functionality
-import { empUserAPI } from "../../services/api.service";
+import { empUserAPI, pageAPI } from "../../services/api.service";
 import dayjs from "dayjs";
 
 // Types
@@ -60,11 +60,37 @@ interface EmpUser {
   isSuspended: boolean;
 }
 
+interface Equipment {
+  equipmentId: number;
+  employeeId: number;
+  equipmentCatId: number;
+  equipmentCategoryName: string;
+  equipmentName: string;
+  assignedDate: string;
+  condition: number;
+}
+
+interface EmpUserRatingMetrics {
+  employeeId: number;
+  fullName: string;
+  averageRating: number;
+  numberOfRatings: number;
+  mostRecentRating: number;
+}
+
+interface EmployeeProfileResponse {
+  empUser: EmpUser;
+  empUserRatingMetrics: EmpUserRatingMetrics;
+  equipment: {
+    $values: Equipment[];
+  };
+}
+
 const EmployeeProfile: React.FC = () => {
-  const [empUser, setEmpUser] = useState<EmpUser | null>(null);
+  const [profileData, setProfileData] = useState<EmployeeProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
   // const { employeeId } = useParams();
-  // TODO Temporary set employee ID (TODO: Fetch from URL)
+  // TODO Temporary set employee ID (TODO: Fetch from logged in user)
   const employeeId = "11";
   const navigate = useNavigate();
 
@@ -78,12 +104,12 @@ const EmployeeProfile: React.FC = () => {
   const fetchEmployee = async () => {
     try {
       if (employeeId) {
-        // Fetch the specific employee by ID
-        const response = await empUserAPI.getEmpUserById(employeeId);
-        setEmpUser(response.data);
+        // Fetch the page details by employee Id
+        const response = await pageAPI.getEmployeeProfile(employeeId);
+        setProfileData(response.data);
       } else {
         // Show an error message if no ID provided
-        messageApi.error("No ID provided - can't display employee details");
+        messageApi.error("No ID found - can't display employee details");
       }
     } catch (error) {
       console.error("Error fetching employee:", error);
@@ -105,7 +131,10 @@ const EmployeeProfile: React.FC = () => {
 
   if (loading) return <div>Loading...</div>;
 
-  if (!empUser) return <div>No employee found</div>;
+  if (!profileData) return <div>No employee found</div>;
+
+  const { empUser, empUserRatingMetrics, equipment } = profileData;
+
   return (
     <>
       {contextHolder}
@@ -124,7 +153,6 @@ const EmployeeProfile: React.FC = () => {
         <div className="flex flex-col items-center gap-3 z-0">
           <div className="flex flex-col gap-7 items-center w-2/3">
             {/* Profile Picture & Name */}
-            {/* {empUser.googleId === null ? <p>Google</p> : <p>Email</p>} */}
             <div className="flex flex-col gap-3 items-center">
               {/* If user has a profile picture */}
               {empUser.profilePicture ? (
@@ -170,10 +198,14 @@ const EmployeeProfile: React.FC = () => {
               )}
               <div className="flex gap-3 items-center">
                 <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
-                <div className="flex items-center gap-1">
-                  <StarIcon className="text-yellow-500" />
-                  <p className="text-zinc-500 text-xl">X.XX</p>
-                </div>
+                {empUserRatingMetrics && (
+                  <div className="flex items-center gap-1">
+                    <StarIcon className="text-yellow-500" />
+                    <p className="text-zinc-500 text-xl">
+                      {empUserRatingMetrics.averageRating.toFixed(2)}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -281,9 +313,9 @@ const EmployeeProfile: React.FC = () => {
                 <h2 className="text-zinc-500 font-semibold">Equipment</h2>
               </div>
               <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
-                {/* TODO: Add dynamic equipment list items */}
-                <EquipmentListItem item={null} />
-                <EquipmentListItem item={null} />
+                {equipment.$values.map((item) => (
+                  <EquipmentListItem key={item.equipmentId} item={item} />
+                ))}
               </div>
             </div>
           </div>

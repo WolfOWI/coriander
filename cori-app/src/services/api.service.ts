@@ -137,7 +137,15 @@ export const pageAPI = {
    * @returns Promise containing the API response
    */
   getAdminEmpManagement: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-emp-management"),
+
+  /**
+   * Fetches the list of all employees for the employee profile page
+   * @returns Promise containing the API response
+   */
+  getEmployeeProfile: (id: string): Promise<AxiosResponse> =>
+    apiClient.get(`/Page/employee-profile/${id}`),
 };
+
 // ------------------------------------------------------------
 
 // ############################################################
