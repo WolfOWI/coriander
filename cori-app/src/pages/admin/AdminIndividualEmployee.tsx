@@ -307,7 +307,7 @@ const AdminIndividualEmployee: React.FC = () => {
 
               <div className="flex flex-col gap-4 mt-8">
                 <div className="flex">
-                  <div className="flex flex-grow flex-col gap-4">
+                  <div className="flex flex-grow flex-col gap-4 w-1/2">
                     <div className="flex gap-2 items-center">
                       {empUser.gender === Gender.Female ? (
                         <FemaleIcon className="text-pink-500" />
@@ -329,20 +329,28 @@ const AdminIndividualEmployee: React.FC = () => {
                       <p className="text-zinc-500">
                         {empUser.dateOfBirth}
                         <span className="text-zinc-400 text-sm ml-2">
-                          {dayjs(empUser.dateOfBirth).fromNow(true)} old
+                          ({dayjs(empUser.dateOfBirth).fromNow(true)} old)
                         </span>
                       </p>
                     </div>
                   </div>
-                  <div className="flex flex-grow flex-col gap-4">
+                  <div className="flex flex-grow flex-col gap-4 w-1/2">
                     <div className="flex gap-2 items-center">
                       <PhoneIcon />
                       <p className="text-zinc-500">{formatPhone(empUser.phoneNumber)}</p>
                     </div>
-                    <div className="flex gap-2 items-center">
-                      <EmailIcon />
-                      <p className="text-zinc-500">{empUser.email}</p>
-                    </div>
+                    <Tooltip
+                      title={empUser.email}
+                      placement="top"
+                      overlayInnerStyle={{
+                        width: "fit-content",
+                      }}
+                    >
+                      <div className="flex gap-2 items-center">
+                        <EmailIcon />
+                        <p className="text-zinc-500 text-truncate">{empUser.email}</p>
+                      </div>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
