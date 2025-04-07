@@ -316,6 +316,10 @@ const EmployeeProfile: React.FC = () => {
                 {equipment.$values.map((item) => (
                   <EquipmentListItem key={item.equipmentId} item={item} />
                 ))}
+                {/* Empty Message */}
+                {equipment.$values.length === 0 && (
+                  <p className="text-zinc-500 py-4">No Equipment Assigned</p>
+                )}
               </div>
             </div>
           </div>
