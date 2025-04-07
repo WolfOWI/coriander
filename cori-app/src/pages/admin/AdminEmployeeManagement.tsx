@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import type { GetProp, TableProps } from "antd";
 import { Table, Avatar } from "antd";
-import type { AnyObject } from "antd/es/_util/type";
 import type { SorterResult } from "antd/es/table/interface";
-import { empUserAPI } from "../../services/api.service";
+import { empUserAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 
 // Types
@@ -18,6 +17,7 @@ import AddIcon from "@mui/icons-material/Add";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
+import StarIcon from "@mui/icons-material/StarRounded";
 
 // Utility Functions
 import { formatRandAmount } from "../../utils/formatUtils";
@@ -31,14 +31,16 @@ interface DataType {
   gender: string;
   jobTitle: string;
   department: string;
-  // Average rating?
   profilePicture: string | null;
   employType: number;
   salaryAmount: number;
   payCycle: number;
   lastPaidDate: string;
   isSuspended: boolean;
-  // Remaining Leave days?
+  averageRating?: number;
+  numberOfRatings?: number;
+  totalRemainingDays?: number;
+  totalLeaveDays?: number;
 }
 
 interface TableParams {
@@ -117,7 +119,26 @@ const columns: ColumnsType<DataType> = [
     ),
   },
   {
-    title: "Employment Type",
+    title: "Performance",
+    dataIndex: "averageRating",
+    sorter: true,
+    width: "15%",
+    render: (_, record) => (
+      <>
+        {record.averageRating ? (
+          <div className="flex items-center">
+            <StarIcon className="text-yellow-500" />
+            <p>{record.averageRating}</p>
+            <p className="text-zinc-500 text-[12px] ml-2">({record.numberOfRatings})</p>
+          </div>
+        ) : (
+          <p className="text-zinc-500 text-[12px]">No Ratings</p>
+        )}
+      </>
+    ),
+  },
+  {
+    title: "Employment",
     dataIndex: "employType",
     sorter: true,
     width: "15%",
@@ -153,6 +174,18 @@ const columns: ColumnsType<DataType> = [
     width: "15%",
     render: (date) => new Date(date).toLocaleDateString(),
   },
+  {
+    title: "Leave",
+    dataIndex: "totalRemainingDays",
+    sorter: true,
+    width: "15%",
+    render: (_, record) => (
+      <div className="flex flex-col items-center">
+        <p>{record.totalRemainingDays}</p>
+        <p className="text-zinc-500 text-[12px]">{record.totalLeaveDays} days</p>
+      </div>
+    ),
+  },
 ];
 
 const AdminEmployeeManagement: React.FC = () => {
@@ -169,13 +202,30 @@ const AdminEmployeeManagement: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await empUserAPI.getAllEmpUsers();
-      setData(response.data.$values);
+      const response = await pageAPI.getAdminEmpManagement();
+      const processedData = response.data.$values.map((item: any) => ({
+        employeeId: item.empUser.employeeId,
+        fullName: item.empUser.fullName,
+        gender: item.empUser.gender,
+        jobTitle: item.empUser.jobTitle,
+        department: item.empUser.department,
+        profilePicture: item.empUser.profilePicture,
+        employType: item.empUser.employType,
+        salaryAmount: item.empUser.salaryAmount,
+        payCycle: item.empUser.payCycle,
+        lastPaidDate: item.empUser.lastPaidDate,
+        isSuspended: item.empUser.isSuspended,
+        averageRating: item.empUserRatingMetrics?.averageRating,
+        numberOfRatings: item.empUserRatingMetrics?.numberOfRatings,
+        totalRemainingDays: item.totalLeaveBalanceSum?.totalRemainingDays,
+        totalLeaveDays: item.totalLeaveBalanceSum?.totalLeaveDays,
+      }));
+      setData(processedData);
       setTableParams({
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          total: response.data.$values.length,
+          total: processedData.length,
         },
       });
     } catch (error) {
