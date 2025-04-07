@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar } from "antd";
+import { Table, Avatar, Dropdown } from "antd";
 import type { SorterResult } from "antd/es/table/interface";
-import { empUserAPI, pageAPI } from "../../services/api.service";
+import { employeeAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 
 // Types
@@ -18,6 +18,8 @@ import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 import StarIcon from "@mui/icons-material/StarRounded";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 
 // Utility Functions
 import { formatRandAmount } from "../../utils/formatUtils";
@@ -70,118 +72,6 @@ interface TableParams {
 //   "employDate": "2025-04-02",
 //   "isSuspended": false
 // }
-
-const columns: ColumnsType<DataType> = [
-  {
-    title: "Name",
-    dataIndex: "fullName",
-    sorter: true, // TODO: add sorting functionality
-    width: "24%",
-    render: (value, record) => (
-      <div className="flex items-center gap-2">
-        {record.profilePicture ? (
-          <Avatar
-            src={record.profilePicture}
-            className="bg-warmstone-600 h-12 w-12 rounded-full object-cover border-2 border-zinc-700"
-          />
-        ) : (
-          <Avatar
-            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${record.fullName}`}
-            className="bg-warmstone-600 h-12 w-12 rounded-full object-cover border-2 border-zinc-700"
-          />
-        )}
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1">
-            <p className="font-medium min-w-fit">{record.fullName}</p>
-            {parseInt(record.gender) === Gender.Female ? (
-              <FemaleIcon className="text-pink-500" />
-            ) : parseInt(record.gender) === Gender.Male ? (
-              <MaleIcon className="text-blue-500" />
-            ) : (
-              <TransgenderIcon className="text-purple-500" />
-            )}
-          </div>
-          <p className="text-sm text-zinc-500">{record.employeeId}</p>
-        </div>
-      </div>
-    ),
-  },
-  {
-    title: "Job",
-    dataIndex: "jobTitle",
-    sorter: true,
-    render: (_, record) => (
-      <div className="flex flex-col">
-        <p className="">{record.jobTitle}</p>
-        <p className="text-sm text-zinc-500">{record.department}</p>
-      </div>
-    ),
-  },
-  {
-    title: "Ratings",
-    dataIndex: "averageRating",
-    sorter: true,
-    render: (_, record) => (
-      <>
-        {record.averageRating ? (
-          <div className="flex items-center">
-            <StarIcon className="text-yellow-500" />
-            <p>{record.averageRating}</p>
-            <p className="text-zinc-500 text-[12px] ml-2">({record.numberOfRatings})</p>
-          </div>
-        ) : (
-          <p className="text-zinc-500 text-[12px]">No Ratings</p>
-        )}
-      </>
-    ),
-  },
-  {
-    title: "Employment",
-    dataIndex: "employType",
-    sorter: true,
-    render: (_, record) =>
-      record.isSuspended ? (
-        <EmployTypeBadge status="suspended" />
-      ) : (
-        <EmployTypeBadge status={record.employType} />
-      ),
-  },
-  {
-    title: "Salary",
-    dataIndex: "salaryAmount",
-    sorter: true,
-    render: (_, record) => (
-      <div className="flex flex-col">
-        <p>{formatRandAmount(record.salaryAmount)}</p>
-        <p className="text-[12px] text-zinc-500">
-          {record.payCycle === PayCycle.Monthly
-            ? "monthly"
-            : record.payCycle === PayCycle.Weekly
-            ? "weekly"
-            : "bi-weekly"}
-        </p>
-      </div>
-    ),
-  },
-  {
-    title: "Last Paid",
-    dataIndex: "lastPaidDate",
-    sorter: true,
-    width: "15%",
-    render: (date) => new Date(date).toLocaleDateString(),
-  },
-  {
-    title: "Leave",
-    dataIndex: "totalRemainingDays",
-    sorter: true,
-    render: (_, record) => (
-      <div className="flex flex-col items-center">
-        <p>{record.totalRemainingDays}</p>
-        <p className="text-zinc-500 text-[12px]">{record.totalLeaveDays} days</p>
-      </div>
-    ),
-  },
-];
 
 const AdminEmployeeManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -246,6 +136,177 @@ const AdminEmployeeManagement: React.FC = () => {
       setData([]);
     }
   };
+
+  const columns: ColumnsType<DataType> = [
+    {
+      title: "Name",
+      dataIndex: "fullName",
+      sorter: true,
+      width: "24%",
+      render: (value, record) => (
+        <div className="flex items-center gap-2">
+          {record.profilePicture ? (
+            <Avatar
+              src={record.profilePicture}
+              className="bg-warmstone-600 h-12 w-12 rounded-full object-cover border-2 border-zinc-700"
+            />
+          ) : (
+            <Avatar
+              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${record.fullName}`}
+              className="bg-warmstone-600 h-12 w-12 rounded-full object-cover border-2 border-zinc-700"
+            />
+          )}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1">
+              <p className="font-medium min-w-fit">{record.fullName}</p>
+              {parseInt(record.gender) === Gender.Female ? (
+                <FemaleIcon className="text-pink-500" />
+              ) : parseInt(record.gender) === Gender.Male ? (
+                <MaleIcon className="text-blue-500" />
+              ) : (
+                <TransgenderIcon className="text-purple-500" />
+              )}
+            </div>
+            <p className="text-sm text-zinc-500">{record.employeeId}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Job",
+      dataIndex: "jobTitle",
+      sorter: true,
+      render: (_, record) => (
+        <div className="flex flex-col">
+          <p className="">{record.jobTitle}</p>
+          <p className="text-sm text-zinc-500">{record.department}</p>
+        </div>
+      ),
+    },
+    {
+      title: "Ratings",
+      dataIndex: "averageRating",
+      sorter: true,
+      render: (_, record) => (
+        <>
+          {record.averageRating ? (
+            <div className="flex items-center">
+              <StarIcon className="text-yellow-500" />
+              <p>{record.averageRating}</p>
+              <p className="text-zinc-500 text-[12px] ml-2">({record.numberOfRatings})</p>
+            </div>
+          ) : (
+            <p className="text-zinc-500 text-[12px]">No Ratings</p>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "Employment",
+      dataIndex: "employType",
+      sorter: true,
+      render: (_, record) => {
+        const handleEmploymentClick = (e: React.MouseEvent) => {
+          e.stopPropagation(); // Prevent row click navigation
+        };
+
+        return (
+          <div onClick={handleEmploymentClick}>
+            {record.isSuspended ? (
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "unsuspend",
+                      label: "Unsuspend Employee",
+                      icon: <ThumbUpAltIcon />,
+                      onClick: () => {
+                        employeeAPI
+                          .toggleEmpSuspension(record.employeeId.toString())
+                          .then(() => {
+                            fetchData(); // Refresh the table data
+                          })
+                          .catch((error) => {
+                            console.error("Error unsuspending employee:", error);
+                          });
+                      },
+                    },
+                  ],
+                }}
+                trigger={["click"]}
+              >
+                <div>
+                  <EmployTypeBadge status="suspended" />
+                </div>
+              </Dropdown>
+            ) : (
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "suspend",
+                      label: "Suspend Employee",
+                      icon: <ThumbDownAltIcon />,
+                      onClick: () => {
+                        employeeAPI
+                          .toggleEmpSuspension(record.employeeId.toString())
+                          .then(() => {
+                            fetchData(); // Refresh the table data
+                          })
+                          .catch((error) => {
+                            console.error("Error suspending employee:", error);
+                          });
+                      },
+                    },
+                  ],
+                }}
+                trigger={["click"]}
+              >
+                <div>
+                  <EmployTypeBadge status={record.employType} />
+                </div>
+              </Dropdown>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      title: "Salary",
+      dataIndex: "salaryAmount",
+      sorter: true,
+      render: (_, record) => (
+        <div className="flex flex-col">
+          <p>{formatRandAmount(record.salaryAmount)}</p>
+          <p className="text-[12px] text-zinc-500">
+            {record.payCycle === PayCycle.Monthly
+              ? "monthly"
+              : record.payCycle === PayCycle.Weekly
+              ? "weekly"
+              : "bi-weekly"}
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: "Last Paid",
+      dataIndex: "lastPaidDate",
+      sorter: true,
+      width: "15%",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: "Leave",
+      dataIndex: "totalRemainingDays",
+      sorter: true,
+      render: (_, record) => (
+        <div className="flex flex-col items-center">
+          <p>{record.totalRemainingDays}</p>
+          <p className="text-zinc-500 text-[12px]">{record.totalLeaveDays} days</p>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="max-w-7xl mx-auto">

@@ -106,6 +106,7 @@ export const empUserAPI = {
   updateEmpUserById: (id: string, data: object): Promise<AxiosResponse> =>
     apiClient.put(`/EmpUser/edit-by-id/${id}`, data),
 };
+// ------------------------------------------------------------
 
 // EMPLOYEE API (ONLY EMPLOYEE, EXCL. USER)
 // ------------------------------------------------------------
@@ -118,6 +119,8 @@ export const employeeAPI = {
   toggleEmpSuspension: (id: string): Promise<AxiosResponse> =>
     apiClient.post(`/Employee/suspension-toggle/${id}`),
 };
+// ------------------------------------------------------------
+
 // PAGE SPECIFIC API
 // ------------------------------------------------------------
 export const pageAPI = {
@@ -135,7 +138,8 @@ export const pageAPI = {
    */
   getAdminEmpManagement: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-emp-management"),
 };
+// ------------------------------------------------------------
 
 // ############################################################
-// Export the configured axios instance for direct use if needed
+// Export the configured axios instance
 export default apiClient;
