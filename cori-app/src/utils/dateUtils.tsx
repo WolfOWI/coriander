@@ -66,10 +66,16 @@ const combineDateTimeToTimestamp = (date: string, time: string): string => {
   return dayjs(date).hour(parseInt(hours)).minute(parseInt(minutes)).toISOString();
 };
 
+// Boolean check if a given date is in the past
+const isDateInPast = (date: string): boolean => {
+  return dayjs(date).isBefore(dayjs());
+};
+
 export {
   formatEmploymentDuration,
   calculateNextPayDay,
   formatTimestampToDate,
   formatTimestampToTime,
   combineDateTimeToTimestamp,
+  isDateInPast,
 };

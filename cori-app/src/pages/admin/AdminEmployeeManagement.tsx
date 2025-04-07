@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar, Dropdown } from "antd";
+import { Table, Avatar, Dropdown, Tooltip } from "antd";
 import type { SorterResult } from "antd/es/table/interface";
 import { employeeAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
@@ -20,9 +20,13 @@ import TransgenderIcon from "@mui/icons-material/Transgender";
 import StarIcon from "@mui/icons-material/StarRounded";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import WatchLaterIcon from "@mui/icons-material/WatchLater";
 
 // Utility Functions
 import { formatRandAmount } from "../../utils/formatUtils";
+import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
+import dayjs from "dayjs";
 
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
@@ -167,19 +171,8 @@ const AdminEmployeeManagement: React.FC = () => {
                 <TransgenderIcon className="text-purple-500" />
               )}
             </div>
-            <p className="text-sm text-zinc-500">{record.employeeId}</p>
+            <p className="text-sm text-zinc-500">{record.jobTitle}</p>
           </div>
-        </div>
-      ),
-    },
-    {
-      title: "Job",
-      dataIndex: "jobTitle",
-      sorter: true,
-      render: (_, record) => (
-        <div className="flex flex-col">
-          <p className="">{record.jobTitle}</p>
-          <p className="text-sm text-zinc-500">{record.department}</p>
         </div>
       ),
     },
@@ -293,7 +286,66 @@ const AdminEmployeeManagement: React.FC = () => {
       dataIndex: "lastPaidDate",
       sorter: true,
       width: "15%",
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (date, record) => {
+        const isLate = isDateInPast(calculateNextPayDay(record.payCycle, date));
+        const nextPayDate = calculateNextPayDay(record.payCycle, date);
+
+        if (isLate) {
+          return (
+            <Tooltip
+              title={
+                <>
+                  Payment was due on
+                  <br />
+                  {nextPayDate}.
+                </>
+              }
+              placement="top"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              color="red"
+            >
+              <div className="flex flex-col">
+                <p>{formatTimestampToDate(date)}</p>
+                <div className="flex items-center gap-1">
+                  <WatchLaterIcon className="text-red-500" fontSize="small" />
+                  <p className="text-red-500 text-[12px]">
+                    {dayjs(nextPayDate).fromNow(true)} late
+                  </p>
+                </div>
+              </div>
+            </Tooltip>
+          );
+        }
+
+        return (
+          <Tooltip
+            title={
+              <>
+                Next Payment in {dayjs(nextPayDate).fromNow(true)}
+                <br />
+                on {nextPayDate}.
+              </>
+            }
+            placement="topLeft"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <p>{formatTimestampToDate(date)}</p>
+                <CheckCircleIcon className="text-corigreen-500" fontSize="small" />
+              </div>
+            </div>
+          </Tooltip>
+        );
+      },
     },
     {
       title: "Leave",
@@ -304,6 +356,7 @@ const AdminEmployeeManagement: React.FC = () => {
           <p>{record.totalRemainingDays}</p>
           <p className="text-zinc-500 text-[12px]">{record.totalLeaveDays} days</p>
         </div>
+        // TODO: Possibly add a tooltip that shows if employee made a leave request
       ),
     },
   ];
