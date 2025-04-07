@@ -1,11 +1,11 @@
 // Wolf Botha
 import React, { useEffect, useState } from "react";
-import { empUserAPI, pageAPI } from "../../services/api.service";
+import { empUserAPI, pageAPI, employeeAPI } from "../../services/api.service";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
-import { Avatar, DatePicker, Tooltip } from "antd";
+import { Avatar, DatePicker, Tooltip, message } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -156,6 +156,9 @@ const AdminIndividualEmployee: React.FC = () => {
   const [showManageEquipmentModal, setShowManageEquipmentModal] = useState(false);
   const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
 
+  // Message System
+  const [messageApi, ContextHolder] = message.useMessage();
+
   // Navigation
   const navigate = useNavigate();
 
@@ -197,6 +200,21 @@ const AdminIndividualEmployee: React.FC = () => {
     }
   }, [empUser]);
 
+  // Toggle suspension status of an employee
+  const toggleEmpSuspension = async () => {
+    try {
+      if (employeeId) {
+        console.log("Toggling suspension status of employee:", employeeId);
+        await employeeAPI.toggleEmpSuspension(employeeId);
+        fetchEmployee(); // Refresh the employee data
+        messageApi.success("Employee suspension status updated");
+      }
+    } catch (error) {
+      console.error("Error toggling employee suspension:", error);
+      messageApi.error("Error updating employee suspension status");
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!empUser)
     return (
@@ -221,6 +239,7 @@ const AdminIndividualEmployee: React.FC = () => {
 
   return (
     <>
+      {ContextHolder} {/* Message System */}
       <div className="max-w-7xl mx-auto">
         {/* Top Heading with buttons */}
         <div className="flex justify-between items-center mb-4">
@@ -235,7 +254,9 @@ const AdminIndividualEmployee: React.FC = () => {
               <EditIcon />
               Edit Details
             </CoriBtn>
-            <CoriBtn style="black">Suspend</CoriBtn>
+            <CoriBtn style="black" onClick={toggleEmpSuspension}>
+              {empUser?.isSuspended ? "Unsuspend" : "Suspend"}
+            </CoriBtn>
             <CoriBtn style="red" onClick={() => setShowTerminateEmployeeModal(true)}>
               Terminate
             </CoriBtn>
@@ -250,23 +271,16 @@ const AdminIndividualEmployee: React.FC = () => {
                 {empUser.profilePicture ? (
                   <Avatar
                     src={empUser.profilePicture}
-                    size={96}
+                    size={104}
                     className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
                   />
                 ) : (
                   <Avatar
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${empUser.fullName}`}
-                    size={96}
+                    size={104}
                     className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
                   />
                 )}
-
-                {/* <img
-                  // src={empUser.profilePicture}
-                  src=""
-                  alt={`Pic`}
-                  className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
-                /> */}
                 <div className="flex flex-col gap-2">
                   <p className="text-sm text-zinc-500">Employee ID {empUser.employeeId}</p>
                   <div className="flex items-center gap-3">

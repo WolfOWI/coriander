@@ -80,8 +80,9 @@ apiClient.interceptors.response.use(
   }
 );
 // API SERVICE METHODS
+// ############################################################
+// EMPUSER API (EMPLOYEE + USER)
 // ------------------------------------------------------------
-// EmpUser (Employee User) API Service Methods
 export const empUserAPI = {
   /**
    * Fetches all employee users from the backend
@@ -106,7 +107,19 @@ export const empUserAPI = {
     apiClient.put(`/EmpUser/edit-by-id/${id}`, data),
 };
 
-// Page Specific API Service Methods
+// EMPLOYEE API (ONLY EMPLOYEE, EXCL. USER)
+// ------------------------------------------------------------
+export const employeeAPI = {
+  /**
+   * Toggle suspension status of an employee
+   * @param id - The employee's ID
+   * @returns Promise containing the API response
+   */
+  toggleEmpSuspension: (id: string): Promise<AxiosResponse> =>
+    apiClient.post(`/Employee/suspension-toggle/${id}`),
+};
+// PAGE SPECIFIC API
+// ------------------------------------------------------------
 export const pageAPI = {
   /**
    * Fetches all details for an employee including equipment, leave balances, ratings, and performance reviews
@@ -123,7 +136,6 @@ export const pageAPI = {
   getAdminEmpManagement: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-emp-management"),
 };
 
-// ------------------------------------------------------------
-
+// ############################################################
 // Export the configured axios instance for direct use if needed
 export default apiClient;
