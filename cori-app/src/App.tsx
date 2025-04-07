@@ -159,6 +159,7 @@ const App: React.FC = () => {
             labelFontSize: 12,
             labelColor: "#71717a", // zinc-500
             verticalLabelPadding: 2,
+            fontSize: 12,
           },
           Input: {
             borderRadius: 8,
