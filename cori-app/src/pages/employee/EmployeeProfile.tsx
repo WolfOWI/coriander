@@ -138,9 +138,9 @@ const EmployeeProfile: React.FC = () => {
   return (
     <>
       {contextHolder}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto m-4">
         {/* Top buttons */}
-        <div className="flex justify-end items-center ">
+        <div className="flex justify-end items-center">
           <div className="flex gap-2 z-10">
             <CoriBtn secondary style="black" onClick={() => setShowEditDetailsModal(true)}>
               <EditIcon />

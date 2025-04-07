@@ -12,7 +12,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCartRounded";
 
 function ReferencePage() {
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto m-4">
       <h1 className="text-3xl font-bold mb-6 text-zinc-900">Custom Components Reference</h1>
 
       {/* CoriBtns */}

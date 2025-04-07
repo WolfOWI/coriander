@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 const Navigation: React.FC = () => {
   return (
-    <div className="flex-grow-0 mr-8">
+    <div className="w-[296px] flex-shrink-0">
       {/* Sidebar */}
-      <div className="bg-zinc-900 text-white w-[260px] rounded-3xl h-full">
-        <div className="p-10">
+      <div className="fixed top-4 left-4 bg-zinc-900 text-white w-[260px] rounded-3xl h-[calc(100vh-32px)] overflow-hidden">
+        <div className="p-10 h-full overflow-y-auto">
           <h1 className="text-2xl font-bold mb-4">Coriander</h1>
 
           {/* Auth Links */}

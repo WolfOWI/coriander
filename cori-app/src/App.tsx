@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
@@ -22,6 +22,47 @@ import AdminCreateEmployee from "./pages/admin/AdminCreateEmployee";
 import AdminIndividualEmployee from "./pages/admin/AdminIndividualEmployee";
 import AdminLeaveRequests from "./pages/admin/AdminLeaveRequests";
 import ReferencePage from "./pages/Reference";
+
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const isAuthPage =
+    location.pathname === "/" ||
+    location.pathname === "/employee/signup" ||
+    location.pathname === "/admin/signup";
+
+  return (
+    <div className="flex h-screen mr-4">
+      {!isAuthPage && <Navigation />}
+      <main className="flex-grow-1">
+        <Routes>
+          {/* Auth Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/employee/signup" element={<EmployeeSignUp />} />
+          <Route path="/admin/signup" element={<AdminSignUp />} />
+
+          {/* Employee Routes */}
+          <Route path="/employee/home" element={<EmployeeHome />} />
+          <Route path="/employee/leave-overview" element={<EmployeeLeaveOverview />} />
+          <Route path="/employee/profile" element={<EmployeeProfile />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
+          <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
+          <Route
+            path="/admin/individual-employee/:employeeId?"
+            element={<AdminIndividualEmployee />}
+          />
+          <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
+
+          {/* Temporary Reference Route */}
+          {/* TODO: Delete this later */}
+          <Route path="/reference" element={<ReferencePage />} />
+        </Routes>
+      </main>
+    </div>
+  );
+};
 
 const App: React.FC = () => {
   return (
@@ -135,36 +176,7 @@ const App: React.FC = () => {
       }}
     >
       <Router>
-        <div className="flex m-4 min-h-[calc(98vh-32px)]">
-          <Navigation />
-          <main className="flex-grow-1 my-4">
-            <Routes>
-              {/* Auth Routes */}
-              <Route path="/" element={<Login />} />
-              <Route path="/employee/signup" element={<EmployeeSignUp />} />
-              <Route path="/admin/signup" element={<AdminSignUp />} />
-
-              {/* Employee Routes */}
-              <Route path="/employee/home" element={<EmployeeHome />} />
-              <Route path="/employee/leave-overview" element={<EmployeeLeaveOverview />} />
-              <Route path="/employee/profile" element={<EmployeeProfile />} />
-
-              {/* Admin Routes */}
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
-              <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
-              <Route
-                path="/admin/individual-employee/:employeeId?"
-                element={<AdminIndividualEmployee />}
-              />
-              <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
-
-              {/* Temporary Reference Route */}
-              {/* TODO: Delete this later */}
-              <Route path="/reference" element={<ReferencePage />} />
-            </Routes>
-          </main>
-        </div>
+        <AppContent />
       </Router>
     </ConfigProvider>
   );

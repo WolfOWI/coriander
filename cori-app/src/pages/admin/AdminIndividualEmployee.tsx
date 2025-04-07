@@ -240,7 +240,7 @@ const AdminIndividualEmployee: React.FC = () => {
   return (
     <>
       {ContextHolder} {/* Message System */}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto m-4 pb-4">
         {/* Top Heading with buttons */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-4 items-center">
