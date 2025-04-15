@@ -46,7 +46,11 @@ import TransgenderIcon from "@mui/icons-material/Transgender";
 import GoogleIcon from "../../assets/icons/googleIcon.png";
 
 // Import Utils
-import { calculateNextPayDay, formatEmploymentDuration } from "../../utils/dateUtils";
+import {
+  calculateNextPayDay,
+  formatEmploymentDuration,
+  calculatePreviousPayDay,
+} from "../../utils/dateUtils";
 import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 
@@ -212,6 +216,75 @@ const AdminIndividualEmployee: React.FC = () => {
     } catch (error) {
       console.error("Error toggling employee suspension:", error);
       messageApi.error("Error updating employee suspension status");
+    }
+  };
+
+  // Update last paid date
+  const updateLastPaidDate = async (newDate: string) => {
+    try {
+      // There must be an employee ID
+      if (employeeId) {
+        await empUserAPI.updateEmpUserById(employeeId, {
+          lastPaidDate: newDate,
+        });
+        fetchEmployee(); // Refresh the employee data
+        messageApi.success("Last paid date updated");
+      } else {
+        // If no ID provided, redirect to employee management page
+        messageApi.error("Something went wrong - Employee ID not found");
+      }
+    } catch (error) {
+      messageApi.error("Error updating last paid date");
+    }
+  };
+
+  // Undo payment (shift last paid by -1 pay cycle)
+  const onUndoPayment = async () => {
+    // Check if empUser is defined
+    if (empUser) {
+      // Calculate the previous pay day
+      const calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.lastPaidDate);
+      // Format the previous pay day
+      const previousPayDay = dayjs(calcPrevPayday).format("YYYY-MM-DD");
+
+      // Update the last paid date
+      try {
+        // There must be an employee ID
+        if (employeeId) {
+          await empUserAPI.updateEmpUserById(employeeId, { lastPaidDate: previousPayDay });
+          fetchEmployee(); // Refresh the employee data
+          messageApi.success("Payment undone");
+        } else {
+          messageApi.error("Something went wrong - Employee ID not found");
+        }
+      } catch (error) {
+        messageApi.error("Error undoing payment");
+      }
+    }
+  };
+
+  // Pay employee (set last paid as next payday)
+  const onPayNow = async () => {
+    // Check if nextPayDay is defined
+    if (nextPayDay) {
+      // Format the next pay day
+      const formattedNextPayDay = dayjs(nextPayDay).format("YYYY-MM-DD");
+      // Update the last paid date
+      try {
+        // There must be an employee ID
+        if (employeeId) {
+          // Set the last paid date to the next payday
+          await empUserAPI.updateEmpUserById(employeeId, { lastPaidDate: formattedNextPayDay });
+          fetchEmployee(); // Refresh the employee data
+          messageApi.success("Payment updated");
+        } else {
+          messageApi.error("Something went wrong - Employee ID not found");
+        }
+      } catch (error) {
+        messageApi.error("Error updating payment");
+      }
+    } else {
+      messageApi.error("Something went wrong - Next pay day not found");
     }
   };
 
@@ -391,6 +464,7 @@ const AdminIndividualEmployee: React.FC = () => {
                         allowClear={false}
                         variant="borderless"
                         className="hover:cursor-pointer"
+                        onChange={(date) => updateLastPaidDate(date?.format("YYYY-MM-DD") || "")}
                       />
                     </div>
                   </div>
@@ -403,11 +477,11 @@ const AdminIndividualEmployee: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex justify-between w-full mt-4">
-                  <CoriBtn secondary style="black">
+                  <CoriBtn secondary style="black" onClick={onUndoPayment}>
                     <UndoIcon />
                     Undo Payment
                   </CoriBtn>
-                  <CoriBtn secondary style="black">
+                  <CoriBtn secondary style="black" onClick={onPayNow}>
                     Pay Now
                     <PayIcon />
                   </CoriBtn>

@@ -48,6 +48,26 @@ const calculateNextPayDay = (payCycle: PayCycle, lastPaidDate: string): string =
   }
 };
 
+// Calculate the previous pay day (for undo payment)
+const calculatePreviousPayDay = (payCycle: PayCycle, lastPaidDate: string): string => {
+  // Format the last paid date (just in case)
+  const lastPaid = dayjs(lastPaidDate);
+
+  if (payCycle === PayCycle.Monthly) {
+    return lastPaid.subtract(1, "month").format("DD MMM YYYY");
+  }
+
+  if (payCycle === PayCycle.BiWeekly) {
+    return lastPaid.subtract(2, "week").format("DD MMM YYYY");
+  }
+
+  if (payCycle === PayCycle.Weekly) {
+    return lastPaid.subtract(1, "week").format("DD MMM YYYY");
+  } else {
+    return "Invalid Pay Cycle";
+  }
+};
+
 // Formats a timestamp to a date string (e.g. "01 Apr 2025")
 const formatTimestampToDate = (timestamp: string): string => {
   // Parse the ISO timestamp directly
@@ -74,6 +94,7 @@ const isDateInPast = (date: string): boolean => {
 export {
   formatEmploymentDuration,
   calculateNextPayDay,
+  calculatePreviousPayDay,
   formatTimestampToDate,
   formatTimestampToTime,
   combineDateTimeToTimestamp,

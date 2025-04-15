@@ -101,7 +101,7 @@ export const empUserAPI = {
   /**
    * Edit an emp user by their ID
    * @param id - The employee's ID (must be a number)
-   * @param data - The data object to update the employee with
+   * @param data - The data object to update the employee with (can be partial)
    * @returns Promise containing the API response
    */
   updateEmpUserById: (id: string, data: object): Promise<AxiosResponse> =>
