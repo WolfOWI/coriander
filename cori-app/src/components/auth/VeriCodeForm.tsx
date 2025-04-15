@@ -1,10 +1,11 @@
 import { Form, Input, ConfigProvider } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CoriBtn from "../buttons/CoriBtn";
 import { Link } from "react-router-dom";
 
-function VeriCodeForm() {
+function VeriCodeForm({ showLoginScreen }: { showLoginScreen: () => void }) {
   const [form] = Form.useForm();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // RESEND BUTTON LOGIC
   // ----------------------------------------------------------------
@@ -13,24 +14,37 @@ function VeriCodeForm() {
 
   // Disable resend button for specified seconds
   const disableResendButtonForSeconds = (seconds: number) => {
+    // Clear any existing interval
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
     setIsResendDisabled(true);
     setResendDisabledTime(seconds);
 
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setResendDisabledTime((prevTime) => {
-        // If time is 1 or less, clear the timer and set the button to not disabled
         if (prevTime <= 1) {
-          clearInterval(timer);
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
           setIsResendDisabled(false);
-          return 0; // Reset the time to 0
+          return 0;
         }
-        return prevTime - 1; // Minus 1 second every second
+        return prevTime - 1;
       });
-    }, 1000); // Every second
-
-    // Clear the timer on page unmount
-    return () => clearInterval(timer);
+    }, 1000);
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
 
   // On page mount
   useEffect(() => {
@@ -82,11 +96,32 @@ function VeriCodeForm() {
           >
             {isResendDisabled ? `Resend Code (${resendDisabledTime}s)` : "Resend Code"}
           </CoriBtn>
+          {/* TODO: Delete this button later */}
+          {isResendDisabled && (
+            <>
+              <CoriBtn
+                secondary
+                type="submit"
+                style="red"
+                className="mt-2"
+                onClick={() => {
+                  setIsResendDisabled(false);
+                  setResendDisabledTime(0);
+                }}
+              >
+                Skip Wait
+              </CoriBtn>
+              <p className="mt-2 text-zinc-500">Delete this skip button later</p>
+            </>
+          )}
         </Form>
         <p className="mt-4 text-zinc-500">
           Have another account?{" "}
           <Link
             to="/"
+            onClick={() => {
+              showLoginScreen();
+            }}
             className="text-corigreen-500 hover:text-corigreen-300 transition-colors font-bold"
           >
             Log in

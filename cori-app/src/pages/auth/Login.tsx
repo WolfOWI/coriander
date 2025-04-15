@@ -1,21 +1,64 @@
-import { Modal, Button, Form, Input, Select, DatePicker, message, Tooltip } from "antd";
-import CoriBtn from "../../components/buttons/CoriBtn";
-import { GoogleOutlined } from "@ant-design/icons";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+
+// Icons
+import { GoogleOutlined } from "@ant-design/icons";
+
+// Components
 import VeriCodeForm from "../../components/auth/VeriCodeForm";
+import UnlinkedMessage from "../../components/auth/UnlinkedMessage";
+import CoriBtn from "../../components/buttons/CoriBtn";
+import { Form, Input } from "antd";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+
+  const [showOTPForm, setShowOTPForm] = useState(false);
+  const [showUnlinkedMessage, setShowUnlinkedMessage] = useState(false);
 
   return (
     <div className="relative">
       {/* TODO: Remove this later */}
       <div className="absolute top-0 right-0 flex flex-col gap-2">
         <CoriBtn type="submit" style="black" onClick={() => navigate("/employee/home")}>
-          Skip Login
+          Go to Home
         </CoriBtn>
         <CoriBtn secondary type="submit" style="black" onClick={() => navigate("/employee/signup")}>
           Next Auth Page
+        </CoriBtn>
+        <CoriBtn
+          secondary
+          type="submit"
+          style="black"
+          className="mt-4"
+          onClick={() => {
+            setShowOTPForm(false);
+            setShowUnlinkedMessage(false);
+          }}
+        >
+          Show Login
+        </CoriBtn>
+        <CoriBtn
+          secondary
+          type="submit"
+          style="black"
+          onClick={() => {
+            setShowOTPForm(true);
+            setShowUnlinkedMessage(false);
+          }}
+        >
+          Show OTP Form
+        </CoriBtn>
+        <CoriBtn
+          secondary
+          type="submit"
+          style="black"
+          onClick={() => {
+            setShowOTPForm(false);
+            setShowUnlinkedMessage(true);
+          }}
+        >
+          Show Unlinked
         </CoriBtn>
       </div>
       <div className="flex w-full h-screen">
@@ -27,7 +70,8 @@ const Login: React.FC = () => {
           />
         </div>
         <div className="w-1/2 flex items-center justify-center mb-16">
-          {false && (
+          {/* Standard Login Screen Section */}
+          {!showOTPForm && !showUnlinkedMessage && (
             <div className="flex flex-col items-center w-4/12">
               <h1 className="text-3xl font-bold mb-4 text-corigreen-500 ">
                 Welcome <span className="text-zinc-900 font-light">Back</span>
@@ -72,7 +116,10 @@ const Login: React.FC = () => {
               </p>
             </div>
           )}
-          <VeriCodeForm />
+          {showOTPForm && <VeriCodeForm showLoginScreen={() => setShowOTPForm(false)} />}
+          {showUnlinkedMessage && (
+            <UnlinkedMessage onLogOut={() => setShowUnlinkedMessage(false)} />
+          )}
         </div>
       </div>
     </div>
