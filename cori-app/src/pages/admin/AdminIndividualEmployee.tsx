@@ -20,6 +20,7 @@ import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
+import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
@@ -500,10 +501,13 @@ const AdminIndividualEmployee: React.FC = () => {
                   </div>
                   <div className="flex flex-col w-1/2 items-center">
                     <p className="text-zinc-500 text-sm mb-1">Next Pay Day</p>
-                    <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                      <p className="text-zinc-900">{nextPayDay}</p>
-                      <CoriBadge text={`${dayjs(nextPayDay).fromNow()}`} size="x-small" />
-                    </div>
+                    {nextPayDay && (
+                      <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
+                        <p className="text-zinc-900">{nextPayDay}</p>
+                        {/* <CoriBadge text={`${dayjs(nextPayDay).fromNow()}`} size="x-small" /> */}
+                        <TimeTodayBadge date={nextPayDay} />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex justify-between w-full mt-4">
