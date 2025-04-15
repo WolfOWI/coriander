@@ -247,6 +247,15 @@ const AdminIndividualEmployee: React.FC = () => {
       // Format the previous pay day
       const previousPayDay = dayjs(calcPrevPayday).format("YYYY-MM-DD");
 
+      // Check if the previous pay day is before the employee's employment date
+      if (dayjs(previousPayDay).isBefore(dayjs(empUser.employDate))) {
+        messageApi.error({
+          content: `You can't set the last paid date to before ${empUser.fullName} was employed.`,
+          duration: 8,
+        });
+        return;
+      }
+
       // Update the last paid date
       try {
         // There must be an employee ID
@@ -263,28 +272,32 @@ const AdminIndividualEmployee: React.FC = () => {
     }
   };
 
-  // Pay employee (set last paid as next payday)
+  // Pay employee (set last paid as today)
   const onPayNow = async () => {
-    // Check if nextPayDay is defined
-    if (nextPayDay) {
-      // Format the next pay day
-      const formattedNextPayDay = dayjs(nextPayDay).format("YYYY-MM-DD");
-      // Update the last paid date
-      try {
-        // There must be an employee ID
-        if (employeeId) {
-          // Set the last paid date to the next payday
-          await empUserAPI.updateEmpUserById(employeeId, { lastPaidDate: formattedNextPayDay });
-          fetchEmployee(); // Refresh the employee data
-          messageApi.success("Payment updated");
-        } else {
-          messageApi.error("Something went wrong - Employee ID not found");
-        }
-      } catch (error) {
-        messageApi.error("Error updating payment");
+    // // Check if the next pay day is in the future
+    // if (dayjs(formattedNextPayDay).isAfter(dayjs())) {
+    //   messageApi.error({
+    //     content: "You can't set the last paid date to a date in the future",
+    //     duration: 8,
+    //   });
+    //   return;
+    // }
+
+    // Update the last paid date
+    try {
+      // There must be an employee ID
+      if (employeeId) {
+        // Set the last paid date to the next payday
+        await empUserAPI.updateEmpUserById(employeeId, {
+          lastPaidDate: dayjs().format("YYYY-MM-DD"),
+        });
+        fetchEmployee(); // Refresh the employee data
+        messageApi.success("Payment updated");
+      } else {
+        messageApi.error("Something went wrong - Employee ID not found");
       }
-    } else {
-      messageApi.error("Something went wrong - Next pay day not found");
+    } catch (error) {
+      messageApi.error("Error updating payment");
     }
   };
 
@@ -479,6 +492,9 @@ const AdminIndividualEmployee: React.FC = () => {
                         variant="borderless"
                         className="hover:cursor-pointer"
                         onChange={(date) => updateLastPaidDate(date?.format("YYYY-MM-DD") || "")}
+                        // Only allow dates after the employee's employment date and before today
+                        minDate={dayjs(empUser.employDate)}
+                        maxDate={dayjs()}
                       />
                     </div>
                   </div>
