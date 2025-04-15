@@ -119,10 +119,17 @@ export const employeeAPI = {
    */
   toggleEmpSuspension: (id: string): Promise<AxiosResponse> =>
     apiClient.post(`/Employee/suspension-toggle/${id}`),
+
+  /**
+   * Delete an employee by their ID
+   * @param id - The employee's ID
+   * @returns Promise containing the API response
+   */
+  terminateEmpById: (id: string): Promise<AxiosResponse> => apiClient.delete(`/Employee/${id}`),
 };
 // ------------------------------------------------------------
 
-// PAGE SPECIFIC API
+// PAGE SPECIFIC GET DATA API
 // ------------------------------------------------------------
 export const pageAPI = {
   /**
