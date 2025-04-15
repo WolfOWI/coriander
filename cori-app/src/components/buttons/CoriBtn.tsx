@@ -14,6 +14,7 @@ interface PrimaryBtnProps {
   style?: "default" | "black" | "red";
   type?: "button" | "submit";
   iconOnly?: boolean;
+  disabled?: boolean;
 }
 
 // Add props using destructuring
@@ -26,6 +27,7 @@ const CoriBtn = ({
   style,
   type,
   iconOnly,
+  disabled,
 }: PrimaryBtnProps) => {
   // Default styles
   let btnStyles = "";
@@ -79,6 +81,7 @@ const CoriBtn = ({
       variant={btnVariant}
       onClick={onClick}
       type={type}
+      disabled={disabled}
       className={`${btnStyles} text-[14px] font-semibold flex items-center justify-center h-10 px-3 gap-2 rounded-xl cori-btn ${className}
       ${iconOnly ? "w-10" : ""}`}
     >
