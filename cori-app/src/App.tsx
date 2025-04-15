@@ -122,6 +122,7 @@ const App: React.FC = () => {
           paddingXS: 8,
           paddingXXS: 4,
         },
+        // Components
         components: {
           Button: {
             borderRadius: 8,

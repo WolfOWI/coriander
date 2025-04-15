@@ -108,7 +108,7 @@ const AdminSignUp: React.FC = () => {
               Already have an account?{" "}
               <Link
                 to="/"
-                className="text-corigreen-600 hover:text-corigreen-400 transition-colors"
+                className="text-corigreen-500 hover:text-corigreen-300 transition-colors font-bold"
               >
                 Log in
               </Link>
