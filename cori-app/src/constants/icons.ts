@@ -20,6 +20,8 @@ import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import BadgeIcon from "@mui/icons-material/Badge";
 import GoogleIcon from "@mui/icons-material/Google";
+import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
+import ConstructionIcon from "@mui/icons-material/Construction";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -44,4 +46,6 @@ export const Icons = {
   Schedule: ScheduleIcon,
   Badge: BadgeIcon,
   Google: GoogleIcon,
+  DirectionsWalk: DirectionsWalkIcon,
+  Construction: ConstructionIcon,
 };

@@ -413,7 +413,10 @@ const AdminEmployeeManagement: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto m-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold text-zinc-900">Employee Management</h1>
+        <div className="flex items-center gap-2">
+          <Icons.DirectionsWalk fontSize="large" className="text-zinc-900" />
+          <h1 className="text-3xl font-bold text-zinc-900">Employees</h1>
+        </div>
         <CoriBtn style="black" onClick={() => navigate("/admin/create-employee")}>
           New
           <Icons.Add />
