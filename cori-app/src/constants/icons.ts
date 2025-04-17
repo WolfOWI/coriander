@@ -23,7 +23,8 @@ import GoogleIcon from "@mui/icons-material/Google";
 import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import ErrorIcon from "@mui/icons-material/Error";
-
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import CheckIcon from "@mui/icons-material/Check";
 export const Icons = {
   ArrowBack: ArrowBackIcon,
   Work: WorkIcon,
@@ -50,4 +51,6 @@ export const Icons = {
   DirectionsWalk: DirectionsWalkIcon,
   Construction: ConstructionIcon,
   Error: ErrorIcon,
+  RadioButtonUnchecked: RadioButtonUncheckedIcon,
+  Check: CheckIcon,
 };

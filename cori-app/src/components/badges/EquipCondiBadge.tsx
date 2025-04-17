@@ -4,9 +4,10 @@ import CoriBadge from "./CoriBadge";
 
 interface EquipCondiBadgeProps {
   condition: EquipmentCondition;
+  className?: string;
 }
 
-function EquipCondiBadge({ condition }: EquipCondiBadgeProps) {
+function EquipCondiBadge({ condition, className }: EquipCondiBadgeProps) {
   let color: string;
   let text: string;
 
@@ -38,7 +39,7 @@ function EquipCondiBadge({ condition }: EquipCondiBadgeProps) {
       text={text}
       color={color as "gray" | "green" | "blue" | "white" | "orange"}
       size="small"
-      className="w-fit"
+      className={`w-fit ${className}`}
     />
   );
 }
