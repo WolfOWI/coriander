@@ -8,11 +8,12 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 
 // Import Modals
 import CreateUnlinkedEquipModal from "../../components/modals/CreateUnlinkedEquipModal";
+import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 
 const AdminEquipmentManagement: React.FC = () => {
   // Modal States
   const [showCreateUnlinkedEquipModal, setShowCreateUnlinkedEquipModal] = useState(false);
-
+  const [showEditEquipDetailsModal, setShowEditEquipDetailsModal] = useState(false);
   return (
     <>
       <div className="max-w-7xl mx-auto m-4">
@@ -21,6 +22,10 @@ const AdminEquipmentManagement: React.FC = () => {
             <Icons.Construction fontSize="large" className="text-zinc-900" />
             <h1 className="text-3xl font-bold text-zinc-900">Equipment</h1>
           </div>
+          {/* TODO Delete this later */}
+          <CoriBtn secondary style="black" onClick={() => setShowEditEquipDetailsModal(true)}>
+            Edit Modal (Delete Later)
+          </CoriBtn>
           <CoriBtn style="black" onClick={() => setShowCreateUnlinkedEquipModal(true)}>
             Create
             <Icons.Add />
@@ -30,6 +35,10 @@ const AdminEquipmentManagement: React.FC = () => {
       <CreateUnlinkedEquipModal
         showModal={showCreateUnlinkedEquipModal}
         setShowModal={setShowCreateUnlinkedEquipModal}
+      />
+      <EditEquipDetailsModal
+        showModal={showEditEquipDetailsModal}
+        setShowModal={setShowEditEquipDetailsModal}
       />
     </>
   );
