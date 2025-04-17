@@ -25,7 +25,7 @@ import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 import CreateAssignedEquipModal from "../../components/modals/CreateAssignedEquipModal";
-import AdminManageEquipItemModal from "../../components/modals/AdminManageEquipItemModal";
+import ManageAssignedItemModal from "../../components/modals/ManageAssignedItemModal";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
@@ -631,7 +631,7 @@ const AdminIndividualEmployee: React.FC = () => {
         />
 
         {/* Manage Equipment Modal */}
-        <AdminManageEquipItemModal
+        <ManageAssignedItemModal
           showModal={showManageEquipmentModal}
           setShowModal={setShowManageEquipmentModal}
         />

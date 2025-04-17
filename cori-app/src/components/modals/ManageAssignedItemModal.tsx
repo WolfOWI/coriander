@@ -1,18 +1,18 @@
 import React from "react";
 import { Modal, Button, Form, Input, Select, DatePicker } from "antd";
 
-interface AdminManageEquipItemModalProps {
+interface ManageAssignedItemModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
 }
 
-function AdminManageEquipItemModal({ showModal, setShowModal }: AdminManageEquipItemModalProps) {
+function ManageAssignedItemModal({ showModal, setShowModal }: ManageAssignedItemModalProps) {
   return (
     <Modal
       title={<h2 className="text-zinc-900 font-bold text-3xl">Manage Equipment Item</h2>}
       open={showModal}
       onCancel={() => setShowModal(false)}
-      width={550}
+      width={600}
       styles={{
         header: {
           paddingLeft: 40,
@@ -77,4 +77,4 @@ function AdminManageEquipItemModal({ showModal, setShowModal }: AdminManageEquip
   );
 }
 
-export default AdminManageEquipItemModal;
+export default ManageAssignedItemModal;
