@@ -83,7 +83,7 @@ function AssignEmpToEquipsModal({ showModal, setShowModal }: AssignEmpToEquipsMo
 
   return (
     <Modal
-      title={<h2 className="text-zinc-900 font-bold text-3xl">Assign Equipment</h2>}
+      title={<h2 className="text-zinc-900 font-bold text-3xl select-none">Assign Equipment</h2>}
       open={showModal}
       onCancel={() => setShowModal(false)}
       width={600}
