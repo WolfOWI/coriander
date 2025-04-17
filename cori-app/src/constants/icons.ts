@@ -22,6 +22,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import GoogleIcon from "@mui/icons-material/Google";
 import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
 import ConstructionIcon from "@mui/icons-material/Construction";
+import ErrorIcon from "@mui/icons-material/Error";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -48,4 +49,5 @@ export const Icons = {
   Google: GoogleIcon,
   DirectionsWalk: DirectionsWalkIcon,
   Construction: ConstructionIcon,
+  Error: ErrorIcon,
 };
