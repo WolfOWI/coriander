@@ -1,35 +1,239 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import type { GetProp, TableProps } from "antd";
+import { Table, Avatar, Tooltip, Button, Dropdown } from "antd";
+import type { SorterResult, FilterValue } from "antd/es/table/interface";
+import { equipmentAPI } from "../../services/api.service";
+import { useNavigate } from "react-router-dom";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
 
 // Import Components
 import CoriBtn from "../../components/buttons/CoriBtn";
+import EquipCondiBadge from "../../components/badges/EquipCondiBadge";
+import EquipmentTypeAvatar from "../../components/avatars/EquipmentTypeAvatar";
 
 // Import Modals
 import CreateUnlinkedEquipModal from "../../components/modals/CreateUnlinkedEquipModal";
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import AssignSingleEquipToEmpModal from "../../components/modals/AssignSingleEquipToEmpModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
+import dayjs from "dayjs";
 
-// TODO: Temporary data here
-const equipment = [
-  {
-    equipmentId: 1,
-    equipmentName: "MacBook Pro 13 inch 2021",
-    equipmentCategoryId: 1,
-    equipmentCategoryName: "Laptop",
-    assignedDate: "2021-01-01",
-    condition: 2,
-  },
-];
+// Types
+type ColumnsType<T extends object = object> = TableProps<T>["columns"];
+type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
+
+interface EquipmentData {
+  equipmentId: number;
+  equipmentName: string;
+  equipmentCatId: number;
+  equipmentCategoryName: string;
+  condition: number;
+  employeeId: number;
+  fullName: string;
+  numberOfItems: number;
+  assignedDate: string;
+}
+
+interface TableParams {
+  pagination?: TablePaginationConfig;
+  sortField?: string;
+  sortOrder?: "ascend" | "descend" | null;
+  filters?: Parameters<GetProp<TableProps, "onChange">>[1];
+}
 
 const AdminEquipmentManagement: React.FC = () => {
+  const navigate = useNavigate();
+
+  // States
+  const [allData, setAllData] = useState<EquipmentData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [tableParams, setTableParams] = useState<TableParams>({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
   // Modal States
   const [showCreateUnlinkedEquipModal, setShowCreateUnlinkedEquipModal] = useState(false);
   const [showEditEquipDetailsModal, setShowEditEquipDetailsModal] = useState(false);
   const [showAssignSingleEquipToEmpModal, setShowAssignSingleEquipToEmpModal] = useState(false);
   const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
+  const [selectedEquipment, setSelectedEquipment] = useState<EquipmentData | null>(null);
+
+  // Fetch equipment data
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await equipmentAPI.getEmpEquipItems();
+      const processedData = response.data.$values.map((item: any) => ({
+        equipmentId: item.equipment.equipmentId,
+        equipmentName: item.equipment.equipmentName,
+        equipmentCatId: item.equipment.equipmentCatId,
+        equipmentCategoryName: item.equipment.equipmentCategoryName,
+        condition: item.equipment.condition,
+        employeeId: item.equipment.employeeId,
+        fullName: item.fullName,
+        numberOfItems: item.numberOfItems,
+        assignedDate: item.equipment.assignedDate,
+      }));
+      setAllData(processedData);
+    } catch (error) {
+      console.error("Error fetching equipment:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleTableChange = useCallback(
+    (
+      pagination: TablePaginationConfig,
+      filters: Record<string, FilterValue | null>,
+      sorter: SorterResult<EquipmentData> | SorterResult<EquipmentData>[]
+    ) => {
+      setTableParams({
+        pagination,
+        filters,
+        sortOrder: Array.isArray(sorter) ? sorter[0]?.order : sorter.order,
+        sortField: Array.isArray(sorter) ? (sorter[0]?.field as string) : (sorter.field as string),
+      });
+    },
+    []
+  );
+
+  const processedData = useMemo(() => {
+    const data = [...allData];
+    if (tableParams.sortField && tableParams.sortOrder) {
+      data.sort((a, b) => {
+        const aValue = a[tableParams.sortField as keyof EquipmentData] ?? "";
+        const bValue = b[tableParams.sortField as keyof EquipmentData] ?? "";
+        if (tableParams.sortOrder === "ascend") {
+          return aValue > bValue ? 1 : -1;
+        } else {
+          return aValue < bValue ? 1 : -1;
+        }
+      });
+    }
+    const { current = 1, pageSize = 10 } = tableParams.pagination || {};
+    const start = (current - 1) * pageSize;
+    const end = start + pageSize;
+    return data.slice(start, end);
+  }, [allData, tableParams]);
+
+  const handleActionClick = (record: EquipmentData, action: string) => {
+    setSelectedEquipment(record);
+    switch (action) {
+      case "edit":
+        setShowEditEquipDetailsModal(true);
+        break;
+      case "assign":
+        setShowAssignSingleEquipToEmpModal(true);
+        break;
+      case "delete":
+        setShowDeleteEquipmentModal(true);
+        break;
+    }
+  };
+
+  const columns = useMemo<ColumnsType<EquipmentData>>(
+    () => [
+      {
+        title: "Equipment",
+        dataIndex: "equipmentName",
+        sorter: true,
+        width: "30%",
+        render: (_, record) => (
+          <div className="flex items-center gap-2">
+            <EquipmentTypeAvatar deviceType={record.equipmentCatId} />
+            <div className="flex flex-col">
+              <p className="font-medium">{record.equipmentName}</p>
+              <p className="text-sm text-zinc-500 truncate">{record.equipmentCategoryName}</p>
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: "Condition",
+        dataIndex: "condition",
+        sorter: true,
+        render: (_, record) => <EquipCondiBadge condition={record.condition} />,
+      },
+      {
+        title: "Assigned To",
+        dataIndex: "fullName",
+        sorter: true,
+        render: (_, record) => (
+          <div className="flex items-center gap-2">
+            <Avatar
+              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${record.fullName}`}
+              className="bg-warmstone-600 h-10 w-10 rounded-full object-cover border-1 border-warmstone-400"
+            />
+            <div className="flex flex-col">
+              <p className="font-medium">{record.fullName}</p>
+              <p className="text-sm text-zinc-500">{record.numberOfItems} items</p>
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: "Assigned Date",
+        dataIndex: "assignedDate",
+        sorter: true,
+        render: (assignedDate) => (
+          <div className="flex flex-col">
+            <p className="text-zinc-900">{dayjs(assignedDate).format("DD MMM YYYY")}</p>
+            <p className="text-zinc-500 text-[12px]">{dayjs(assignedDate).fromNow(true)}</p>
+          </div>
+        ),
+      },
+      {
+        render: (_, record) => (
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: "edit",
+                  label: "Edit Item Info",
+                  icon: <Icons.Edit />,
+                  onClick: () => handleActionClick(record, "edit"),
+                },
+                {
+                  key: "assign",
+                  label: "Employee Assignment",
+                  icon: <Icons.PersonPin />,
+                  onClick: () => handleActionClick(record, "assign"),
+                },
+                {
+                  key: "delete",
+                  label: "Delete Item",
+                  icon: <Icons.Delete />,
+                  danger: true,
+                  onClick: () => handleActionClick(record, "delete"),
+                },
+              ],
+            }}
+            placement="bottomRight"
+            trigger={["click"]}
+            dropdownRender={(menu) => (
+              <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
+            )}
+          >
+            <Button className="p-0 border-none bg-transparent">
+              <Icons.MoreVertRounded className="text-zinc-500" />
+            </Button>
+          </Dropdown>
+        ),
+      },
+    ],
+    []
+  );
+
   return (
     <>
       <div className="max-w-7xl mx-auto m-4">
@@ -38,22 +242,25 @@ const AdminEquipmentManagement: React.FC = () => {
             <Icons.Construction fontSize="large" className="text-zinc-900" />
             <h1 className="text-3xl font-bold text-zinc-900">Equipment</h1>
           </div>
-          {/* TODO Delete this later */}
-          <CoriBtn secondary style="black" onClick={() => setShowEditEquipDetailsModal(true)}>
-            Edit Modal
-          </CoriBtn>
-          <CoriBtn secondary style="black" onClick={() => setShowAssignSingleEquipToEmpModal(true)}>
-            Assign2Emp Modal
-          </CoriBtn>
-          <CoriBtn secondary style="black" onClick={() => setShowDeleteEquipmentModal(true)}>
-            Delete Equip Modal
-          </CoriBtn>
           <CoriBtn style="black" onClick={() => setShowCreateUnlinkedEquipModal(true)}>
             Create
             <Icons.Add />
           </CoriBtn>
         </div>
+        <Table<EquipmentData>
+          columns={columns}
+          rowKey={(record) => record.equipmentId}
+          dataSource={processedData}
+          pagination={{
+            ...tableParams.pagination,
+            total: allData.length,
+          }}
+          loading={loading}
+          onChange={handleTableChange}
+        />
       </div>
+
+      {/* Modals */}
       <CreateUnlinkedEquipModal
         showModal={showCreateUnlinkedEquipModal}
         setShowModal={setShowCreateUnlinkedEquipModal}
@@ -61,6 +268,7 @@ const AdminEquipmentManagement: React.FC = () => {
       <EditEquipDetailsModal
         showModal={showEditEquipDetailsModal}
         setShowModal={setShowEditEquipDetailsModal}
+        equipment={selectedEquipment}
       />
       <AssignSingleEquipToEmpModal
         showModal={showAssignSingleEquipToEmpModal}
@@ -69,9 +277,10 @@ const AdminEquipmentManagement: React.FC = () => {
       <DeleteEquipmentModal
         showModal={showDeleteEquipmentModal}
         setShowModal={setShowDeleteEquipmentModal}
-        equipment={equipment[0]}
+        equipment={selectedEquipment}
         onDelete={() => {
           console.log("Delete");
+          fetchData();
         }}
       />
     </>

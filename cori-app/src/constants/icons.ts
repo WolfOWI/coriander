@@ -25,6 +25,16 @@ import ConstructionIcon from "@mui/icons-material/Construction";
 import ErrorIcon from "@mui/icons-material/Error";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import CheckIcon from "@mui/icons-material/Check";
+import TabletIcon from "@mui/icons-material/TabletAndroid";
+import LaptopIcon from "@mui/icons-material/Laptop";
+import MonitorIcon from "@mui/icons-material/Monitor";
+import HeadsetIcon from "@mui/icons-material/Headset";
+import KeyboardIcon from "@mui/icons-material/Keyboard";
+import DeviceUnknownIcon from "@mui/icons-material/DeviceUnknown";
+import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PersonPinIcon from "@mui/icons-material/PersonPin";
+
 export const Icons = {
   ArrowBack: ArrowBackIcon,
   Work: WorkIcon,
@@ -53,4 +63,13 @@ export const Icons = {
   Error: ErrorIcon,
   RadioButtonUnchecked: RadioButtonUncheckedIcon,
   Check: CheckIcon,
+  Tablet: TabletIcon,
+  Laptop: LaptopIcon,
+  Monitor: MonitorIcon,
+  Headset: HeadsetIcon,
+  Keyboard: KeyboardIcon,
+  DeviceUnknown: DeviceUnknownIcon,
+  MoreVertRounded: MoreVertRoundedIcon,
+  Delete: DeleteIcon,
+  PersonPin: PersonPinIcon,
 };

@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Button } from "antd";
 import { Icons } from "../../constants/icons";
+
 interface DeleteEquipmentModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
@@ -8,9 +9,8 @@ interface DeleteEquipmentModalProps {
     equipmentId: number;
     equipmentName: string;
     equipmentCategoryName: string;
-    assignedDate: string;
     condition: number;
-  };
+  } | null;
   onDelete: () => void;
 }
 
@@ -20,9 +20,11 @@ function DeleteEquipmentModal({
   equipment,
   onDelete,
 }: DeleteEquipmentModalProps) {
+  if (!equipment) return null;
+
   return (
     <Modal
-      title={<h2 className="text-red-600 font-bold text-3xl text-center">Delete Item?</h2>}
+      title={<h2 className="text-zinc-900 font-bold text-3xl">Delete Equipment Item</h2>}
       open={showModal}
       onCancel={() => setShowModal(false)}
       width={600}
@@ -47,16 +49,16 @@ function DeleteEquipmentModal({
       }}
       footer={[
         <div className="flex gap-2 w-full" key="footer">
-          <Button className="w-full" onClick={() => setShowModal(false)}>
+          <Button key="cancel" onClick={() => setShowModal(false)} className="w-full">
             Cancel
           </Button>
-          <Button className="w-full" type="primary" danger onClick={onDelete}>
-            Delete
+          <Button key="delete" type="primary" danger onClick={onDelete} className="w-full">
+            Delete Item
           </Button>
         </div>,
       ]}
     >
-      <div className="flex flex-col gap-2 text-center">
+      <div className="flex flex-col gap-2">
         <p className="text-zinc-500 text-sm">This cannot be undone.</p>
         <div className="flex items-center gap-3 px-4 py-3 bg-warmstone-300 rounded-xl my-2">
           <div className="bg-warmstone-50 rounded-full p-2">

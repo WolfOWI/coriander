@@ -154,6 +154,16 @@ export const pageAPI = {
     apiClient.get(`/Page/employee-profile/${id}`),
 };
 
+// EQUIPMENT API
+// ------------------------------------------------------------
+export const equipmentAPI = {
+  /**
+   * Fetches all equipment items assigned to employees
+   * @returns Promise containing the API response
+   */
+  getEmpEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment/emp-equip-items"),
+};
+
 // ------------------------------------------------------------
 
 // ############################################################

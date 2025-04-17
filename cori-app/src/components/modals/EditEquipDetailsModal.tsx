@@ -1,12 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Button, Form, Input, Select } from "antd";
 
 interface EditEquipDetailsModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
+  equipment: {
+    equipmentId: number;
+    equipmentName: string;
+    equipmentCategoryName: string;
+    condition: number;
+  } | null;
 }
 
-function EditEquipDetailsModal({ showModal, setShowModal }: EditEquipDetailsModalProps) {
+function EditEquipDetailsModal({ showModal, setShowModal, equipment }: EditEquipDetailsModalProps) {
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (equipment) {
+      form.setFieldsValue({
+        equipmentName: equipment.equipmentName,
+        deviceType: equipment.equipmentCategoryName.toLowerCase(),
+        condition: equipment.condition.toString(),
+      });
+    }
+  }, [equipment, form]);
+
   return (
     <Modal
       title={<h2 className="text-zinc-900 font-bold text-3xl">Edit Equipment Item</h2>}
@@ -38,7 +56,7 @@ function EditEquipDetailsModal({ showModal, setShowModal }: EditEquipDetailsModa
         </Button>,
       ]}
     >
-      <Form layout="vertical" variant="filled" className="flex flex-col">
+      <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
         <Form.Item name="equipmentName" label="Equipment Name">
           <Input type="text" />
         </Form.Item>
