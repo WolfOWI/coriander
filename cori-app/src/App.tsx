@@ -20,6 +20,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminEmployeeManagement from "./pages/admin/AdminEmployeeManagement";
 import AdminCreateEmployee from "./pages/admin/AdminCreateEmployee";
 import AdminIndividualEmployee from "./pages/admin/AdminIndividualEmployee";
+import AdminEquipmentManagement from "./pages/admin/AdminEquipmentManagement";
 import AdminLeaveRequests from "./pages/admin/AdminLeaveRequests";
 import ReferencePage from "./pages/Reference";
 
@@ -48,6 +49,7 @@ const AppContent: React.FC = () => {
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
+          <Route path="/admin/equipment" element={<AdminEquipmentManagement />} />
           <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
           <Route
             path="/admin/individual-employee/:employeeId?"
