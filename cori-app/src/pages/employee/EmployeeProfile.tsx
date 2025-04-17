@@ -10,22 +10,8 @@ import EmpEditEmpDetailsModal from "../../components/modals/EmpEditEmpDetailsMod
 // 3rd Party Components
 import { Avatar, message } from "antd";
 
-// Import Google Icons
-import EditIcon from "@mui/icons-material/Edit";
-import WorkIcon from "@mui/icons-material/Work";
-import CakeIcon from "@mui/icons-material/Cake";
-import PhoneIcon from "@mui/icons-material/Phone";
-import EmailIcon from "@mui/icons-material/Email";
-import AssistantPhotoIcon from "@mui/icons-material/AssistantPhoto";
-import FemaleIcon from "@mui/icons-material/Female";
-import MaleIcon from "@mui/icons-material/Male";
-import TransgenderIcon from "@mui/icons-material/Transgender";
-import StarIcon from "@mui/icons-material/StarRounded";
-import AddIcon from "@mui/icons-material/Add";
-import CorporateFareIcon from "@mui/icons-material/CorporateFare";
-import ScheduleIcon from "@mui/icons-material/Schedule";
-import BadgeIcon from "@mui/icons-material/Badge";
-import GoogleIcon from "@mui/icons-material/Google";
+// Import Icons
+import { Icons } from "../../constants/icons";
 
 // Functionality
 import { empUserAPI, pageAPI } from "../../services/api.service";
@@ -143,7 +129,7 @@ const EmployeeProfile: React.FC = () => {
         <div className="flex justify-end items-center">
           <div className="flex gap-2 z-10">
             <CoriBtn secondary style="black" onClick={() => setShowEditDetailsModal(true)}>
-              <EditIcon />
+              <Icons.Edit />
               Edit Details
             </CoriBtn>
             <CoriBtn style="black">Export Payroll Info</CoriBtn>
@@ -164,10 +150,10 @@ const EmployeeProfile: React.FC = () => {
                   />
                   {/* If user is not a google user */}
                   {empUser.googleId === null ? (
-                    <CoriCircleBtn icon={<EditIcon />} className="absolute bottom-0 right-0" />
+                    <CoriCircleBtn icon={<Icons.Edit />} className="absolute bottom-0 right-0" />
                   ) : (
                     <CoriCircleBtn
-                      icon={<GoogleIcon />}
+                      icon={<Icons.Google />}
                       style="black"
                       className="absolute bottom-0 right-0"
                     />
@@ -183,13 +169,13 @@ const EmployeeProfile: React.FC = () => {
                   {/* If user is not a google user */}
                   {empUser.googleId === null ? (
                     <CoriCircleBtn
-                      icon={<AddIcon />}
+                      icon={<Icons.Edit />}
                       style="black"
                       className="absolute bottom-0 right-0"
                     />
                   ) : (
                     <CoriCircleBtn
-                      icon={<GoogleIcon />}
+                      icon={<Icons.Google />}
                       style="black"
                       className="absolute bottom-0 right-0"
                     />
@@ -200,7 +186,7 @@ const EmployeeProfile: React.FC = () => {
                 <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
                 {empUserRatingMetrics && (
                   <div className="flex items-center gap-1">
-                    <StarIcon className="text-yellow-500" />
+                    <Icons.StarRounded className="text-yellow-500" />
                     <p className="text-zinc-500 text-xl">
                       {empUserRatingMetrics.averageRating.toFixed(2)}
                     </p>
@@ -216,11 +202,11 @@ const EmployeeProfile: React.FC = () => {
                 <div className="flex flex-grow flex-col gap-4 w-1/2">
                   <div className="flex gap-2 items-center">
                     {empUser.gender === Gender.Female ? (
-                      <FemaleIcon className="text-pink-500" />
+                      <Icons.Female className="text-pink-500" />
                     ) : empUser.gender === Gender.Male ? (
-                      <MaleIcon className="text-blue-500" />
+                      <Icons.Male className="text-blue-500" />
                     ) : (
-                      <TransgenderIcon className="text-purple-500" />
+                      <Icons.Transgender className="text-purple-500" />
                     )}
                     <p className="text-zinc-500">
                       {empUser.gender === Gender.Female
@@ -231,7 +217,7 @@ const EmployeeProfile: React.FC = () => {
                     </p>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <CakeIcon />
+                    <Icons.Cake />
                     <p className="text-zinc-500">
                       {dayjs(empUser.dateOfBirth).format("DD MMM YYYY")}
                       <span className="text-zinc-400 text-sm ml-2">
@@ -243,11 +229,11 @@ const EmployeeProfile: React.FC = () => {
                 {/* Right Side */}
                 <div className="flex flex-grow flex-col gap-4 w-1/2">
                   <div className="flex gap-2 items-center">
-                    <PhoneIcon />
+                    <Icons.Phone />
                     <p className="text-zinc-500">{formatPhone(empUser.phoneNumber)}</p>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <EmailIcon />
+                    <Icons.Email />
                     <p className="text-zinc-500">{empUser.email}</p>
                   </div>
                 </div>
@@ -265,18 +251,18 @@ const EmployeeProfile: React.FC = () => {
                     {/* Left Side */}
                     <div className="flex flex-grow flex-col gap-4 w-1/2">
                       <div className="flex gap-2 items-center">
-                        <WorkIcon />
+                        <Icons.Work />
                         <p className="text-zinc-500">{empUser.jobTitle}</p>
                       </div>
                       <div className="flex gap-2 items-center">
-                        <CorporateFareIcon />
+                        <Icons.CorporateFare />
                         <p className="text-zinc-500">{empUser.department} Department</p>
                       </div>
                     </div>
                     {/* Right Side */}
                     <div className="flex flex-grow flex-col gap-4 w-1/2">
                       <div className="flex gap-2 items-center">
-                        <ScheduleIcon />
+                        <Icons.Schedule />
                         <p className="text-zinc-500">
                           {empUser.employType === EmployType.FullTime
                             ? "Full-Time"
@@ -288,14 +274,14 @@ const EmployeeProfile: React.FC = () => {
                         </p>
                       </div>
                       <div className="flex gap-2 items-center">
-                        <BadgeIcon />
+                        <Icons.Badge />
                         <p className="text-zinc-500">Employee ID {empUser.employeeId}</p>
                       </div>
                     </div>
                   </div>
                   {/* Bottom Employed for */}
                   <div className="flex gap-2 items-center">
-                    <AssistantPhotoIcon />
+                    <Icons.AssistantPhoto />
                     <p className="text-zinc-500">
                       Employed for {formatEmploymentDuration(empUser.employDate)}
                       <span className="text-zinc-400 text-sm ml-2">

@@ -12,16 +12,8 @@ import { Gender, PayCycle, EmployType } from "../../types/common";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 
-// Import Google Icons
-import AddIcon from "@mui/icons-material/Add";
-import FemaleIcon from "@mui/icons-material/Female";
-import MaleIcon from "@mui/icons-material/Male";
-import TransgenderIcon from "@mui/icons-material/Transgender";
-import StarIcon from "@mui/icons-material/StarRounded";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import WatchLaterIcon from "@mui/icons-material/WatchLater";
+// Import Icons
+import { Icons } from "../../constants/icons";
 
 // Utility Functions
 import { formatRandAmount } from "../../utils/formatUtils";
@@ -233,11 +225,11 @@ const AdminEmployeeManagement: React.FC = () => {
               <div className="flex items-center gap-1">
                 <p className="font-medium min-w-fit">{record.fullName}</p>
                 {parseInt(record.gender) === Gender.Female ? (
-                  <FemaleIcon className="text-pink-500" />
+                  <Icons.Female className="text-pink-500" />
                 ) : parseInt(record.gender) === Gender.Male ? (
-                  <MaleIcon className="text-blue-500" />
+                  <Icons.Male className="text-blue-500" />
                 ) : (
-                  <TransgenderIcon className="text-purple-500" />
+                  <Icons.Transgender className="text-purple-500" />
                 )}
               </div>
               <p className="text-sm text-zinc-500">{record.jobTitle}</p>
@@ -253,7 +245,7 @@ const AdminEmployeeManagement: React.FC = () => {
           <>
             {record.averageRating ? (
               <div className="flex items-center">
-                <StarIcon className="text-yellow-500" />
+                <Icons.StarRounded className="text-yellow-500" />
                 <p>{record.averageRating}</p>
                 <p className="text-zinc-500 text-[12px] ml-2">({record.numberOfRatings})</p>
               </div>
@@ -281,7 +273,7 @@ const AdminEmployeeManagement: React.FC = () => {
                       {
                         key: "unsuspend",
                         label: "Unsuspend Employee",
-                        icon: <ThumbUpAltIcon />,
+                        icon: <Icons.ThumbUpAlt />,
                         onClick: () => {
                           handleToggleSuspension(record.employeeId);
                         },
@@ -301,7 +293,7 @@ const AdminEmployeeManagement: React.FC = () => {
                       {
                         key: "suspend",
                         label: "Suspend Employee",
-                        icon: <ThumbDownAltIcon />,
+                        icon: <Icons.ThumbDownAlt />,
                         onClick: () => {
                           handleToggleSuspension(record.employeeId);
                         },
@@ -366,7 +358,7 @@ const AdminEmployeeManagement: React.FC = () => {
                 <div className="flex flex-col">
                   <p>{formatTimestampToDate(date)}</p>
                   <div className="flex items-center gap-1">
-                    <WatchLaterIcon className="text-red-500" fontSize="small" />
+                    <Icons.WatchLater className="text-red-500" fontSize="small" />
                     <p className="text-red-500 text-[12px]">
                       {dayjs(nextPayDate).fromNow(true)} late
                     </p>
@@ -395,7 +387,7 @@ const AdminEmployeeManagement: React.FC = () => {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1">
                   <p>{formatTimestampToDate(date)}</p>
-                  <CheckCircleIcon className="text-corigreen-500" fontSize="small" />
+                  <Icons.CheckCircle className="text-corigreen-500" fontSize="small" />
                 </div>
               </div>
             </Tooltip>
@@ -424,7 +416,7 @@ const AdminEmployeeManagement: React.FC = () => {
         <h1 className="text-3xl font-bold text-zinc-900">Employee Management</h1>
         <CoriBtn style="black" onClick={() => navigate("/admin/create-employee")}>
           New
-          <AddIcon />
+          <Icons.Add />
         </CoriBtn>
       </div>
       <Table<DataType>

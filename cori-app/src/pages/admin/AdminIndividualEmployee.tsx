@@ -28,20 +28,7 @@ import AdminAddEquipItemModal from "../../components/modals/AdminAddEquipItemMod
 import AdminManageEquipItemModal from "../../components/modals/AdminManageEquipItemModal";
 
 // Import Icons
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import WorkIcon from "@mui/icons-material/Work";
-import EmailIcon from "@mui/icons-material/Email";
-import FemaleIcon from "@mui/icons-material/Female";
-import CakeIcon from "@mui/icons-material/Cake";
-import PhoneIcon from "@mui/icons-material/PhoneAndroid";
-import AssistantPhotoIcon from "@mui/icons-material/AssistantPhoto";
-import PayIcon from "@mui/icons-material/Payments";
-import UndoIcon from "@mui/icons-material/Undo";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
-import MaleIcon from "@mui/icons-material/Male";
-import TransgenderIcon from "@mui/icons-material/Transgender";
+import { Icons } from "../../constants/icons";
 
 // Import Assets
 import GoogleIcon from "../../assets/icons/googleIcon.png";
@@ -332,13 +319,13 @@ const AdminIndividualEmployee: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-4 items-center">
             <CoriBtn style="black" iconOnly onClick={() => navigate("/admin/employees")}>
-              <ArrowBackIcon />
+              <Icons.ArrowBack />
             </CoriBtn>
             <h1 className="text-3xl font-bold text-zinc-900">Employee Details</h1>
           </div>
           <div className="flex gap-2">
             <CoriBtn secondary style="black" onClick={() => setShowEditDetailsModal(true)}>
-              <EditIcon />
+              <Icons.Edit />
               Edit Details
             </CoriBtn>
             <CoriBtn style="black" onClick={toggleEmpSuspension}>
@@ -406,11 +393,11 @@ const AdminIndividualEmployee: React.FC = () => {
                   <div className="flex flex-grow flex-col gap-4 w-1/2">
                     <div className="flex gap-2 items-center">
                       {empUser.gender === Gender.Female ? (
-                        <FemaleIcon className="text-pink-500" />
+                        <Icons.Female className="text-pink-500" />
                       ) : empUser.gender === Gender.Male ? (
-                        <MaleIcon className="text-blue-500" />
+                        <Icons.Male className="text-blue-500" />
                       ) : (
-                        <TransgenderIcon className="text-purple-500" />
+                        <Icons.Transgender className="text-purple-500" />
                       )}
                       <p className="text-zinc-500">
                         {empUser.gender === Gender.Female
@@ -421,7 +408,7 @@ const AdminIndividualEmployee: React.FC = () => {
                       </p>
                     </div>
                     <div className="flex gap-2 items-center">
-                      <CakeIcon />
+                      <Icons.Cake />
                       <p className="text-zinc-500">
                         {empUser.dateOfBirth}
                         <span className="text-zinc-400 text-sm ml-2">
@@ -432,7 +419,7 @@ const AdminIndividualEmployee: React.FC = () => {
                   </div>
                   <div className="flex flex-grow flex-col gap-4 w-1/2">
                     <div className="flex gap-2 items-center">
-                      <PhoneIcon />
+                      <Icons.Phone />
                       <p className="text-zinc-500">{formatPhone(empUser.phoneNumber)}</p>
                     </div>
                     <Tooltip
@@ -443,14 +430,14 @@ const AdminIndividualEmployee: React.FC = () => {
                       }}
                     >
                       <div className="flex gap-2 items-center">
-                        <EmailIcon />
+                        <Icons.Email />
                         <p className="text-zinc-500 text-truncate">{empUser.email}</p>
                       </div>
                     </Tooltip>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
-                  <AssistantPhotoIcon />
+                  <Icons.AssistantPhoto />
                   <p className="text-zinc-500">
                     Employed for {formatEmploymentDuration(empUser.employDate)}
                     <span className="text-zinc-400 text-sm ml-2">
@@ -483,7 +470,7 @@ const AdminIndividualEmployee: React.FC = () => {
                       <DatePicker
                         value={dayjs(empUser.lastPaidDate)}
                         format="DD MMM YYYY"
-                        suffixIcon={<CoriCircleBtn style="black" icon={<EditIcon />} />}
+                        suffixIcon={<CoriCircleBtn style="black" icon={<Icons.Edit />} />}
                         allowClear={false}
                         variant="borderless"
                         className="hover:cursor-pointer"
@@ -507,12 +494,12 @@ const AdminIndividualEmployee: React.FC = () => {
                 </div>
                 <div className="flex justify-between w-full mt-4">
                   <CoriBtn secondary style="black" onClick={onUndoPayment}>
-                    <UndoIcon />
+                    <Icons.Undo />
                     Undo Payment
                   </CoriBtn>
                   <CoriBtn secondary style="black" onClick={onPayNow}>
                     Pay Now
-                    <PayIcon />
+                    <Icons.Pay />
                   </CoriBtn>
                 </div>
               </div>
@@ -522,7 +509,10 @@ const AdminIndividualEmployee: React.FC = () => {
             <div className="w-full flex flex-col gap-2 items-center">
               <div className="flex gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Equipment</h2>
-                <CoriCircleBtn icon={<AddIcon />} onClick={() => setShowNewEquipmentModal(true)} />
+                <CoriCircleBtn
+                  icon={<Icons.Add />}
+                  onClick={() => setShowNewEquipmentModal(true)}
+                />
               </div>
               <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
                 {equipment.map((item) => (
