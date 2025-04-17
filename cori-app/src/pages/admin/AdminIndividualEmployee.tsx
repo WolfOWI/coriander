@@ -320,21 +320,7 @@ const AdminIndividualEmployee: React.FC = () => {
   if (!empUser)
     return (
       <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
-        <h2 className="text-zinc-900 font-bold text-3xl text-center">Backend Not Connected</h2>
-        <h3 className="text-zinc-900 font-bold text-xl text-center">Hey Ruan / Ine / Kayla</h3>
-        <p className="text-zinc-500 text-center">
-          This page is very basically connected to the backend. If you are seeing this message, it
-          means your front-end is not connecting to the backend.
-          <br />
-          <br />
-          First, you'll need to create a ".env" file in the root of this project (in cori-app).
-          Inside it, add this line: VITE_API_URL=http://localhost:5121/api
-          <br />
-          <br />
-          Secondly, you'll actually need to run the backend on your computer. (Open our coriander
-          backend project in your VSCode, cd into CoriCore, and then 'dotnet run' so that swagger is
-          open and running.)
-        </p>
+        <h2 className="text-zinc-900 font-bold text-3xl text-center">Employee Not Found</h2>
       </div>
     );
 
