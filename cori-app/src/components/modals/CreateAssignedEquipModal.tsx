@@ -1,18 +1,18 @@
 import React from "react";
 import { Modal, Button, Form, Input, Select, DatePicker } from "antd";
 
-interface AdminAddEquipItemModalProps {
+interface CreateAssignedEquipModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
 }
 
-function AdminAddEquipItemModal({ showModal, setShowModal }: AdminAddEquipItemModalProps) {
+function CreateAssignedEquipModal({ showModal, setShowModal }: CreateAssignedEquipModalProps) {
   return (
     <Modal
-      title={<h2 className="text-zinc-900 font-bold text-3xl">Add Equipment Item</h2>}
+      title={<h2 className="text-zinc-900 font-bold text-3xl">New Assigned Equipment</h2>}
       open={showModal}
       onCancel={() => setShowModal(false)}
-      width={500}
+      width={600}
       styles={{
         header: {
           paddingLeft: 40,
@@ -33,7 +33,7 @@ function AdminAddEquipItemModal({ showModal, setShowModal }: AdminAddEquipItemMo
           Cancel
         </Button>,
         <Button key="create" type="primary" onClick={() => setShowModal(false)}>
-          Create Equipment
+          Create & Add
         </Button>,
       ]}
     >
@@ -68,4 +68,4 @@ function AdminAddEquipItemModal({ showModal, setShowModal }: AdminAddEquipItemMo
   );
 }
 
-export default AdminAddEquipItemModal;
+export default CreateAssignedEquipModal;
