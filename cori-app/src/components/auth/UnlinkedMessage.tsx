@@ -11,7 +11,7 @@ function UnlinkedMessage({ onLogOut }: { onLogOut: () => void }) {
       <PendingActionsIcon className="text-warmstone-600" style={{ fontSize: "128px" }} />
       <div className="flex flex-col gap-2 items-center">
         <h1 className="text-3xl text-zinc-900 font-light">
-          You're <span className="font-bold text-corigreen-500">almost</span> there!
+          <span className="font-bold text-corigreen-500">Almost</span> there!
         </h1>
         <p className="text-zinc-500 text-center">
           Your Coriander account was created successfully, but still needs to be linked to your
