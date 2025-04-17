@@ -24,7 +24,7 @@ function EquipCondiBadge({ condition }: EquipCondiBadgeProps) {
       text = "Decent";
       break;
     case EquipmentCondition.Used:
-      color = "red";
+      color = "gray";
       text = "Used";
       break;
     default:
@@ -36,7 +36,7 @@ function EquipCondiBadge({ condition }: EquipCondiBadgeProps) {
   return (
     <CoriBadge
       text={text}
-      color={color as "red" | "green" | "blue" | "white"}
+      color={color as "gray" | "green" | "blue" | "white" | "orange"}
       size="small"
       className="w-fit"
     />

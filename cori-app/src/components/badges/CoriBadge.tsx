@@ -1,7 +1,7 @@
 import React from "react";
 
 interface BadgeProps {
-  color?: "green" | "black" | "yellow" | "red" | "blue" | "white" | "orange";
+  color?: "green" | "black" | "yellow" | "red" | "blue" | "white" | "orange" | "gray";
   size?: "x-small" | "small" | "medium" | "large";
   text: string;
   className?: string;
@@ -34,6 +34,9 @@ function CoriBadge({ color, size, text, className }: BadgeProps) {
       break;
     case "orange":
       bgColor = "bg-amber-600";
+      break;
+    case "gray":
+      bgColor = "bg-zinc-500";
       break;
     default:
       bgColor = "bg-corigreen-500";
