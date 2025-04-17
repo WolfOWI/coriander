@@ -325,7 +325,7 @@ const AdminIndividualEmployee: React.FC = () => {
     );
 
   return (
-    <>
+    <div className="">
       {ContextHolder} {/* Message System */}
       <div className="max-w-7xl mx-auto m-4 pb-4">
         {/* Top Heading with buttons */}
@@ -351,7 +351,7 @@ const AdminIndividualEmployee: React.FC = () => {
         </div>
         {/* Page Body */}
         <div className="flex gap-4">
-          <div className="w-1/2 flex flex-col gap-4">
+          <div className="max-w-1/2 min-w-1/2 w-1/2 flex flex-col gap-4">
             {/* Employee Details */}
             <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col">
               <div className="flex gap-4">
@@ -378,17 +378,26 @@ const AdminIndividualEmployee: React.FC = () => {
                       </Tooltip>
                     )}
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <WorkIcon />
-                    <p className="text-zinc-900">{empUser.jobTitle}</p>
-                    <p className="text-zinc-900">•</p>
-                    <p className="text-zinc-500">{empUser.department}</p>
-                    {empUser.isSuspended ? (
-                      <EmployTypeBadge status="suspended" />
-                    ) : (
-                      <EmployTypeBadge status={empUser.employType} />
-                    )}
-                  </div>
+                  <Tooltip
+                    title={`${
+                      empUser.jobTitle
+                    } in the ${empUser.department.toLowerCase()} department`}
+                    placement="bottomLeft"
+                  >
+                    <div className="flex gap-2 items-center justify-between overflow-clip">
+                      {/* <WorkIcon /> */}
+                      <p className="text-zinc-900 truncate max-w-[40%]">{empUser.jobTitle}</p>
+                      <p className="text-zinc-900">•</p>
+                      <p className="text-zinc-500 truncate max-w-[40%]">{empUser.department}</p>
+                      <div className="w-fit">
+                        {empUser.isSuspended ? (
+                          <EmployTypeBadge status="suspended" />
+                        ) : (
+                          <EmployTypeBadge status={empUser.employType} />
+                        )}
+                      </div>
+                    </div>
+                  </Tooltip>
                 </div>
               </div>
 
@@ -531,7 +540,7 @@ const AdminIndividualEmployee: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="w-1/2">
+          <div className="max-w-1/2 min-w-1/2 w-1/2">
             <div className="flex gap-4">
               {/* Leave Balances */}
               <div className="w-3/12 flex flex-col items-center gap-2">
@@ -615,7 +624,7 @@ const AdminIndividualEmployee: React.FC = () => {
           </div>
         </div>
       </div>
-      <>
+      <div>
         {/* MODALS */}
         {/* Edit Details Modal */}
         <AdminEditEmpDetailsModal
@@ -644,8 +653,8 @@ const AdminIndividualEmployee: React.FC = () => {
           employeeFullName={empUser?.fullName || "this employee"}
           onTerminate={onTerminate}
         />
-      </>
-    </>
+      </div>
+    </div>
   );
 };
 

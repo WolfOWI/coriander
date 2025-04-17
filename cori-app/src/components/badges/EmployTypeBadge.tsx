@@ -43,7 +43,7 @@ function EmployTypeBadge({ status }: EmployTypeBadgeProps) {
       text={text}
       color={color as "red" | "green" | "orange" | "blue" | "yellow" | "white"}
       size="small"
-      className="w-fit"
+      className="w-fit min-w-fit text-nowrap"
     />
   );
 }
