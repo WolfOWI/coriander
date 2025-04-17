@@ -20,6 +20,7 @@ function CreateAssignedEquipModal({ showModal, setShowModal }: CreateAssignedEqu
           paddingTop: 40,
         },
         body: {
+          paddingTop: 20,
           padding: 40,
         },
         footer: {
