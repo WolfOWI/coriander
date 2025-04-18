@@ -162,6 +162,13 @@ export const equipmentAPI = {
    * @returns Promise containing the API response
    */
   getAllEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment"),
+
+  /**
+   * Deletes an equipment item by its ID
+   * @param id - The equipment's ID
+   * @returns Promise containing the API response
+   */
+  deleteEquipItemById: (id: number): Promise<AxiosResponse> => apiClient.delete(`/Equipment/${id}`),
 };
 
 // ------------------------------------------------------------

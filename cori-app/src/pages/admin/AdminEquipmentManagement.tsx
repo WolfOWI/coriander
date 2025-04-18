@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar, Tooltip, Button, Dropdown, Popover } from "antd";
+import { Table, Avatar, Tooltip, Button, Dropdown, Popover, message } from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
 import { equipmentAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
@@ -128,7 +128,9 @@ const AdminEquipmentManagement: React.FC = () => {
     return data.slice(start, end);
   }, [allData, tableParams]);
 
+  // Dropdown Actions for each row (Edit, Assign, Delete)
   const handleActionClick = (record: EquipmentData, action: string) => {
+    // Set the selected equipment to be used in the modals & respective functions
     setSelectedEquipment(record);
     switch (action) {
       case "edit":
@@ -300,8 +302,33 @@ const AdminEquipmentManagement: React.FC = () => {
     []
   );
 
+  const handleDelete = async () => {
+    if (!selectedEquipment?.equipmentId) {
+      messageApi.error(
+        "Something went wrong. The system was unable to detect what equipment was selected."
+      );
+      return;
+    }
+    try {
+      await equipmentAPI.deleteEquipItemById(selectedEquipment.equipmentId);
+      messageApi.success(`${selectedEquipment.equipmentName} was deleted successfully`);
+      // Refresh the data
+      fetchData();
+    } catch (error) {
+      messageApi.error("Something went wrong and the equipment was not deleted.");
+      console.error("Error deleting equipment:", error);
+    }
+
+    // Close the modal
+    setShowDeleteEquipmentModal(false);
+  };
+
+  // Message System (Ant Design)
+  const [messageApi, contextHolder] = message.useMessage();
+
   return (
     <>
+      {contextHolder}
       <div className="max-w-7xl mx-auto m-4">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
@@ -344,10 +371,7 @@ const AdminEquipmentManagement: React.FC = () => {
         showModal={showDeleteEquipmentModal}
         setShowModal={setShowDeleteEquipmentModal}
         equipment={selectedEquipment}
-        onDelete={() => {
-          console.log("Delete");
-          fetchData();
-        }}
+        onDelete={handleDelete}
       />
     </>
   );

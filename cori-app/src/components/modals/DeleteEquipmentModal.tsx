@@ -24,7 +24,7 @@ function DeleteEquipmentModal({
 
   return (
     <Modal
-      title={<h2 className="text-zinc-900 font-bold text-3xl">Delete Equipment Item</h2>}
+      title={<h2 className="text-red-600 font-bold text-3xl text-center">Delete Item?</h2>}
       open={showModal}
       onCancel={() => setShowModal(false)}
       width={600}
@@ -59,7 +59,7 @@ function DeleteEquipmentModal({
       ]}
     >
       <div className="flex flex-col gap-2">
-        <p className="text-zinc-500 text-sm">This cannot be undone.</p>
+        <p className="text-zinc-500 text-sm text-center">This cannot be undone.</p>
         <div className="flex items-center gap-3 px-4 py-3 bg-warmstone-300 rounded-xl my-2">
           <div className="bg-warmstone-50 rounded-full p-2">
             <Icons.Phone className="text-zinc-900" fontSize="large" />
@@ -77,7 +77,7 @@ function DeleteEquipmentModal({
                   : equipment.condition === 2
                   ? "Decent"
                   : "Used"}{" "}
-                Quality
+                Condition
               </p>
             </div>
           </div>
