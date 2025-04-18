@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { Modal, Button, Form, Input, Select, DatePicker, message, Alert } from "antd";
 import { equipmentAPI } from "../../services/api.service";
-import { EmployType, PayCycle, Gender } from "../../types/common";
 import dayjs from "dayjs";
-import { Icons } from "../../constants/icons";
 
 interface CreateAssignedEquipModalProps {
   showModal: boolean;

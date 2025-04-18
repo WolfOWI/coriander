@@ -323,25 +323,9 @@ const AdminEquipmentManagement: React.FC = () => {
   };
 
   // Delete Equipment (Modal)
-  const handleDelete = async () => {
-    if (!selectedEquipment?.equipmentId) {
-      messageApi.error(
-        "Something went wrong. The system was unable to detect what equipment was selected."
-      );
-      return;
-    }
-    try {
-      await equipmentAPI.deleteEquipItemById(selectedEquipment.equipmentId);
-      messageApi.success(`${selectedEquipment.equipmentName} was deleted successfully`);
-      // Refresh the data
-      fetchData();
-    } catch (error) {
-      messageApi.error("Something went wrong and the equipment was not deleted.");
-      console.error("Error deleting equipment:", error);
-    }
-
-    // Close the modal
-    setShowDeleteEquipmentModal(false);
+  const handleDeleteSuccess = () => {
+    // Refresh the data
+    fetchData();
   };
 
   // Message System (Ant Design)
@@ -393,7 +377,7 @@ const AdminEquipmentManagement: React.FC = () => {
         showModal={showDeleteEquipmentModal}
         setShowModal={setShowDeleteEquipmentModal}
         equipment={selectedEquipment}
-        onDelete={handleDelete}
+        onDeleteSuccess={handleDeleteSuccess}
       />
     </>
   );
