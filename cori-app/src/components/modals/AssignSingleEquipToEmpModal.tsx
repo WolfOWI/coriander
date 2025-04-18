@@ -15,6 +15,7 @@ interface AssignSingleEquipToEmpModalProps {
     equipmentName: string;
     equipmentCategoryName: string;
     condition: EquipmentCondition;
+    employeeId: number | null;
   } | null;
   onAssignSuccess: () => void; // Callback to refresh the equipment list
 }
@@ -125,7 +126,13 @@ function AssignSingleEquipToEmpModal({
             </p>
           </div>
         </div>
-        {emp.hasItemOfSameEquipCat && (
+        {emp.employeeId == equipment?.employeeId && (
+          <div className="flex items-center gap-1">
+            <p className="text-corigreen-500 text-[12px] font-bold">Currently Assigned</p>
+          </div>
+        )}
+        {/* If the employee has an item of the same equipment category and is not currently assigned to the equipment, show the warning message */}
+        {emp.hasItemOfSameEquipCat && emp.employeeId !== equipment?.employeeId && (
           <div className="flex items-center gap-1">
             <Icons.Error className="text-yellow-500" fontSize="small" />
             <p className="text-zinc-500 text-[12px]">
