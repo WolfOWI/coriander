@@ -62,7 +62,15 @@ function AssignSingleEquipToEmpModal({
   // When equipment changes, get all employees for the dropdown
   useEffect(() => {
     if (equipment) {
-      fetchEmployees();
+      setIsLoadingEmployees(true);
+      fetchEmployees().finally(() => {
+        // Set the initial form value if equipment has an assigned employee
+        if (equipment.employeeId) {
+          form.setFieldValue("empId", equipment.employeeId);
+        } else {
+          form.resetFields(["empId"]);
+        }
+      });
     }
   }, [equipment]);
 
