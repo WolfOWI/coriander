@@ -303,23 +303,9 @@ const AdminEquipmentManagement: React.FC = () => {
   );
 
   // Create Unlinked Equipment (Modal)
-  const handleCreate = async (data: object) => {
-    if (!data) {
-      messageApi.error("Something went wrong. No equipment data was detected.");
-      return;
-    }
-    try {
-      await equipmentAPI.createEquipItemOrItems([data]); // Create the equipment item (must be in an array - even if just 1)
-      messageApi.success("Equipment was created successfully");
-      // Refresh the data
-      fetchData();
-    } catch (error) {
-      messageApi.error("Something went wrong and the equipment was not created.");
-      console.error("Error creating equipment:", error);
-    }
-
-    // Close the modal
-    setShowCreateUnlinkedEquipModal(false);
+  const handleCreateSuccess = () => {
+    // Refresh the data
+    fetchData();
   };
 
   // Delete Equipment (Modal)
@@ -362,7 +348,7 @@ const AdminEquipmentManagement: React.FC = () => {
       <CreateUnlinkedEquipModal
         showModal={showCreateUnlinkedEquipModal}
         setShowModal={setShowCreateUnlinkedEquipModal}
-        onCreate={handleCreate}
+        onCreateSuccess={handleCreateSuccess}
       />
       <EditEquipDetailsModal
         showModal={showEditEquipDetailsModal}
