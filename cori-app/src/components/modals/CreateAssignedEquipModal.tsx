@@ -1,18 +1,26 @@
-import React from "react";
-import { Modal, Button, Form, Input, Select, DatePicker, message } from "antd";
+import React, { useEffect } from "react";
+import { Modal, Button, Form, Input, Select, DatePicker, message, Alert } from "antd";
 import { equipmentAPI } from "../../services/api.service";
+import { EmployType, PayCycle, Gender } from "../../types/common";
+import dayjs from "dayjs";
+import { Icons } from "../../constants/icons";
 
 interface CreateAssignedEquipModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  employeeId: number;
+  employee: {
+    fullName: string;
+    employeeId: number;
+    employDate: string;
+    isSuspended: boolean;
+  };
   onCreate: () => void; // Callback to refresh the employee details
 }
 
 function CreateAssignedEquipModal({
   showModal,
   setShowModal,
-  employeeId,
+  employee,
   onCreate,
 }: CreateAssignedEquipModalProps) {
   const [form] = Form.useForm();
@@ -20,14 +28,18 @@ function CreateAssignedEquipModal({
   // Message System
   const [messageApi, contextHolder] = message.useMessage();
 
+  useEffect(() => {
+    console.log(employee);
+  }, [employee]);
+
   const createAssignedEquip = async () => {
     try {
       // Validate all form fields
       const values = await form.validateFields();
 
       // Check if we have an employee ID
-      if (!employeeId) {
-        messageApi.error("No employee ID found");
+      if (!employee) {
+        messageApi.error("The employee was not found");
         return;
       }
 
@@ -35,7 +47,7 @@ function CreateAssignedEquipModal({
       const createData = [
         {
           ...values,
-          employeeId: employeeId,
+          employeeId: employee.employeeId,
           assignedDate: values.assignedDate.format("YYYY-MM-DD"), // Format the date to YYYY-MM-DD
         },
       ];
@@ -73,80 +85,105 @@ function CreateAssignedEquipModal({
   return (
     <>
       {contextHolder}
-      <Modal
-        title={<h2 className="text-zinc-900 font-bold text-3xl">Create Equipment</h2>}
-        open={showModal}
-        onCancel={handleCancel}
-        width={600}
-        styles={{
-          header: {
-            paddingLeft: 40,
-            paddingRight: 40,
-            paddingTop: 40,
-          },
-          body: {
-            paddingTop: 20,
-            padding: 40,
-          },
-          footer: {
-            paddingLeft: 40,
-            paddingRight: 40,
-            paddingBottom: 40,
-          },
-        }}
-        footer={[
-          <Button key="cancel" onClick={handleCancel}>
-            Cancel
-          </Button>,
-          <Button key="create" type="primary" onClick={createAssignedEquip}>
-            Create & Add
-          </Button>,
-        ]}
-      >
-        <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
-          <Form.Item
-            name="equipmentName"
-            label="Equipment Name"
-            rules={[{ required: true, message: "Please enter a name for the equipment" }]}
-          >
-            <Input type="text" />
-          </Form.Item>
-          <Form.Item
-            name="equipmentCatId"
-            label="Equipment Category"
-            rules={[{ required: true, message: "Please select an equipment category" }]}
-          >
-            <Select>
-              <Select.Option value={1}>Cellphone</Select.Option>
-              <Select.Option value={2}>Tablet</Select.Option>
-              <Select.Option value={3}>Laptop</Select.Option>
-              <Select.Option value={4}>Monitor</Select.Option>
-              <Select.Option value={5}>Headset</Select.Option>
-              <Select.Option value={6}>Keyboard</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="condition"
-            label="Condition"
-            rules={[{ required: true, message: "Please select a condition" }]}
-          >
-            <Select>
-              {/* New = 0, Good = 1, Decent = 2, Used = 3 */}
-              <Select.Option value={0}>New</Select.Option>
-              <Select.Option value={1}>Good</Select.Option>
-              <Select.Option value={2}>Decent</Select.Option>
-              <Select.Option value={3}>Used</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="assignedDate"
-            label="Assigned Date"
-            rules={[{ required: true, message: "Please select when the equipment was assigned" }]}
-          >
-            <DatePicker className="w-full h-12" />
-          </Form.Item>
-        </Form>
-      </Modal>
+      {employee && (
+        <Modal
+          title={
+            <h2 className="text-zinc-900 font-bold text-3xl flex flex-col gap-2">
+              {/* Create Equipment for {employee.fullName} */}
+              Create Equipment{" "}
+              <span className="text-corigreen-500 text-xl font-light">
+                (assigned to {employee.fullName})
+              </span>
+            </h2>
+          }
+          open={showModal}
+          onCancel={handleCancel}
+          width={600}
+          styles={{
+            header: {
+              paddingLeft: 40,
+              paddingRight: 40,
+              paddingTop: 40,
+            },
+            body: {
+              paddingTop: 8,
+              padding: 40,
+            },
+            footer: {
+              paddingLeft: 40,
+              paddingRight: 40,
+              paddingBottom: 40,
+            },
+          }}
+          footer={[
+            <Button key="cancel" onClick={handleCancel}>
+              Cancel
+            </Button>,
+            <Button key="create" type="primary" onClick={createAssignedEquip}>
+              Create & Add
+            </Button>,
+          ]}
+        >
+          <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
+            {employee.isSuspended && (
+              <Alert
+                description="This employee is suspended, please proceed with caution."
+                type="warning"
+                showIcon
+                className="mb-4 rounded-xl"
+                closable
+              />
+            )}
+            <Form.Item
+              name="equipmentName"
+              label="Equipment Name"
+              rules={[{ required: true, message: "Please enter a name for the equipment" }]}
+            >
+              <Input type="text" />
+            </Form.Item>
+            <Form.Item
+              name="equipmentCatId"
+              label="Equipment Category"
+              rules={[{ required: true, message: "Please select an equipment category" }]}
+            >
+              <Select>
+                <Select.Option value={1}>Cellphone</Select.Option>
+                <Select.Option value={2}>Tablet</Select.Option>
+                <Select.Option value={3}>Laptop</Select.Option>
+                <Select.Option value={4}>Monitor</Select.Option>
+                <Select.Option value={5}>Headset</Select.Option>
+                <Select.Option value={6}>Keyboard</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="condition"
+              label="Condition"
+              rules={[{ required: true, message: "Please select a condition" }]}
+            >
+              <Select>
+                {/* New = 0, Good = 1, Decent = 2, Used = 3 */}
+                <Select.Option value={0}>New</Select.Option>
+                <Select.Option value={1}>Good</Select.Option>
+                <Select.Option value={2}>Decent</Select.Option>
+                <Select.Option value={3}>Used</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="assignedDate"
+              label="Assigned Date"
+              rules={[{ required: true, message: "Please select when the equipment was assigned" }]}
+            >
+              <DatePicker
+                className="w-full h-12"
+                // Can't assign equipment to an employee before they were hired
+                minDate={dayjs(employee.employDate, "YYYY-MM-DD")}
+                // Can't assign equipment to an employee after today
+                maxDate={dayjs()}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
+      )}
     </>
   );
 }
