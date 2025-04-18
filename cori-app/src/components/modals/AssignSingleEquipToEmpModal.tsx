@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, Select, DatePicker, message, Spin } from "antd";
+import { Modal, Button, Form, Select, DatePicker, message, Spin, Alert } from "antd";
 import type { SelectProps } from "antd";
 
 import { Icons } from "../../constants/icons";
@@ -39,6 +39,7 @@ function AssignSingleEquipToEmpModal({
   const [dropdownEmployees, setDropdownEmployees] = useState<EmployeeOption[]>([]);
   const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
 
   // Message System
   const [messageApi, contextHolder] = message.useMessage();
@@ -67,12 +68,21 @@ function AssignSingleEquipToEmpModal({
         // Set the initial form value if equipment has an assigned employee
         if (equipment.employeeId) {
           form.setFieldValue("empId", equipment.employeeId);
+          setSelectedEmployeeId(equipment.employeeId);
         } else {
           form.resetFields(["empId"]);
+          setSelectedEmployeeId(null);
         }
       });
     }
   }, [equipment]);
+
+  // Reset selectedEmployeeId when modal is closed/opened
+  useEffect(() => {
+    if (!showModal) {
+      setSelectedEmployeeId(null);
+    }
+  }, [showModal]);
 
   // Assignment button
   const handleAssign = () => {
@@ -217,6 +227,11 @@ function AssignSingleEquipToEmpModal({
             variant="filled"
             className="flex flex-col"
             onFinish={handleAssign}
+            onValuesChange={(changedValues) => {
+              if (changedValues.empId !== undefined) {
+                setSelectedEmployeeId(changedValues.empId);
+              }
+            }}
           >
             <Form.Item
               name="empId"
@@ -237,6 +252,17 @@ function AssignSingleEquipToEmpModal({
               />
             </Form.Item>
           </Form>
+          {equipment?.employeeId &&
+            selectedEmployeeId &&
+            equipment.employeeId !== selectedEmployeeId && (
+              <Alert
+                description="You are changing the assigned employee of this equipment. Please proceed with caution."
+                type="warning"
+                showIcon
+                className="mb-4 rounded-xl"
+                closable
+              />
+            )}
         </Spin>
       </Modal>
     </>
