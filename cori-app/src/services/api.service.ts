@@ -164,6 +164,14 @@ export const equipmentAPI = {
   getAllEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment"),
 
   /**
+   * Create a single or multiple equipment items (based on the request body)
+   * @param data - An array of objects containing the equipment data (can be just one object)
+   * @returns The created equipment items
+   */
+  createEquipItemOrItems: (data: object): Promise<AxiosResponse> =>
+    apiClient.post("/Equipment/CreateEquipmentItems", data),
+
+  /**
    * Deletes an equipment item by its ID
    * @param id - The equipment's ID
    * @returns Promise containing the API response
