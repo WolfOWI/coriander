@@ -198,7 +198,7 @@ const AdminEquipmentManagement: React.FC = () => {
                   ),
                   onClick: () => {
                     if (record.employeeId) {
-                      console.log("Unlinking Employee");
+                      handleUnlinkEquipItemFromEmp(record.equipmentId);
                     } else {
                       console.log("Assign an Employee");
                     }
@@ -312,6 +312,20 @@ const AdminEquipmentManagement: React.FC = () => {
   const handleDeleteSuccess = () => {
     // Refresh the data
     fetchData();
+  };
+
+  // Unlink Equipment
+  const handleUnlinkEquipItemFromEmp = async (id: number) => {
+    console.log(id);
+    try {
+      await equipmentAPI.unlinkEquipItemFromEmp(id);
+      messageApi.success("Equipment unlinked successfully");
+      // Refresh the data
+      fetchData();
+    } catch (error) {
+      messageApi.error("Something went wrong with unlinking the equipment");
+      console.error("Error unlinking equipment:", error);
+    }
   };
 
   // Message System (Ant Design)

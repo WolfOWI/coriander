@@ -172,6 +172,17 @@ export const equipmentAPI = {
     apiClient.post("/Equipment/CreateEquipmentItems", data),
 
   /**
+   * Unlink an equipment item from an employee
+   * @param id - The equipment's ID
+   * @returns Promise containing the API response
+   */
+  unlinkEquipItemFromEmp: (id: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/Equipment/unlink/${id}`),
+  // Note: Although this is a DELETE request, it is not actually deleting the equipment item
+  // It is only unlinking it from the employee
+  // We are "Deleting" the link between the equipment and the employee (following good conventions)
+
+  /**
    * Deletes an equipment item by its ID
    * @param id - The equipment's ID
    * @returns Promise containing the API response
