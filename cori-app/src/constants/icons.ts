@@ -37,6 +37,8 @@ import PersonPinIcon from "@mui/icons-material/PersonPin";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+
 export const Icons = {
   ArrowBack: ArrowBackIcon,
   Work: WorkIcon,
@@ -77,4 +79,5 @@ export const Icons = {
   Person: PersonIcon,
   PersonAdd: PersonAddIcon,
   PersonOff: PersonOffIcon,
+  AutoAwesome: AutoAwesomeIcon,
 };

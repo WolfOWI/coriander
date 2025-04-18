@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
-import { Avatar, DatePicker, Tooltip, message } from "antd";
+import { Avatar, DatePicker, Dropdown, Tooltip, message, Button } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -25,6 +25,7 @@ import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 import CreateAssignedEquipModal from "../../components/modals/CreateAssignedEquipModal";
+import AssignEmpToEquipsModal from "../../components/modals/AssignEmpToEquipsModal";
 import ManageAssignedItemModal from "../../components/modals/ManageAssignedItemModal";
 
 // Import Icons
@@ -144,7 +145,8 @@ const AdminIndividualEmployee: React.FC = () => {
 
   // Modal States
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
-  const [showNewEquipmentModal, setShowNewEquipmentModal] = useState(false);
+  const [showCreateAssignedEquipModal, setShowCreateAssignedEquipModal] = useState(false);
+  const [showAssignExistingEquipModal, setShowAssignExistingEquipModal] = useState(false);
   const [showManageEquipmentModal, setShowManageEquipmentModal] = useState(false);
   const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
 
@@ -509,10 +511,33 @@ const AdminIndividualEmployee: React.FC = () => {
             <div className="w-full flex flex-col gap-2 items-center">
               <div className="flex gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Equipment</h2>
-                <CoriCircleBtn
-                  icon={<Icons.Add />}
-                  onClick={() => setShowNewEquipmentModal(true)}
-                />
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: "create",
+                        label: "Create Brand New",
+                        icon: <Icons.AutoAwesome />,
+                        onClick: () => setShowCreateAssignedEquipModal(true),
+                      },
+                      {
+                        key: "assign",
+                        label: "Assign Existing",
+                        icon: <Icons.PersonPin />,
+                        onClick: () => setShowAssignExistingEquipModal(true),
+                      },
+                    ],
+                  }}
+                  trigger={["click"]}
+                  placement="bottomLeft"
+                >
+                  <Button
+                    type="text"
+                    className="flex items-center justify-center h-9 w-9 rounded-full bg-zinc-500 text-zinc-50 border-2 border-zinc-500 hover:bg-zinc-900 hover:text-zinc-50 hover:border-zinc-900"
+                  >
+                    <Icons.Add fontSize="small" />
+                  </Button>
+                </Dropdown>
               </div>
               <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
                 {equipment.map((item) => (
@@ -624,10 +649,16 @@ const AdminIndividualEmployee: React.FC = () => {
           onUpdate={fetchEmployee}
         />
 
-        {/* Create & Add Equipment Modal */}
+        {/* Create & Assign Equipment Modal */}
         <CreateAssignedEquipModal
-          showModal={showNewEquipmentModal}
-          setShowModal={setShowNewEquipmentModal}
+          showModal={showCreateAssignedEquipModal}
+          setShowModal={setShowCreateAssignedEquipModal}
+        />
+
+        {/* Assign Existing Equipments Modal */}
+        <AssignEmpToEquipsModal
+          showModal={showAssignExistingEquipModal}
+          setShowModal={setShowAssignExistingEquipModal}
         />
 
         {/* Manage Equipment Modal */}

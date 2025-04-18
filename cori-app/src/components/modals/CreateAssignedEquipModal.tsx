@@ -9,7 +9,7 @@ interface CreateAssignedEquipModalProps {
 function CreateAssignedEquipModal({ showModal, setShowModal }: CreateAssignedEquipModalProps) {
   return (
     <Modal
-      title={<h2 className="text-zinc-900 font-bold text-3xl">New Assigned Equipment</h2>}
+      title={<h2 className="text-zinc-900 font-bold text-3xl">Create Equipment</h2>}
       open={showModal}
       onCancel={() => setShowModal(false)}
       width={600}
