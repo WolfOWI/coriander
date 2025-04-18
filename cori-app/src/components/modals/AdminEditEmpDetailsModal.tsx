@@ -84,16 +84,19 @@ function AdminEditEmpDetailsModal({
       // Success message if the update was successful
       messageApi.success("Details updated successfully");
 
+      // Refresh the employee details
       if (onUpdate) {
         onUpdate();
       }
-
-      // Close the modal
-      setShowModal(false);
     } catch (error) {
       console.error("Error updating employee details:", error);
       messageApi.error("Error updating employee details");
     }
+    // Close the modal
+    setShowModal(false);
+
+    // Reset the form fields
+    form.resetFields();
   };
 
   const handleCancel = () => {

@@ -1,71 +1,153 @@
 import React from "react";
-import { Modal, Button, Form, Input, Select, DatePicker } from "antd";
+import { Modal, Button, Form, Input, Select, DatePicker, message } from "antd";
+import { equipmentAPI } from "../../services/api.service";
 
 interface CreateAssignedEquipModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
+  employeeId: number;
+  onCreate: () => void; // Callback to refresh the employee details
 }
 
-function CreateAssignedEquipModal({ showModal, setShowModal }: CreateAssignedEquipModalProps) {
+function CreateAssignedEquipModal({
+  showModal,
+  setShowModal,
+  employeeId,
+  onCreate,
+}: CreateAssignedEquipModalProps) {
+  const [form] = Form.useForm();
+
+  // Message System
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const createAssignedEquip = async () => {
+    try {
+      // Validate all form fields
+      const values = await form.validateFields();
+
+      // Check if we have an employee ID
+      if (!employeeId) {
+        messageApi.error("No employee ID found");
+        return;
+      }
+
+      // Prepare the data to be sent (must be in an array)
+      const createData = [
+        {
+          ...values,
+          employeeId: employeeId,
+          assignedDate: values.assignedDate.format("YYYY-MM-DD"), // Format the date to YYYY-MM-DD
+        },
+      ];
+
+      console.log(createData);
+
+      // Create the equipment item
+      await equipmentAPI.createEquipItemOrItems(createData);
+
+      // Success message if the creation was successful
+      messageApi.success("Equipment was created successfully");
+
+      // Refresh the employee details
+      if (onCreate) {
+        onCreate();
+      }
+    } catch (error) {
+      messageApi.error("Something went wrong and the equipment was not created.");
+      console.error("Error creating equipment:", error);
+    }
+
+    // Close the modal
+    setShowModal(false);
+
+    // Reset the form fields
+    form.resetFields();
+  };
+
+  // Handle the cancellation of the equipment item creation
+  const handleCancel = () => {
+    setShowModal(false);
+    form.resetFields(); // Clear the form fields
+  };
+
   return (
-    <Modal
-      title={<h2 className="text-zinc-900 font-bold text-3xl">Create Equipment</h2>}
-      open={showModal}
-      onCancel={() => setShowModal(false)}
-      width={600}
-      styles={{
-        header: {
-          paddingLeft: 40,
-          paddingRight: 40,
-          paddingTop: 40,
-        },
-        body: {
-          paddingTop: 20,
-          padding: 40,
-        },
-        footer: {
-          paddingLeft: 40,
-          paddingRight: 40,
-          paddingBottom: 40,
-        },
-      }}
-      footer={[
-        <Button key="cancel" onClick={() => setShowModal(false)}>
-          Cancel
-        </Button>,
-        <Button key="create" type="primary" onClick={() => setShowModal(false)}>
-          Create & Add
-        </Button>,
-      ]}
-    >
-      <Form layout="vertical" variant="filled" className="flex flex-col">
-        <Form.Item name="equipmentName" label="Equipment Name">
-          <Input type="text" />
-        </Form.Item>
-        <Form.Item name="deviceType" label="Device Type">
-          <Select>
-            <Select.Option value="cellphone">Cellphone</Select.Option>
-            <Select.Option value="tablet">Tablet</Select.Option>
-            <Select.Option value="laptop">Laptop</Select.Option>
-            <Select.Option value="monitor">Monitor</Select.Option>
-            <Select.Option value="headset">Headset</Select.Option>
-            <Select.Option value="keyboard">Keyboard</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item name="condition" label="Condition">
-          <Select>
-            {/* New = 0, Good = 1, Decent = 2, Used = 3 */}
-            <Select.Option value="0">New</Select.Option>
-            <Select.Option value="1">Good</Select.Option>
-            <Select.Option value="2">Decent</Select.Option>
-            <Select.Option value="3">Used</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item name="assignedDate" label="Assigned Date">
-          <DatePicker className="w-full h-12" />
-        </Form.Item>
-      </Form>
-    </Modal>
+    <>
+      {contextHolder}
+      <Modal
+        title={<h2 className="text-zinc-900 font-bold text-3xl">Create Equipment</h2>}
+        open={showModal}
+        onCancel={handleCancel}
+        width={600}
+        styles={{
+          header: {
+            paddingLeft: 40,
+            paddingRight: 40,
+            paddingTop: 40,
+          },
+          body: {
+            paddingTop: 20,
+            padding: 40,
+          },
+          footer: {
+            paddingLeft: 40,
+            paddingRight: 40,
+            paddingBottom: 40,
+          },
+        }}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancel
+          </Button>,
+          <Button key="create" type="primary" onClick={createAssignedEquip}>
+            Create & Add
+          </Button>,
+        ]}
+      >
+        <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
+          <Form.Item
+            name="equipmentName"
+            label="Equipment Name"
+            rules={[{ required: true, message: "Please enter a name for the equipment" }]}
+          >
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item
+            name="equipmentCatId"
+            label="Equipment Category"
+            rules={[{ required: true, message: "Please select an equipment category" }]}
+          >
+            <Select>
+              <Select.Option value={1}>Cellphone</Select.Option>
+              <Select.Option value={2}>Tablet</Select.Option>
+              <Select.Option value={3}>Laptop</Select.Option>
+              <Select.Option value={4}>Monitor</Select.Option>
+              <Select.Option value={5}>Headset</Select.Option>
+              <Select.Option value={6}>Keyboard</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="condition"
+            label="Condition"
+            rules={[{ required: true, message: "Please select a condition" }]}
+          >
+            <Select>
+              {/* New = 0, Good = 1, Decent = 2, Used = 3 */}
+              <Select.Option value={0}>New</Select.Option>
+              <Select.Option value={1}>Good</Select.Option>
+              <Select.Option value={2}>Decent</Select.Option>
+              <Select.Option value={3}>Used</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="assignedDate"
+            label="Assigned Date"
+            rules={[{ required: true, message: "Please select when the equipment was assigned" }]}
+          >
+            <DatePicker className="w-full h-12" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 }
 

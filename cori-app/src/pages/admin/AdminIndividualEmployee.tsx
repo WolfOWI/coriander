@@ -653,6 +653,8 @@ const AdminIndividualEmployee: React.FC = () => {
         <CreateAssignedEquipModal
           showModal={showCreateAssignedEquipModal}
           setShowModal={setShowCreateAssignedEquipModal}
+          employeeId={empUser?.employeeId || 0}
+          onCreate={fetchEmployee}
         />
 
         {/* Assign Existing Equipments Modal */}
