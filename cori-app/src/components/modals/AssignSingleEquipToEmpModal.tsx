@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, Select, DatePicker, message } from "antd";
+import { Modal, Button, Form, Select, DatePicker, message, Spin } from "antd";
 import type { SelectProps } from "antd";
 
 import { Icons } from "../../constants/icons";
@@ -36,6 +36,8 @@ function AssignSingleEquipToEmpModal({
 }: AssignSingleEquipToEmpModalProps) {
   const [form] = Form.useForm();
   const [dropdownEmployees, setDropdownEmployees] = useState<EmployeeOption[]>([]);
+  const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
+  const [isAssigning, setIsAssigning] = useState(false);
 
   // Message System
   const [messageApi, contextHolder] = message.useMessage();
@@ -43,8 +45,16 @@ function AssignSingleEquipToEmpModal({
   // Fetch employees for the dropdown
   const fetchEmployees = async () => {
     if (equipment) {
-      const res = await empUserAPI.getAllEmpUsersAndEquipStats(equipment.equipmentId);
-      setDropdownEmployees(res.data.$values);
+      setIsLoadingEmployees(true);
+      try {
+        const res = await empUserAPI.getAllEmpUsersAndEquipStats(equipment.equipmentId);
+        setDropdownEmployees(res.data.$values);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+        messageApi.error("Failed to load employees");
+      } finally {
+        setIsLoadingEmployees(false);
+      }
     }
   };
 
@@ -57,26 +67,42 @@ function AssignSingleEquipToEmpModal({
 
   // Assignment button
   const handleAssign = () => {
-    form.validateFields().then(async (values) => {
-      console.log("Selected employee ID:", values.empId);
-      setShowModal(false);
-      try {
-        if (equipment && values.empId) {
-          console.log("Equipment ID:", equipment.equipmentId);
-          console.log("Employee ID:", values.empId);
-          await equipmentAPI.assignEquipItemOrItemsToEmp(values.empId, [equipment.equipmentId]);
-          messageApi.success("Equipment assigned to employee");
-        } else {
-          messageApi.error("Failed to assign equipment to employee");
+    form
+      .validateFields()
+      .then(async (values) => {
+        console.log("Form values:", values);
+        console.log("Selected employee ID:", values.empId);
+
+        if (!values.empId) {
+          messageApi.error("Please select an employee");
+          return;
         }
-      } catch (error) {
-        console.error("Error assigning equipment to employee:", error);
-        messageApi.error("Failed to assign equipment to employee");
-      }
-      onAssignSuccess();
-    });
-    // Reset the form
-    form.resetFields();
+
+        setShowModal(false);
+        setIsAssigning(true);
+        try {
+          if (equipment && values.empId) {
+            console.log("Equipment ID:", equipment.equipmentId);
+            console.log("Employee ID:", values.empId);
+            await equipmentAPI.assignEquipItemOrItemsToEmp(values.empId, [equipment.equipmentId]);
+            messageApi.success("Equipment assigned to employee");
+            // Reset the form after successful assignment
+            form.resetFields();
+          } else {
+            messageApi.error("Failed to assign equipment to employee");
+          }
+        } catch (error) {
+          console.error("Error assigning equipment to employee:", error);
+          messageApi.error("Failed to assign equipment to employee");
+        } finally {
+          setIsAssigning(false);
+          onAssignSuccess();
+        }
+      })
+      .catch((error) => {
+        console.error("Form validation error:", error);
+        messageApi.error("Please select an employee");
+      });
   };
 
   // Format the employee data for the Dropdown component
@@ -137,51 +163,66 @@ function AssignSingleEquipToEmpModal({
           },
         }}
         footer={[
-          <Button key="cancel" onClick={() => setShowModal(false)}>
+          <Button key="cancel" onClick={() => setShowModal(false)} disabled={isAssigning}>
             Cancel
           </Button>,
-          <Button key="create" type="primary" onClick={handleAssign}>
+          <Button key="create" type="primary" onClick={handleAssign} loading={isAssigning}>
             Assign To Employee
           </Button>,
         ]}
       >
-        {equipment && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-warmstone-300 rounded-xl mb-4">
-            <div className="bg-warmstone-50 rounded-full p-2">
-              <Icons.Phone className="text-zinc-900" fontSize="large" />
-            </div>
-            <div className="flex flex-col">
-              <p className="text-zinc-900">{equipment.equipmentName}</p>
-              <div className="flex items-center gap-2">
-                <p className="text-zinc-500 text-sm">{equipment.equipmentCategoryName}</p>
-                <p className="text-zinc-500 text-sm">•</p>
-                <p className="text-zinc-500 text-sm">
-                  {equipment.condition === EquipmentCondition.New
-                    ? "New"
-                    : equipment.condition === EquipmentCondition.Good
-                    ? "Good"
-                    : equipment.condition === EquipmentCondition.Decent
-                    ? "Decent"
-                    : "Used"}{" "}
-                  Condition
-                </p>
+        <Spin spinning={isLoadingEmployees}>
+          {equipment && (
+            <div className="flex items-center gap-3 px-4 py-3 bg-warmstone-300 rounded-xl mb-4">
+              <div className="bg-warmstone-50 rounded-full p-2">
+                <Icons.Phone className="text-zinc-900" fontSize="large" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-zinc-900">{equipment.equipmentName}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-zinc-500 text-sm">{equipment.equipmentCategoryName}</p>
+                  <p className="text-zinc-500 text-sm">•</p>
+                  <p className="text-zinc-500 text-sm">
+                    {equipment.condition === EquipmentCondition.New
+                      ? "New"
+                      : equipment.condition === EquipmentCondition.Good
+                      ? "Good"
+                      : equipment.condition === EquipmentCondition.Decent
+                      ? "Decent"
+                      : "Used"}{" "}
+                    Condition
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
-          <Form.Item name="empId" label="Employee">
-            <Select
-              placeholder="Select a Employee"
-              options={employeeOptions}
-              optionFilterProp="label"
-              labelRender={(option) => {
-                const emp = dropdownEmployees.find((e) => e.employeeId === option.value);
-                return <div>{emp?.fullName}</div>;
-              }}
-            />
-          </Form.Item>
-        </Form>
+          )}
+          <Form
+            form={form}
+            layout="vertical"
+            variant="filled"
+            className="flex flex-col"
+            onFinish={handleAssign}
+          >
+            <Form.Item
+              name="empId"
+              label="Employee"
+              rules={[{ required: true, message: "Please select an employee" }]}
+            >
+              <Select
+                placeholder="Select a Employee"
+                options={employeeOptions}
+                optionFilterProp="label"
+                labelRender={(option) => {
+                  const emp = dropdownEmployees.find((e) => e.employeeId === option.value);
+                  return <div>{emp?.fullName}</div>;
+                }}
+                loading={isLoadingEmployees}
+                showSearch
+                allowClear
+              />
+            </Form.Item>
+          </Form>
+        </Spin>
       </Modal>
     </>
   );
