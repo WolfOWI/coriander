@@ -34,7 +34,9 @@ import DeviceUnknownIcon from "@mui/icons-material/DeviceUnknown";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
-
+import PersonIcon from "@mui/icons-material/Person";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonOffIcon from "@mui/icons-material/PersonOff";
 export const Icons = {
   ArrowBack: ArrowBackIcon,
   Work: WorkIcon,
@@ -72,4 +74,7 @@ export const Icons = {
   MoreVertRounded: MoreVertRoundedIcon,
   Delete: DeleteIcon,
   PersonPin: PersonPinIcon,
+  Person: PersonIcon,
+  PersonAdd: PersonAddIcon,
+  PersonOff: PersonOffIcon,
 };

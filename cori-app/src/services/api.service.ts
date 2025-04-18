@@ -161,7 +161,7 @@ export const equipmentAPI = {
    * Fetches all equipment items assigned to employees
    * @returns Promise containing the API response
    */
-  getEmpEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment/emp-equip-items"),
+  getAllEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment"),
 };
 
 // ------------------------------------------------------------

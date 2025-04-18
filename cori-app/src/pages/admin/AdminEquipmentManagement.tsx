@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar, Tooltip, Button, Dropdown } from "antd";
+import { Table, Avatar, Tooltip, Button, Dropdown, Popover } from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
 import { equipmentAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
@@ -30,10 +30,11 @@ interface EquipmentData {
   equipmentCatId: number;
   equipmentCategoryName: string;
   condition: number;
-  employeeId: number;
-  fullName: string;
-  numberOfItems: number;
-  assignedDate: string;
+  employeeId: number | null;
+  fullName: string | null;
+  profilePicture: string | null;
+  numberOfItems: number | null;
+  assignedDate: string | null;
 }
 
 interface TableParams {
@@ -67,17 +68,18 @@ const AdminEquipmentManagement: React.FC = () => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await equipmentAPI.getEmpEquipItems();
+      const response = await equipmentAPI.getAllEquipItems();
       const processedData = response.data.$values.map((item: any) => ({
         equipmentId: item.equipment.equipmentId,
         equipmentName: item.equipment.equipmentName,
         equipmentCatId: item.equipment.equipmentCatId,
         equipmentCategoryName: item.equipment.equipmentCategoryName,
         condition: item.equipment.condition,
-        employeeId: item.equipment.employeeId,
-        fullName: item.fullName,
-        numberOfItems: item.numberOfItems,
-        assignedDate: item.equipment.assignedDate,
+        employeeId: item.equipment.employeeId || null,
+        fullName: item.fullName || null,
+        profilePicture: item.profilePicture || null,
+        numberOfItems: item.numberOfItems || null,
+        assignedDate: item.equipment.assignedDate || null,
       }));
       setAllData(processedData);
     } catch (error) {
@@ -169,27 +171,91 @@ const AdminEquipmentManagement: React.FC = () => {
         dataIndex: "fullName",
         sorter: true,
         render: (_, record) => (
-          <div className="flex items-center gap-2">
-            <Avatar
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${record.fullName}`}
-              className="bg-warmstone-600 h-10 w-10 rounded-full object-cover border-1 border-warmstone-400"
-            />
-            <div className="flex flex-col">
-              <p className="font-medium">{record.fullName}</p>
-              <p className="text-sm text-zinc-500">{record.numberOfItems} items</p>
+          <Dropdown
+            menu={{
+              items: [
+                ...(record.employeeId
+                  ? [
+                      {
+                        key: "view",
+                        label: "View Employee",
+                        icon: <Icons.Person fontSize="small" />,
+                        onClick: () => {
+                          navigate(`/admin/individual-employee/${record.employeeId}`);
+                        },
+                      },
+                    ]
+                  : []),
+                {
+                  key: "assign",
+                  label: record.employeeId ? "Unlink Employee" : "Assign an Employee",
+                  icon: record.employeeId ? (
+                    <Icons.PersonOff fontSize="small" />
+                  ) : (
+                    <Icons.PersonAdd fontSize="small" />
+                  ),
+                  onClick: () => {
+                    if (record.employeeId) {
+                      console.log("Unlinking Employee");
+                    } else {
+                      console.log("Assign an Employee");
+                    }
+                  },
+                },
+              ],
+            }}
+            trigger={["click"]}
+            placement="bottomLeft"
+          >
+            <div className="cursor-pointer">
+              {record.employeeId ? (
+                <div className="flex items-center gap-2">
+                  {record.profilePicture ? (
+                    <Avatar
+                      src={record.profilePicture}
+                      className="bg-corigreen-500 h-10 w-10 rounded-full object-cover border-1 border-corigreen-300"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center bg-corigreen-500 h-10 w-10 rounded-full">
+                      <Icons.Person fontSize="medium" className="text-white" />
+                    </div>
+                  )}
+                  <div className="flex flex-col">
+                    <p className="font-medium">{record.fullName}</p>
+                    <p className="text-sm text-zinc-500">{record.numberOfItems} items</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center bg-zinc-200 h-10 w-10 rounded-full">
+                    <Icons.Person fontSize="medium" className="text-zinc-300" />
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-zinc-300">Unassigned</p>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          </Dropdown>
         ),
       },
       {
         title: "Assigned Date",
         dataIndex: "assignedDate",
         sorter: true,
-        render: (assignedDate) => (
-          <div className="flex flex-col">
-            <p className="text-zinc-900">{dayjs(assignedDate).format("DD MMM YYYY")}</p>
-            <p className="text-zinc-500 text-[12px]">{dayjs(assignedDate).fromNow(true)}</p>
-          </div>
+        render: (_, record) => (
+          <>
+            {record.employeeId ? (
+              <div className="flex flex-col">
+                <p className="text-zinc-900">{dayjs(record.assignedDate).format("DD MMM YYYY")}</p>
+                <p className="text-zinc-500 text-[12px]">
+                  {dayjs(record.assignedDate).fromNow(true)}
+                </p>
+              </div>
+            ) : (
+              <p className="text-zinc-900">-</p>
+            )}
+          </>
         ),
       },
       {
