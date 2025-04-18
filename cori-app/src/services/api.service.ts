@@ -106,6 +106,14 @@ export const empUserAPI = {
    */
   updateEmpUserById: (id: string, data: object): Promise<AxiosResponse> =>
     apiClient.put(`/EmpUser/edit-by-id/${id}`, data),
+
+  /**
+   * Get all emp users with equipment stats (compared to a specific equipment - for "hasItemOfSameEquipCat")
+   * @param comparedEquipId - The equipment's ID to compare against
+   * @returns Promise containing the API response
+   */
+  getAllEmpUsersAndEquipStats: (comparedEquipId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/EmpUser/equip-stats/${comparedEquipId}`),
 };
 // ------------------------------------------------------------
 
@@ -170,6 +178,15 @@ export const equipmentAPI = {
    */
   createEquipItemOrItems: (data: object): Promise<AxiosResponse> =>
     apiClient.post("/Equipment/CreateEquipmentItems", data),
+
+  /**
+   * Assign a single or multiple equipment items to an employee
+   * @param empId - The employee's ID
+   * @param equipIds - An array of equipment IDs
+   * @returns A message confirming the assignment
+   */
+  assignEquipItemOrItemsToEmp: (empId: number, equipIds: number[]): Promise<AxiosResponse> =>
+    apiClient.post(`/Equipment/assign-equipment/${empId}`, equipIds),
 
   /**
    * Unlink an equipment item from an employee

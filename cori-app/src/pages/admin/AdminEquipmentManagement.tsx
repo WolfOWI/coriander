@@ -145,6 +145,7 @@ const AdminEquipmentManagement: React.FC = () => {
     }
   };
 
+  // The columns of the table rendering
   const columns = useMemo<ColumnsType<EquipmentData>>(
     () => [
       {
@@ -198,9 +199,12 @@ const AdminEquipmentManagement: React.FC = () => {
                   ),
                   onClick: () => {
                     if (record.employeeId) {
+                      // Unlink the equipment from the employee
                       handleUnlinkEquipItemFromEmp(record.equipmentId);
                     } else {
-                      console.log("Assign an Employee");
+                      setSelectedEquipment(record);
+                      // Open the assignment modal
+                      setShowAssignSingleEquipToEmpModal(true);
                     }
                   },
                 },
@@ -314,6 +318,12 @@ const AdminEquipmentManagement: React.FC = () => {
     fetchData();
   };
 
+  // Assign Equipment (Modal)
+  const handleAssignSuccess = () => {
+    // Refresh the data
+    fetchData();
+  };
+
   // Unlink Equipment
   const handleUnlinkEquipItemFromEmp = async (id: number) => {
     console.log(id);
@@ -372,6 +382,8 @@ const AdminEquipmentManagement: React.FC = () => {
       <AssignSingleEquipToEmpModal
         showModal={showAssignSingleEquipToEmpModal}
         setShowModal={setShowAssignSingleEquipToEmpModal}
+        equipment={selectedEquipment}
+        onAssignSuccess={handleAssignSuccess}
       />
       <DeleteEquipmentModal
         showModal={showDeleteEquipmentModal}
