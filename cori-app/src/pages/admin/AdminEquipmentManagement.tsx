@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar, Tooltip, Button, Dropdown, Popover, message } from "antd";
+import { Table, Avatar, Tooltip, Button, Dropdown, Popover, message, DatePicker } from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
 import { equipmentAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +33,7 @@ interface EquipmentData {
   employeeId: number | null;
   fullName: string | null;
   profilePicture: string | null;
+  employDate: Date | null;
   isSuspended: boolean | null;
   numberOfItems: number | null;
   assignedDate: string | null;
@@ -79,6 +80,7 @@ const AdminEquipmentManagement: React.FC = () => {
         employeeId: item.equipment.employeeId || null,
         fullName: item.fullName || null,
         profilePicture: item.profilePicture || null,
+        employDate: item.employDate || null,
         isSuspended: item.isSuspended || null,
         numberOfItems: item.numberOfItems || null,
         assignedDate: item.equipment.assignedDate || null,
@@ -144,6 +146,20 @@ const AdminEquipmentManagement: React.FC = () => {
       case "delete":
         setShowDeleteEquipmentModal(true);
         break;
+    }
+  };
+
+  // Update assigned date
+  const handleUpdateAssignedDate = async (record: EquipmentData, date: dayjs.Dayjs) => {
+    try {
+      await equipmentAPI.editEquipItemById(record.equipmentId, {
+        assignedDate: date.format("YYYY-MM-DD"),
+      });
+      messageApi.success("Assigned date updated successfully");
+      fetchData();
+    } catch (error) {
+      messageApi.error("Failed to update assigned date");
+      console.error("Error updating assigned date:", error);
     }
   };
 
@@ -267,12 +283,35 @@ const AdminEquipmentManagement: React.FC = () => {
         render: (_, record) => (
           <>
             {record.employeeId ? (
-              <div className="flex flex-col">
-                <p className="text-zinc-900">{dayjs(record.assignedDate).format("DD MMM YYYY")}</p>
-                <p className="text-zinc-500 text-[12px]">
-                  {dayjs(record.assignedDate).fromNow(true)}
-                </p>
-              </div>
+              <Popover
+                content={
+                  <DatePicker
+                    defaultValue={record.assignedDate ? dayjs(record.assignedDate) : undefined}
+                    onChange={(date) => {
+                      if (date) {
+                        handleUpdateAssignedDate(record, date);
+                      }
+                    }}
+                    className="w-full"
+                    format="DD MMM YYYY"
+                    allowClear={false}
+                    maxDate={dayjs()} // Can't assign date after today
+                    minDate={record.employDate ? dayjs(record.employDate) : undefined} // Can't assign date before employment date
+                  />
+                }
+                trigger="click"
+                placement="bottom"
+                destroyTooltipOnHide
+              >
+                <div className="flex flex-col cursor-pointer hover:bg-zinc-50 p-2 rounded-lg transition-colors">
+                  <p className="text-zinc-900">
+                    {dayjs(record.assignedDate).format("DD MMM YYYY")}
+                  </p>
+                  <p className="text-zinc-500 text-[12px]">
+                    {dayjs(record.assignedDate).fromNow(true)}
+                  </p>
+                </div>
+              </Popover>
             ) : (
               <p className="text-zinc-900">-</p>
             )}
