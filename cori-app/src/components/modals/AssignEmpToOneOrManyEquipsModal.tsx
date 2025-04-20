@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form } from "antd";
+import { Modal, Button, Form, message } from "antd";
 import { EquipmentCondition } from "../../types/common";
 import EquipCheckItem from "../equipment/EquipCheckItem";
 import { equipmentAPI } from "../../services/api.service";
@@ -7,6 +7,8 @@ import { equipmentAPI } from "../../services/api.service";
 interface AssignEmpToEquipsModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
+  employeeId: number;
+  onAssignSuccess: () => void;
 }
 
 interface Equipment {
@@ -17,140 +19,126 @@ interface Equipment {
   condition: EquipmentCondition;
 }
 
-function AssignEmpToEquipsModal({ showModal, setShowModal }: AssignEmpToEquipsModalProps) {
+function AssignEmpToOneOrManyEquipsModal({
+  showModal,
+  setShowModal,
+  employeeId,
+  onAssignSuccess,
+}: AssignEmpToEquipsModalProps) {
   const [form] = Form.useForm();
   const [unassingedEquips, setUnassingedEquips] = useState<Equipment[]>([]);
-  const [selectedEquipments, setSelectedEquipments] = useState<string[]>([]);
+  const [selectedEquipments, setSelectedEquipments] = useState<number[]>([]);
 
+  // Message System
+  const [messageApi, contextHolder] = message.useMessage();
+
+  // On Modal Open, load all unassigned equipment items
   useEffect(() => {
-    const fetchUnassignedEquips = async () => {
-      try {
-        const response = await equipmentAPI.getAllUnassignedEquipItems();
-        setUnassingedEquips(response.data.$values);
-      } catch (error) {
-        console.error("Error fetching unassigned equipment items:", error);
-      }
-    };
+    setSelectedEquipments([]);
     fetchUnassignedEquips();
-  }, []);
+  }, [showModal]);
 
-  useEffect(() => {
-    console.log(unassingedEquips);
-  }, [unassingedEquips]);
+  // Fetch all unassigned equipment items
+  const fetchUnassignedEquips = async () => {
+    try {
+      const response = await equipmentAPI.getAllUnassignedEquipItems();
+      setUnassingedEquips(response.data.$values);
+    } catch (error) {
+      messageApi.error("Error fetching unassigned equipment items");
+      console.error("Error fetching unassigned equipment items:", error);
+    }
+  };
 
-  // const equipmentList: Equipment[] = [
-  //   {
-  //     id: "equipment1",
-  //     name: "Equipment Name",
-  //     category: "Category",
-  //     condition: EquipmentCondition.Good,
-  //   },
-  //   {
-  //     id: "equipment2",
-  //     name: "Equipment 2",
-  //     category: "Category",
-  //     condition: EquipmentCondition.New,
-  //   },
-  //   {
-  //     id: "equipment3",
-  //     name: "Equipment 3",
-  //     category: "Category",
-  //     condition: EquipmentCondition.Used,
-  //   },
-  //   {
-  //     id: "equipment4",
-  //     name: "Equipment 4",
-  //     category: "Category",
-  //     condition: EquipmentCondition.Decent,
-  //   },
-  //   {
-  //     id: "equipment5",
-  //     name: "Equipment 5",
-  //     category: "Category",
-  //     condition: EquipmentCondition.Good,
-  //   },
-  //   {
-  //     id: "equipment6",
-  //     name: "Equipment 6",
-  //     category: "Category",
-  //     condition: EquipmentCondition.Used,
-  //   },
-  //   {
-  //     id: "equipment7",
-  //     name: "Equipment 7",
-  //     category: "Category",
-  //     condition: EquipmentCondition.New,
-  //   },
-  // ];
+  // useEffect(() => {
+  //   console.log(unassingedEquips);
+  // }, [unassingedEquips]);
 
-  const handleSelect = (id: string) => {
+  // useEffect(() => {
+  //   console.log(selectedEquipments);
+  // }, [selectedEquipments]);
+
+  // Handle Select Equipment
+  const handleSelect = (id: number) => {
     setSelectedEquipments((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((v) => v !== id);
+      // Check if the equipment is already selected
+      const isAlreadySelected = prev.includes(id);
+      if (isAlreadySelected) {
+        // If it is, remove it from the selected equipments
+        return prev.filter((equipmentId) => equipmentId !== id);
       }
+      // If not, add the id to the selected equipments
       return [...prev, id];
     });
   };
 
-  const handleSave = () => {
-    form.setFieldsValue({ equipmentList: selectedEquipments });
-    form.validateFields().then((values) => {
-      console.log("Selected equipment IDs:", values.equipmentList);
-      setShowModal(false);
-    });
+  // Handle Assign Equipment
+  const handleAssign = async () => {
+    // Assign 1 or multiple equipments (numbers array) to the employee
+    try {
+      await equipmentAPI.assignEquipItemOrItemsToEmp(employeeId, selectedEquipments);
+      messageApi.success("Equipments assigned successfully");
+      onAssignSuccess(); // Refresh the employee data
+    } catch (error) {
+      messageApi.error("Error assigning equipments");
+      console.error("Error assigning equipments:", error);
+    }
+    setShowModal(false);
   };
 
   return (
-    <Modal
-      title={<h2 className="text-zinc-900 font-bold text-3xl select-none">Assign Equipment</h2>}
-      open={showModal}
-      onCancel={() => setShowModal(false)}
-      width={600}
-      styles={{
-        header: {
-          paddingLeft: 40,
-          paddingRight: 40,
-          paddingTop: 40,
-        },
-        body: {
-          paddingTop: 16,
-          padding: 40,
-        },
-        footer: {
-          paddingLeft: 40,
-          paddingRight: 40,
-          paddingBottom: 40,
-        },
-      }}
-      footer={[
-        <Button key="cancel" onClick={() => setShowModal(false)}>
-          Cancel
-        </Button>,
-        <Button key="create" type="primary" onClick={handleSave}>
-          Assign {selectedEquipments.length > 0 ? `(${selectedEquipments.length})` : ""}
-        </Button>,
-      ]}
-    >
-      <Form form={form} layout="vertical" variant="filled" className="flex flex-col w-full">
-        <Form.Item name="equipmentList" className="flex flex-col w-full">
-          <div className="flex flex-col gap-2 w-full h-[400px] overflow-y-auto">
-            {unassingedEquips.map((item) => (
-              <EquipCheckItem
-                key={item.equipmentId}
-                equipmentId={item.equipmentId}
-                equipmentName={item.equipmentName}
-                equipmentCategoryId={item.equipmentCatId}
-                equipmentCategoryName={item.equipmentCategoryName}
-                condition={item.condition}
-                isSelected={selectedEquipments.includes(item.equipmentId.toString())}
-                onClick={() => handleSelect(item.equipmentId.toString())}
-              />
-            ))}
-          </div>
-        </Form.Item>
-      </Form>
-    </Modal>
+    <>
+      {contextHolder}
+      <Modal
+        title={<h2 className="text-zinc-900 font-bold text-3xl select-none">Assign Equipment</h2>}
+        open={showModal}
+        onCancel={() => setShowModal(false)}
+        width={600}
+        styles={{
+          header: {
+            paddingLeft: 40,
+            paddingRight: 40,
+            paddingTop: 40,
+          },
+          body: {
+            paddingTop: 16,
+            padding: 40,
+          },
+          footer: {
+            paddingLeft: 40,
+            paddingRight: 40,
+            paddingBottom: 40,
+          },
+        }}
+        footer={[
+          <Button key="cancel" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>,
+          <Button key="assign" type="primary" onClick={handleAssign}>
+            Assign {selectedEquipments.length > 0 ? `(${selectedEquipments.length})` : ""}
+          </Button>,
+        ]}
+      >
+        <Form form={form} layout="vertical" variant="filled" className="flex flex-col w-full">
+          <Form.Item name="equipmentList" className="flex flex-col w-full">
+            <div className="flex flex-col gap-2 w-full h-[400px] overflow-y-auto">
+              {unassingedEquips.map((item) => (
+                <EquipCheckItem
+                  key={item.equipmentId}
+                  equipmentId={item.equipmentId}
+                  equipmentName={item.equipmentName}
+                  equipmentCategoryId={item.equipmentCatId}
+                  equipmentCategoryName={item.equipmentCategoryName}
+                  condition={item.condition}
+                  isSelected={selectedEquipments.includes(item.equipmentId)}
+                  onClick={() => handleSelect(item.equipmentId)}
+                />
+              ))}
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 }
 
-export default AssignEmpToEquipsModal;
+export default AssignEmpToOneOrManyEquipsModal;

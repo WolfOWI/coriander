@@ -672,6 +672,8 @@ const AdminIndividualEmployee: React.FC = () => {
         <AssignEmpToOneOrManyEquipsModal
           showModal={showAssignExistingEquipModal}
           setShowModal={setShowAssignExistingEquipModal}
+          employeeId={empUser?.employeeId}
+          onAssignSuccess={fetchEmployee}
         />
 
         {/* Edit Equipment Modal */}
