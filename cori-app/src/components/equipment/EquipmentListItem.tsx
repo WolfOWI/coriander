@@ -8,14 +8,7 @@ import CoriCircleBtn from "../buttons/CoriCircleBtn";
 import dayjs from "dayjs";
 
 // Import Icons
-import PhoneIcon from "@mui/icons-material/PhoneAndroid";
-import TabletIcon from "@mui/icons-material/TabletAndroid";
-import LaptopIcon from "@mui/icons-material/Laptop";
-import MonitorIcon from "@mui/icons-material/Monitor";
-import HeadsetIcon from "@mui/icons-material/Headset";
-import KeyboardIcon from "@mui/icons-material/Keyboard";
-import EditIcon from "@mui/icons-material/Edit";
-import DeviceUnknownIcon from "@mui/icons-material/DeviceUnknown";
+import { Icons } from "../../constants/icons";
 
 // Types
 import { EquipmentCondition, EquipmentCategory } from "../../types/common";
@@ -46,25 +39,25 @@ function EquipmentListItem({ item, onEdit, adminView }: EquipmentListItemProps) 
 
   switch (item.equipmentCatId) {
     case EquipmentCategory.Cellphone:
-      deviceIcon = <PhoneIcon fontSize="large" />;
+      deviceIcon = <Icons.Phone fontSize="large" />;
       break;
     case EquipmentCategory.Tablet:
-      deviceIcon = <TabletIcon fontSize="large" />;
+      deviceIcon = <Icons.Tablet fontSize="large" />;
       break;
     case EquipmentCategory.Laptop:
-      deviceIcon = <LaptopIcon fontSize="large" />;
+      deviceIcon = <Icons.Laptop fontSize="large" />;
       break;
     case EquipmentCategory.Monitor:
-      deviceIcon = <MonitorIcon fontSize="large" />;
+      deviceIcon = <Icons.Monitor fontSize="large" />;
       break;
     case EquipmentCategory.Headset:
-      deviceIcon = <HeadsetIcon fontSize="large" />;
+      deviceIcon = <Icons.Headset fontSize="large" />;
       break;
     case EquipmentCategory.Keyboard:
-      deviceIcon = <KeyboardIcon fontSize="large" />;
+      deviceIcon = <Icons.Keyboard fontSize="large" />;
       break;
     default:
-      deviceIcon = <DeviceUnknownIcon fontSize="large" />;
+      deviceIcon = <Icons.DeviceUnknown fontSize="large" />;
       break;
   }
 
@@ -82,12 +75,14 @@ function EquipmentListItem({ item, onEdit, adminView }: EquipmentListItemProps) 
         <EquipCondiBadge condition={item.condition} />
         {/* Edit button only for admins */}
         {adminView && (
-          <CoriCircleBtn
-            style="black"
-            icon={<EditIcon />}
-            onClick={onEdit}
-            className="hidden group-hover:flex transition-all duration-300"
-          />
+          <>
+            <CoriCircleBtn
+              style="black"
+              icon={<Icons.Edit />}
+              onClick={onEdit}
+              className="hidden group-hover:flex transition-all duration-300"
+            />
+          </>
         )}
       </div>
     </div>
