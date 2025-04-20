@@ -39,6 +39,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import WarningIcon from "@mui/icons-material/WarningRounded";
+import LinkOffIcon from "@mui/icons-material/LinkOff";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -82,4 +83,5 @@ export const Icons = {
   PersonOff: PersonOffIcon,
   AutoAwesome: AutoAwesomeIcon,
   Warning: WarningIcon,
+  LinkOff: LinkOffIcon,
 };

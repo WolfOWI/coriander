@@ -1,7 +1,6 @@
-import React, { JSX } from "react";
+import React, { useState, JSX } from "react";
 
 // Import Components
-import CoriBadge from "../badges/CoriBadge";
 import CoriCircleBtn from "../buttons/CoriCircleBtn";
 
 // Functions
@@ -26,13 +25,22 @@ interface Equipment {
 
 interface EquipmentListItemProps {
   item: Equipment | null;
-  onEdit?: () => void;
   adminView?: boolean;
+  onEdit?: () => void;
+  onUnlink?: () => void;
+  onDelete?: () => void;
 }
 
-function EquipmentListItem({ item, onEdit, adminView }: EquipmentListItemProps) {
+function EquipmentListItem({
+  item,
+  adminView,
+  onEdit,
+  onUnlink,
+  onDelete,
+}: EquipmentListItemProps) {
   let deviceIcon: JSX.Element;
 
+  // If no item, return null
   if (!item) {
     return null;
   }
@@ -62,30 +70,45 @@ function EquipmentListItem({ item, onEdit, adminView }: EquipmentListItemProps) 
   }
 
   return (
-    <div className="flex items-center gap-2 w-full justify-between group">
-      <div className="flex items-center gap-2">
-        {deviceIcon}
-        <div className="flex flex-col">
-          <p className="text-zinc-900">{item.equipmentName}</p>
-          <p className="text-zinc-500 text-sm">{item.equipmentCategoryName}</p>
+    <>
+      <div className="flex items-center gap-2 w-full justify-between group">
+        <div className="flex items-center gap-2">
+          {deviceIcon}
+          <div className="flex flex-col">
+            <p className="text-zinc-900">{item.equipmentName}</p>
+            <p className="text-zinc-500 text-sm">{item.equipmentCategoryName}</p>
+          </div>
+        </div>
+        <p className="text-zinc-500 text-sm">{dayjs(item.assignedDate).format("DD MMM YYYY")}</p>
+        <div className="flex items-center gap-2">
+          <EquipCondiBadge condition={item.condition} />
+          {/* Edit button only for admins */}
+          {adminView && (
+            <>
+              <CoriCircleBtn
+                style="black"
+                icon={<Icons.Edit />}
+                onClick={onEdit}
+                className="hidden group-hover:flex transition-all duration-300"
+              />
+              <CoriCircleBtn
+                secondary
+                style="red"
+                icon={<Icons.LinkOff />}
+                onClick={onUnlink}
+                className="hidden group-hover:flex transition-all duration-300"
+              />
+              <CoriCircleBtn
+                style="red"
+                icon={<Icons.Delete />}
+                onClick={onDelete}
+                className="hidden group-hover:flex transition-all duration-300"
+              />
+            </>
+          )}
         </div>
       </div>
-      <p className="text-zinc-500 text-sm">{dayjs(item.assignedDate).format("DD MMM YYYY")}</p>
-      <div className="flex items-center gap-2">
-        <EquipCondiBadge condition={item.condition} />
-        {/* Edit button only for admins */}
-        {adminView && (
-          <>
-            <CoriCircleBtn
-              style="black"
-              icon={<Icons.Edit />}
-              onClick={onEdit}
-              className="hidden group-hover:flex transition-all duration-300"
-            />
-          </>
-        )}
-      </div>
-    </div>
+    </>
   );
 }
 

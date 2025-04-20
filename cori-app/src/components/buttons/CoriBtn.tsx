@@ -4,8 +4,8 @@ import React from "react";
 import "../../styles/buttons.css";
 import { Button } from "react-bootstrap";
 
-// PrimaryBtn Properties
-interface PrimaryBtnProps {
+// Btn Properties
+interface BtnProps {
   onClick?: () => void;
   children?: React.ReactNode;
   className?: string;
@@ -28,7 +28,7 @@ const CoriBtn = ({
   type,
   iconOnly,
   disabled,
-}: PrimaryBtnProps) => {
+}: BtnProps) => {
   // Default styles
   let btnStyles = "";
   let btnVariant = "primary";

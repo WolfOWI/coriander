@@ -27,6 +27,7 @@ import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetail
 import CreateAssignedEquipModal from "../../components/modals/CreateAssignedEquipModal";
 import AssignEmpToEquipsModal from "../../components/modals/AssignEmpToEquipsModal";
 import ManageAssignedItemModal from "../../components/modals/ManageAssignedItemModal";
+import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
@@ -149,6 +150,8 @@ const AdminIndividualEmployee: React.FC = () => {
   const [showAssignExistingEquipModal, setShowAssignExistingEquipModal] = useState(false);
   const [showManageEquipmentModal, setShowManageEquipmentModal] = useState(false);
   const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
+  const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
   // Message System
   const [messageApi, ContextHolder] = message.useMessage();
@@ -544,7 +547,14 @@ const AdminIndividualEmployee: React.FC = () => {
                   <EquipmentListItem
                     key={item.equipmentId}
                     item={item}
-                    onEdit={() => setShowManageEquipmentModal(true)}
+                    onEdit={() => {
+                      setSelectedEquipment(item);
+                      setShowManageEquipmentModal(true);
+                    }}
+                    onDelete={() => {
+                      setSelectedEquipment(item);
+                      setShowDeleteEquipmentModal(true);
+                    }}
                     adminView
                   />
                 ))}
@@ -640,15 +650,7 @@ const AdminIndividualEmployee: React.FC = () => {
         </div>
       </div>
       <div>
-        {/* MODALS */}
-        {/* Edit Details Modal */}
-        <AdminEditEmpDetailsModal
-          showModal={showEditDetailsModal}
-          setShowModal={setShowEditDetailsModal}
-          employee={empUser}
-          onUpdate={fetchEmployee}
-        />
-
+        {/* EQUIPMENT MODALS */}
         {/* Create & Assign Equipment Modal */}
         <CreateAssignedEquipModal
           showModal={showCreateAssignedEquipModal}
@@ -657,7 +659,7 @@ const AdminIndividualEmployee: React.FC = () => {
           onCreate={fetchEmployee}
         />
 
-        {/* Assign Existing Equipments Modal */}
+        {/* Assign Multiple Existing Equipments Modal */}
         <AssignEmpToEquipsModal
           showModal={showAssignExistingEquipModal}
           setShowModal={setShowAssignExistingEquipModal}
@@ -667,6 +669,23 @@ const AdminIndividualEmployee: React.FC = () => {
         <ManageAssignedItemModal
           showModal={showManageEquipmentModal}
           setShowModal={setShowManageEquipmentModal}
+        />
+
+        {/* Delete Equipment Modal */}
+        <DeleteEquipmentModal
+          showModal={showDeleteEquipmentModal}
+          setShowModal={setShowDeleteEquipmentModal}
+          equipment={selectedEquipment}
+          onDeleteSuccess={fetchEmployee}
+        />
+
+        {/* EMPLOYEE MODALS*/}
+        {/* Edit EmployeeDetails Modal */}
+        <AdminEditEmpDetailsModal
+          showModal={showEditDetailsModal}
+          setShowModal={setShowEditDetailsModal}
+          employee={empUser}
+          onUpdate={fetchEmployee}
         />
 
         {/* Terminate Employee Modal */}
