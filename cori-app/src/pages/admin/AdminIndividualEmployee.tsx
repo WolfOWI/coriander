@@ -27,6 +27,7 @@ import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetail
 import CreateAssignedEquipModal from "../../components/modals/CreateAssignedEquipModal";
 import AssignEmpToEquipsModal from "../../components/modals/AssignEmpToEquipsModal";
 import ManageAssignedItemModal from "../../components/modals/ManageAssignedItemModal";
+import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
 
 // Import Icons
@@ -150,6 +151,7 @@ const AdminIndividualEmployee: React.FC = () => {
   const [showAssignExistingEquipModal, setShowAssignExistingEquipModal] = useState(false);
   const [showManageEquipmentModal, setShowManageEquipmentModal] = useState(false);
   const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
+  const [showUnlinkEquipmentModal, setShowUnlinkEquipmentModal] = useState(false);
   const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
@@ -551,6 +553,10 @@ const AdminIndividualEmployee: React.FC = () => {
                       setSelectedEquipment(item);
                       setShowManageEquipmentModal(true);
                     }}
+                    onUnlink={() => {
+                      setSelectedEquipment(item);
+                      setShowUnlinkEquipmentModal(true);
+                    }}
                     onDelete={() => {
                       setSelectedEquipment(item);
                       setShowDeleteEquipmentModal(true);
@@ -669,6 +675,14 @@ const AdminIndividualEmployee: React.FC = () => {
         <ManageAssignedItemModal
           showModal={showManageEquipmentModal}
           setShowModal={setShowManageEquipmentModal}
+        />
+
+        {/* Unlink Equipment Modal */}
+        <UnlinkEquipmentModal
+          showModal={showUnlinkEquipmentModal}
+          setShowModal={setShowUnlinkEquipmentModal}
+          equipment={selectedEquipment}
+          onUnlinkSuccess={fetchEmployee}
         />
 
         {/* Delete Equipment Modal */}

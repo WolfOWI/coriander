@@ -4,7 +4,7 @@ import { Icons } from "../../constants/icons";
 import { equipmentAPI } from "../../services/api.service";
 import EquipmentTypeAvatar from "../avatars/EquipmentTypeAvatar";
 
-interface DeleteEquipmentModalProps {
+interface UnlinkEquipmentModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   equipment: {
@@ -14,29 +14,29 @@ interface DeleteEquipmentModalProps {
     equipmentCategoryName: string;
     condition: number;
   } | null;
-  onDeleteSuccess: () => void;
+  onUnlinkSuccess: () => void;
 }
 
-function DeleteEquipmentModal({
+function UnlinkEquipmentModal({
   showModal,
   setShowModal,
   equipment,
-  onDeleteSuccess,
-}: DeleteEquipmentModalProps) {
+  onUnlinkSuccess,
+}: UnlinkEquipmentModalProps) {
   const [messageApi, contextHolder] = message.useMessage();
 
   if (!equipment) return null;
 
-  // Handle the deletion of the equipment item
-  const handleDelete = async () => {
+  // Handle the unlinking of the equipment item
+  const handleUnlink = async () => {
     try {
-      await equipmentAPI.deleteEquipItemById(equipment.equipmentId);
-      messageApi.success(`${equipment.equipmentName} was deleted successfully`);
-      onDeleteSuccess();
+      await equipmentAPI.unlinkEquipItemFromEmp(equipment.equipmentId);
+      messageApi.success(`${equipment.equipmentName} was unlinked successfully`);
+      onUnlinkSuccess();
       setShowModal(false);
     } catch (error) {
-      messageApi.error("Something went wrong and the equipment was not deleted.");
-      console.error("Error deleting equipment:", error);
+      messageApi.error("Something went wrong and the equipment was not unlinked.");
+      console.error("Error unlinking equipment:", error);
     }
   };
 
@@ -44,7 +44,7 @@ function DeleteEquipmentModal({
     <>
       {contextHolder}
       <Modal
-        title={<h2 className="text-red-600 font-bold text-3xl text-center">Delete Item?</h2>}
+        title={<h2 className="text-orange-400 font-bold text-3xl text-center">Unlink Item?</h2>}
         open={showModal}
         onCancel={() => setShowModal(false)}
         width={600}
@@ -72,14 +72,17 @@ function DeleteEquipmentModal({
             <Button key="cancel" onClick={() => setShowModal(false)} className="w-full">
               Cancel
             </Button>
-            <Button key="delete" type="primary" danger onClick={handleDelete} className="w-full">
-              Delete Item
+            <Button key="unlink" type="primary" onClick={handleUnlink} className="w-full">
+              Unlink Item
             </Button>
           </div>,
         ]}
       >
         <div className="flex flex-col gap-2">
-          <p className="text-zinc-500 text-sm text-center">This cannot be undone.</p>
+          <p className="text-zinc-500 text-sm text-center">
+            This will remove the item from the employee's profile, but not delete it. You can relink
+            this item later.
+          </p>
           <div className="flex items-center gap-3 px-4 py-3 bg-warmstone-300 rounded-xl my-2">
             <EquipmentTypeAvatar equipmentCategoryId={equipment.equipmentCatId} />
             <div className="flex flex-col">
@@ -106,4 +109,4 @@ function DeleteEquipmentModal({
   );
 }
 
-export default DeleteEquipmentModal;
+export default UnlinkEquipmentModal;
