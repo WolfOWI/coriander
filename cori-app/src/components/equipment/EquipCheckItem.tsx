@@ -2,18 +2,23 @@ import React from "react";
 import { Icons } from "../../constants/icons";
 import EquipCondiBadge from "../badges/EquipCondiBadge";
 import { EquipmentCondition } from "../../types/common";
+import EquipmentTypeAvatar from "../avatars/EquipmentTypeAvatar";
 
 interface EquipCheckItemProps {
-  name: string;
-  category: string;
+  equipmentId: number;
+  equipmentName: string;
+  equipmentCategoryId: number;
+  equipmentCategoryName: string;
   condition: EquipmentCondition;
   isSelected: boolean;
   onClick: () => void;
 }
 
 const EquipCheckItem: React.FC<EquipCheckItemProps> = ({
-  name,
-  category,
+  equipmentId,
+  equipmentName,
+  equipmentCategoryId,
+  equipmentCategoryName,
   condition,
   isSelected,
   onClick,
@@ -33,13 +38,13 @@ const EquipCheckItem: React.FC<EquipCheckItemProps> = ({
             </div>
           ) : (
             <div className="bg-warmstone-500 rounded-full flex items-center justify-center h-10 w-10">
-              <Icons.Phone className="text-zinc-900" />
+              <EquipmentTypeAvatar equipmentCategoryId={equipmentCategoryId} />
             </div>
           )}
         </div>
         <div className="flex flex-col select-none">
-          <span className="text-zinc-900">{name}</span>
-          <span className="text-zinc-500 text-sm">{category}</span>
+          <span className="text-zinc-900">{equipmentName}</span>
+          <span className="text-zinc-500 text-sm">{equipmentCategoryName}</span>
         </div>
       </div>
       <EquipCondiBadge condition={condition} className="select-none" />

@@ -166,10 +166,16 @@ export const pageAPI = {
 // ------------------------------------------------------------
 export const equipmentAPI = {
   /**
-   * Fetches all equipment items assigned to employees
+   * Fetches all equipment items (assigned to employees and unassigned)
    * @returns Promise containing the API response
    */
   getAllEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment"),
+
+  /**
+   * Fetches all unassigned equipment items
+   * @returns Promise containing the API response
+   */
+  getAllUnassignedEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment/unassigned"),
 
   /**
    * Create a single or multiple equipment items (based on the request body)

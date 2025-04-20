@@ -15,7 +15,6 @@ dayjs.extend(relativeTime);
 // Import React Components
 import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
-import CoriBadge from "../../components/badges/CoriBadge";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
@@ -25,7 +24,7 @@ import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 import CreateAssignedEquipModal from "../../components/modals/CreateAssignedEquipModal";
-import AssignEmpToEquipsModal from "../../components/modals/AssignEmpToEquipsModal";
+import AssignEmpToOneOrManyEquipsModal from "../../components/modals/AssignEmpToOneOrManyEquipsModal";
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
@@ -670,12 +669,12 @@ const AdminIndividualEmployee: React.FC = () => {
         />
 
         {/* Assign Multiple Existing Equipments Modal */}
-        <AssignEmpToEquipsModal
+        <AssignEmpToOneOrManyEquipsModal
           showModal={showAssignExistingEquipModal}
           setShowModal={setShowAssignExistingEquipModal}
         />
 
-        {/* Manage Equipment Modal */}
+        {/* Edit Equipment Modal */}
         <EditEquipDetailsModal
           showModal={showManageEquipmentModal}
           setShowModal={setShowManageEquipmentModal}

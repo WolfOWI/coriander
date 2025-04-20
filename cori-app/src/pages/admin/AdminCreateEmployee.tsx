@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AssignEmpToEquipsModal from "../../components/modals/AssignEmpToEquipsModal";
+import AssignEmpToEquipsModal from "../../components/modals/AssignEmpToOneOrManyEquipsModal";
 import CoriBtn from "../../components/buttons/CoriBtn";
 
 const AdminCreateEmployee: React.FC = () => {
