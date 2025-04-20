@@ -26,7 +26,7 @@ import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 import CreateAssignedEquipModal from "../../components/modals/CreateAssignedEquipModal";
 import AssignEmpToEquipsModal from "../../components/modals/AssignEmpToEquipsModal";
-import ManageAssignedItemModal from "../../components/modals/ManageAssignedItemModal";
+import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
 
@@ -57,6 +57,7 @@ interface Equipment {
   equipmentName: string;
   assignedDate: string;
   condition: EquipmentCondition;
+  employDate: string;
 }
 
 // Leave Balance Interface
@@ -550,7 +551,10 @@ const AdminIndividualEmployee: React.FC = () => {
                     key={item.equipmentId}
                     item={item}
                     onEdit={() => {
-                      setSelectedEquipment(item);
+                      setSelectedEquipment({
+                        ...item,
+                        employDate: empUser?.employDate || "",
+                      });
                       setShowManageEquipmentModal(true);
                     }}
                     onUnlink={() => {
@@ -672,9 +676,11 @@ const AdminIndividualEmployee: React.FC = () => {
         />
 
         {/* Manage Equipment Modal */}
-        <ManageAssignedItemModal
+        <EditEquipDetailsModal
           showModal={showManageEquipmentModal}
           setShowModal={setShowManageEquipmentModal}
+          equipment={selectedEquipment}
+          onEditSuccess={fetchEmployee}
         />
 
         {/* Unlink Equipment Modal */}

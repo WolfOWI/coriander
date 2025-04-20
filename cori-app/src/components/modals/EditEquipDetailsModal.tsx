@@ -13,8 +13,8 @@ interface EditEquipDetailsModalProps {
     equipmentCatId: EquipmentCategory;
     condition: EquipmentCondition;
     employeeId: number | null;
-    employDate: Date | null;
-    assignedDate: Date | null;
+    employDate: string | null;
+    assignedDate: string | null;
   } | null;
   onEditSuccess: () => void;
 }
@@ -32,6 +32,7 @@ function EditEquipDetailsModal({
 
   useEffect(() => {
     if (equipment) {
+      console.log(equipment);
       form.setFieldsValue({
         equipmentName: equipment.equipmentName,
         equipmentCatId: equipment.equipmentCatId,

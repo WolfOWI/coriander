@@ -21,22 +21,24 @@ import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
 import dayjs from "dayjs";
 
 // Types
+import { EquipmentCategory, EquipmentCondition } from "../../types/common";
+
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
 
 interface EquipmentData {
   equipmentId: number;
   equipmentName: string;
-  equipmentCatId: number;
+  equipmentCatId: EquipmentCategory;
   equipmentCategoryName: string;
-  condition: number;
+  condition: EquipmentCondition;
   employeeId: number | null;
   fullName: string | null;
   profilePicture: string | null;
-  employDate: Date | null;
+  employDate: string | null;
   isSuspended: boolean | null;
   numberOfItems: number | null;
-  assignedDate: Date | null;
+  assignedDate: string | null;
 }
 
 interface TableParams {
@@ -87,7 +89,7 @@ const AdminEquipmentManagement: React.FC = () => {
       }));
       setAllData(processedData);
     } catch (error) {
-      console.error("Error fetching equipment:", error);
+      console.error("Error fetching equipment data:", error);
     } finally {
       setLoading(false);
     }
