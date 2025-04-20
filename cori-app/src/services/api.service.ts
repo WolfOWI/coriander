@@ -215,6 +215,14 @@ export const equipmentAPI = {
   // We are "Deleting" the link between the equipment and the employee (following good conventions)
 
   /**
+   * Mass unlink all equipment items from an employee by their id.
+   * @param id - The employee's ID
+   * @returns Promise containing the API response
+   */
+  massUnlinkEquipItemsFromEmp: (id: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/Equipment/mass-unlink/${id}`),
+
+  /**
    * Deletes an equipment item by its ID
    * @param id - The equipment's ID
    * @returns Promise containing the API response

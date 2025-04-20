@@ -296,20 +296,6 @@ const AdminIndividualEmployee: React.FC = () => {
     }
   };
 
-  // Terminate employee
-  const onTerminate = async () => {
-    try {
-      if (employeeId) {
-        await employeeAPI.terminateEmpById(employeeId); // Delete the employee
-        messageApi.success("Employee terminated");
-        navigate("/admin/employees"); // Navigate back to employee management page
-      } else {
-        messageApi.error("Something went wrong - Employee ID not found");
-      }
-    } catch (error) {
-      console.error("Error terminating employee:", error);
-    }
-  };
   if (loading) return <div>Loading...</div>;
   if (!empUser)
     return (
@@ -714,7 +700,7 @@ const AdminIndividualEmployee: React.FC = () => {
           showModal={showTerminateEmployeeModal}
           setShowModal={setShowTerminateEmployeeModal}
           employeeFullName={empUser?.fullName || "this employee"}
-          onTerminate={onTerminate}
+          employeeId={employeeId || ""}
         />
       </div>
     </div>
