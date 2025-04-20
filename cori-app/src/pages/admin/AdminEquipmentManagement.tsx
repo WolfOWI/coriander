@@ -33,6 +33,7 @@ interface EquipmentData {
   employeeId: number | null;
   fullName: string | null;
   profilePicture: string | null;
+  isSuspended: boolean | null;
   numberOfItems: number | null;
   assignedDate: string | null;
 }
@@ -78,6 +79,7 @@ const AdminEquipmentManagement: React.FC = () => {
         employeeId: item.equipment.employeeId || null,
         fullName: item.fullName || null,
         profilePicture: item.profilePicture || null,
+        isSuspended: item.isSuspended || null,
         numberOfItems: item.numberOfItems || null,
         assignedDate: item.equipment.assignedDate || null,
       }));
@@ -155,7 +157,12 @@ const AdminEquipmentManagement: React.FC = () => {
         width: "30%",
         render: (_, record) => (
           <div className="flex items-center gap-2">
-            <EquipmentTypeAvatar equipmentCategoryId={record.equipmentCatId} />
+            {record.isSuspended ? (
+              <EquipmentTypeAvatar equipmentCategoryId={record.equipmentCatId} colour="red" />
+            ) : (
+              <EquipmentTypeAvatar equipmentCategoryId={record.equipmentCatId} />
+            )}
+
             <div className="flex flex-col">
               <p className="font-medium">{record.equipmentName}</p>
               <p className="text-sm text-zinc-500 truncate">{record.equipmentCategoryName}</p>
@@ -227,7 +234,15 @@ const AdminEquipmentManagement: React.FC = () => {
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <p className="font-medium">{record.fullName}</p>
+                    <div className="flex items-center gap-1">
+                      <p className="font-medium">{record.fullName}</p>
+                      {record.isSuspended && (
+                        <Tooltip title="Employee is suspended">
+                          <Icons.Error fontSize="small" className="text-red-600" />
+                        </Tooltip>
+                      )}
+                    </div>
+
                     <p className="text-sm text-zinc-500">{record.numberOfItems} items</p>
                   </div>
                 </div>
