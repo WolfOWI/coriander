@@ -36,7 +36,7 @@ interface EquipmentData {
   employDate: Date | null;
   isSuspended: boolean | null;
   numberOfItems: number | null;
-  assignedDate: string | null;
+  assignedDate: Date | null;
 }
 
 interface TableParams {
@@ -80,10 +80,10 @@ const AdminEquipmentManagement: React.FC = () => {
         employeeId: item.equipment.employeeId || null,
         fullName: item.fullName || null,
         profilePicture: item.profilePicture || null,
-        employDate: item.employDate || null,
+        employDate: item.employDate ? new Date(item.employDate) : null,
         isSuspended: item.isSuspended || null,
         numberOfItems: item.numberOfItems || null,
-        assignedDate: item.equipment.assignedDate || null,
+        assignedDate: item.equipment.assignedDate ? new Date(item.equipment.assignedDate) : null,
       }));
       setAllData(processedData);
     } catch (error) {

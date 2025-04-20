@@ -13,7 +13,8 @@ interface EditEquipDetailsModalProps {
     equipmentCatId: EquipmentCategory;
     condition: EquipmentCondition;
     employeeId: number | null;
-    assignedDate: string | null;
+    employDate: Date | null;
+    assignedDate: Date | null;
   } | null;
   onEditSuccess: () => void;
 }
@@ -139,6 +140,7 @@ function EditEquipDetailsModal({
                 format="DD MMM YYYY"
                 allowClear={false}
                 maxDate={dayjs()} // Can't assign date after today
+                minDate={equipment.employDate ? dayjs(equipment.employDate) : undefined} // Can't assign date before employment date
               />
             </Form.Item>
           )}
