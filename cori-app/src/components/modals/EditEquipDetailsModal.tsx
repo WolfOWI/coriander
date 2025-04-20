@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { Modal, Button, Form, Input, Select, message } from "antd";
+import { Modal, Button, Form, Input, Select, message, DatePicker } from "antd";
 import { equipmentAPI } from "../../services/api.service";
 import { EquipmentCategory, EquipmentCondition } from "../../types/common";
+import dayjs from "dayjs";
 
 interface EditEquipDetailsModalProps {
   showModal: boolean;
@@ -11,6 +12,8 @@ interface EditEquipDetailsModalProps {
     equipmentName: string;
     equipmentCatId: EquipmentCategory;
     condition: EquipmentCondition;
+    employeeId: number | null;
+    assignedDate: string | null;
   } | null;
   onEditSuccess: () => void;
 }
@@ -32,6 +35,7 @@ function EditEquipDetailsModal({
         equipmentName: equipment.equipmentName,
         equipmentCatId: equipment.equipmentCatId,
         condition: equipment.condition,
+        assignedDate: equipment.assignedDate ? dayjs(equipment.assignedDate) : undefined,
       });
     }
   }, [equipment, form]);
@@ -40,8 +44,11 @@ function EditEquipDetailsModal({
     if (equipment) {
       try {
         const values = await form.validateFields();
-        console.log(values);
-        await equipmentAPI.editEquipItemById(equipment.equipmentId, values);
+        const formData = {
+          ...values,
+          assignedDate: values.assignedDate ? values.assignedDate.format("YYYY-MM-DD") : null,
+        };
+        await equipmentAPI.editEquipItemById(equipment.equipmentId, formData);
         onEditSuccess();
         setShowModal(false);
         messageApi.success("Equipment updated successfully!");
@@ -121,6 +128,20 @@ function EditEquipDetailsModal({
               <Select.Option value={EquipmentCondition.Used}>Used</Select.Option>
             </Select>
           </Form.Item>
+          {equipment?.employeeId && (
+            <Form.Item
+              name="assignedDate"
+              label="Assigned Date"
+              rules={[{ required: true, message: "Assigned date is required" }]}
+            >
+              <DatePicker
+                className="w-full"
+                format="DD MMM YYYY"
+                allowClear={false}
+                maxDate={dayjs()} // Can't assign date after today
+              />
+            </Form.Item>
+          )}
         </Form>
       </Modal>
     </>
