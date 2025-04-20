@@ -180,6 +180,15 @@ export const equipmentAPI = {
     apiClient.post("/Equipment/CreateEquipmentItems", data),
 
   /**
+   * Edit / update an equipment item by its ID with one or more fields
+   * @param id - The equipment's ID
+   * @param data - An object containing the fields to update
+   * @returns The updated equipment item
+   */
+  editEquipItemById: (id: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/Equipment/${id}`, data),
+
+  /**
    * Assign a single or multiple equipment items to an employee
    * @param empId - The employee's ID
    * @param equipIds - An array of equipment IDs

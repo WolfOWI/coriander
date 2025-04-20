@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
-import { Modal, Button, Form, Input, Select } from "antd";
+import { Modal, Button, Form, Input, Select, message } from "antd";
+import { equipmentAPI } from "../../services/api.service";
+import { EquipmentCategory, EquipmentCondition } from "../../types/common";
 
 interface EditEquipDetailsModalProps {
   showModal: boolean;
@@ -7,80 +9,121 @@ interface EditEquipDetailsModalProps {
   equipment: {
     equipmentId: number;
     equipmentName: string;
-    equipmentCategoryName: string;
-    condition: number;
+    equipmentCatId: EquipmentCategory;
+    condition: EquipmentCondition;
   } | null;
+  onEditSuccess: () => void;
 }
 
-function EditEquipDetailsModal({ showModal, setShowModal, equipment }: EditEquipDetailsModalProps) {
+function EditEquipDetailsModal({
+  showModal,
+  setShowModal,
+  equipment,
+  onEditSuccess,
+}: EditEquipDetailsModalProps) {
   const [form] = Form.useForm();
+
+  // Message System
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     if (equipment) {
       form.setFieldsValue({
         equipmentName: equipment.equipmentName,
-        deviceType: equipment.equipmentCategoryName.toLowerCase(),
-        condition: equipment.condition.toString(),
+        equipmentCatId: equipment.equipmentCatId,
+        condition: equipment.condition,
       });
     }
   }, [equipment, form]);
 
+  const handleSave = async () => {
+    if (equipment) {
+      try {
+        const values = await form.validateFields();
+        console.log(values);
+        await equipmentAPI.editEquipItemById(equipment.equipmentId, values);
+        onEditSuccess();
+        setShowModal(false);
+        messageApi.success("Equipment updated successfully!");
+      } catch (error) {
+        console.error("Error updating equipment:", error);
+        messageApi.error("Failed to update equipment. Please try again.");
+      }
+    } else {
+      messageApi.error("Equipment not found. Please select an equipment to update.");
+    }
+  };
   return (
-    <Modal
-      title={<h2 className="text-zinc-900 font-bold text-3xl">Edit Equipment Item</h2>}
-      open={showModal}
-      onCancel={() => setShowModal(false)}
-      width={600}
-      styles={{
-        header: {
-          paddingLeft: 40,
-          paddingRight: 40,
-          paddingTop: 40,
-        },
-        body: {
-          paddingTop: 20,
-          padding: 40,
-        },
-        footer: {
-          paddingLeft: 40,
-          paddingRight: 40,
-          paddingBottom: 40,
-        },
-      }}
-      footer={[
-        <Button key="cancel" onClick={() => setShowModal(false)}>
-          Cancel
-        </Button>,
-        <Button key="create" type="primary" onClick={() => setShowModal(false)}>
-          Save Changes
-        </Button>,
-      ]}
-    >
-      <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
-        <Form.Item name="equipmentName" label="Equipment Name">
-          <Input type="text" />
-        </Form.Item>
-        <Form.Item name="deviceType" label="Device Type">
-          <Select>
-            <Select.Option value="cellphone">Cellphone</Select.Option>
-            <Select.Option value="tablet">Tablet</Select.Option>
-            <Select.Option value="laptop">Laptop</Select.Option>
-            <Select.Option value="monitor">Monitor</Select.Option>
-            <Select.Option value="headset">Headset</Select.Option>
-            <Select.Option value="keyboard">Keyboard</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item name="condition" label="Condition">
-          <Select>
-            {/* New = 0, Good = 1, Decent = 2, Used = 3 */}
-            <Select.Option value="0">New</Select.Option>
-            <Select.Option value="1">Good</Select.Option>
-            <Select.Option value="2">Decent</Select.Option>
-            <Select.Option value="3">Used</Select.Option>
-          </Select>
-        </Form.Item>
-      </Form>
-    </Modal>
+    <>
+      {contextHolder}
+      <Modal
+        title={<h2 className="text-zinc-900 font-bold text-3xl">Edit Equipment Item</h2>}
+        open={showModal}
+        onCancel={() => setShowModal(false)}
+        width={600}
+        styles={{
+          header: {
+            paddingLeft: 40,
+            paddingRight: 40,
+            paddingTop: 40,
+          },
+          body: {
+            paddingTop: 20,
+            padding: 40,
+          },
+          footer: {
+            paddingLeft: 40,
+            paddingRight: 40,
+            paddingBottom: 40,
+          },
+        }}
+        footer={[
+          <Button key="cancel" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>,
+          <Button key="create" type="primary" onClick={handleSave}>
+            Save Changes
+          </Button>,
+        ]}
+      >
+        <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
+          <Form.Item
+            name="equipmentName"
+            label="Equipment Name"
+            rules={[{ required: true, message: "Equipment name is required" }]}
+          >
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item
+            name="equipmentCatId"
+            label="Equipment Category"
+            rules={[{ required: true, message: "Equipment category is required" }]}
+          >
+            <Select>
+              <Select.Option value={EquipmentCategory.Cellphone}>Cellphone</Select.Option>
+              <Select.Option value={EquipmentCategory.Tablet}>Tablet</Select.Option>
+              <Select.Option value={EquipmentCategory.Laptop}>Laptop</Select.Option>
+              <Select.Option value={EquipmentCategory.Monitor}>Monitor</Select.Option>
+              <Select.Option value={EquipmentCategory.Headset}>Headset</Select.Option>
+              <Select.Option value={EquipmentCategory.Keyboard}>Keyboard</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="condition"
+            label="Condition"
+            rules={[{ required: true, message: "Condition is required" }]}
+          >
+            <Select>
+              {/* New = 0, Good = 1, Decent = 2, Used = 3 */}
+              <Select.Option value={EquipmentCondition.New}>New</Select.Option>
+              <Select.Option value={EquipmentCondition.Good}>Good</Select.Option>
+              <Select.Option value={EquipmentCondition.Decent}>Decent</Select.Option>
+              <Select.Option value={EquipmentCondition.Used}>Used</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 }
 

@@ -155,7 +155,7 @@ const AdminEquipmentManagement: React.FC = () => {
         width: "30%",
         render: (_, record) => (
           <div className="flex items-center gap-2">
-            <EquipmentTypeAvatar deviceType={record.equipmentCatId} />
+            <EquipmentTypeAvatar equipmentCategoryId={record.equipmentCatId} />
             <div className="flex flex-col">
               <p className="font-medium">{record.equipmentName}</p>
               <p className="text-sm text-zinc-500 truncate">{record.equipmentCategoryName}</p>
@@ -324,6 +324,12 @@ const AdminEquipmentManagement: React.FC = () => {
     fetchData();
   };
 
+  // Edit Equipment (Modal)
+  const handleEditSuccess = () => {
+    // Refresh the data
+    fetchData();
+  };
+
   // Unlink Equipment
   const handleUnlinkEquipItemFromEmp = async (id: number) => {
     console.log(id);
@@ -378,6 +384,7 @@ const AdminEquipmentManagement: React.FC = () => {
         showModal={showEditEquipDetailsModal}
         setShowModal={setShowEditEquipDetailsModal}
         equipment={selectedEquipment}
+        onEditSuccess={handleEditSuccess}
       />
       <AssignSingleEquipToEmpModal
         showModal={showAssignSingleEquipToEmpModal}

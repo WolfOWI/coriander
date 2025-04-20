@@ -3,12 +3,12 @@ import { Icons } from "../../constants/icons";
 import { EquipmentCategory } from "../../types/common";
 
 interface EquipmentTypeAvatarProps {
-  deviceType: EquipmentCategory | number;
+  equipmentCategoryId: EquipmentCategory | number;
   colour?: string;
   className?: string;
 }
 
-function EquipmentTypeAvatar({ deviceType, className, colour }: EquipmentTypeAvatarProps) {
+function EquipmentTypeAvatar({ equipmentCategoryId, className, colour }: EquipmentTypeAvatarProps) {
   let icon;
   let bgColour;
   let iconColour;
@@ -28,7 +28,7 @@ function EquipmentTypeAvatar({ deviceType, className, colour }: EquipmentTypeAva
       break;
   }
 
-  switch (deviceType) {
+  switch (equipmentCategoryId) {
     case EquipmentCategory.Cellphone:
       icon = <Icons.Phone fontSize="large" className={iconColour} />;
       break;
