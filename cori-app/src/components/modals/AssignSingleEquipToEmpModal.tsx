@@ -25,6 +25,7 @@ interface EmployeeOption {
   employeeId: number;
   fullName: string;
   profilePicture: string | null;
+  isSuspended: boolean;
   numberOfItems: number;
   hasItemOfSameEquipCat: boolean;
 }
@@ -144,20 +145,25 @@ function AssignSingleEquipToEmpModal({
             </p>
           </div>
         </div>
-        {emp.employeeId == equipment?.employeeId && (
-          <div className="flex items-center gap-1">
-            <p className="text-corigreen-500 text-[12px] font-bold">Currently Assigned</p>
-          </div>
-        )}
-        {/* If the employee has an item of the same equipment category and is not currently assigned to the equipment, show the warning message */}
-        {emp.hasItemOfSameEquipCat && emp.employeeId !== equipment?.employeeId && (
-          <div className="flex items-center gap-1">
-            <Icons.Error className="text-yellow-500" fontSize="small" />
-            <p className="text-zinc-500 text-[12px]">
-              Already Owns A {equipment?.equipmentCategoryName}
-            </p>
-          </div>
-        )}
+        <>
+          {emp.employeeId == equipment?.employeeId ? (
+            <div className="flex items-center gap-1">
+              <p className="text-corigreen-500 text-[12px] font-bold">Currently Assigned</p>
+            </div>
+          ) : emp.isSuspended ? (
+            <div className="flex items-center gap-1">
+              <Icons.Warning className="text-red-500" fontSize="small" />
+              <p className="text-red-500 text-[12px]">Suspended</p>
+            </div>
+          ) : emp.hasItemOfSameEquipCat ? (
+            <div className="flex items-center gap-1">
+              <Icons.Error className="text-yellow-500" fontSize="small" />
+              <p className="text-zinc-500 text-[12px]">
+                Already Owns A {equipment?.equipmentCategoryName}
+              </p>
+            </div>
+          ) : null}
+        </>
       </div>
     ),
     data: emp,
@@ -252,17 +258,31 @@ function AssignSingleEquipToEmpModal({
               />
             </Form.Item>
           </Form>
-          {equipment?.employeeId &&
-            selectedEmployeeId &&
-            equipment.employeeId !== selectedEmployeeId && (
-              <Alert
-                description="You are changing the assigned employee of this equipment. Please proceed with caution."
-                type="warning"
-                showIcon
-                className="mb-4 rounded-xl"
-                closable
-              />
-            )}
+          {selectedEmployeeId && (
+            <>
+              {dropdownEmployees.find((emp) => emp.employeeId === selectedEmployeeId)
+                ?.isSuspended ? (
+                <Alert
+                  description="Caution: You are assigning equipment to a suspended employee."
+                  type="error"
+                  showIcon
+                  className="mb-4 rounded-xl"
+                  closable
+                />
+              ) : equipment?.employeeId && equipment.employeeId !== selectedEmployeeId ? (
+                <Alert
+                  description={`This item is already linked to a ${
+                    dropdownEmployees.find((emp) => emp.employeeId === equipment.employeeId)
+                      ?.fullName
+                  }. Reassigning will override the current assignment.`}
+                  type="warning"
+                  showIcon
+                  className="mb-4 rounded-xl"
+                  closable
+                />
+              ) : null}
+            </>
+          )}
         </Spin>
       </Modal>
     </>
