@@ -6,7 +6,7 @@ import { Button } from "react-bootstrap";
 
 // Btn Properties
 interface BtnProps {
-  onClick?: () => void;
+  onClick?: (e?: any) => void;
   children?: React.ReactNode;
   className?: string;
   primary?: boolean;

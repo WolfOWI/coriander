@@ -65,6 +65,12 @@ const Navigation: React.FC = () => {
             <Link to="/reference" className="nav-link text-white">
               Custom Stuffies
             </Link>
+            <Link to="/temp-modals/leave-overview" className="nav-link text-white">
+              Modals: Leave Overv
+            </Link>
+            <Link to="/temp-modals/admin-dash" className="nav-link text-white">
+              Modals: Admin Dash
+            </Link>
           </div>
         </div>
       </div>

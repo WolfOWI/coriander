@@ -22,7 +22,11 @@ import AdminCreateEmployee from "./pages/admin/AdminCreateEmployee";
 import AdminIndividualEmployee from "./pages/admin/AdminIndividualEmployee";
 import AdminEquipmentManagement from "./pages/admin/AdminEquipmentManagement";
 import AdminLeaveRequests from "./pages/admin/AdminLeaveRequests";
+
+// TODO: Delete these later
 import ReferencePage from "./pages/Reference";
+import TempModalsLeaveOverviewPage from "./pages/TempModalsLeaveOverviewPage";
+import TempModalsAdminDashPage from "./pages/TempModalsAdminDashPage";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
@@ -60,6 +64,8 @@ const AppContent: React.FC = () => {
           {/* Temporary Reference Route */}
           {/* TODO: Delete this later */}
           <Route path="/reference" element={<ReferencePage />} />
+          <Route path="/temp-modals/leave-overview" element={<TempModalsLeaveOverviewPage />} />
+          <Route path="/temp-modals/admin-dash" element={<TempModalsAdminDashPage />} />
         </Routes>
       </main>
     </div>
