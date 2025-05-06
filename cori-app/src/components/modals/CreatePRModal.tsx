@@ -14,7 +14,7 @@ function CreatePRModal({ showModal, setShowModal, onCreateSuccess }: CreatePRMod
   const [messageApi, contextHolder] = message.useMessage();
   const [isOnline, setIsOnline] = useState(false);
 
-  // Handle the creation of the equipment item
+  // Handle the creation of the performance review
   const handleCreate = async () => {
     try {
       // Validate the form fields
@@ -22,7 +22,7 @@ function CreatePRModal({ showModal, setShowModal, onCreateSuccess }: CreatePRMod
 
       // TODO: Create the performance review
       //   await equipmentAPI.createEquipItemOrItems([values]);
-      messageApi.success("Equipment was created successfully");
+      messageApi.success("Performance Review was created successfully");
 
       // Reset form and close modal
       form.resetFields();
