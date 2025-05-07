@@ -1,10 +1,17 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
 import Navigation from "./components/Navigation";
 import "antd/dist/reset.css";
+
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 // Configure day.js
 dayjs.locale("en");
@@ -27,6 +34,7 @@ import AdminLeaveRequests from "./pages/admin/AdminLeaveRequests";
 import ReferencePage from "./pages/Reference";
 import TempModalsLeaveOverviewPage from "./pages/TempModalsLeaveOverviewPage";
 import TempModalsAdminDashPage from "./pages/TempModalsAdminDashPage";
+import ApiPlayground from "./pages/apiPlayground/ApiPlayground";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
@@ -47,25 +55,47 @@ const AppContent: React.FC = () => {
 
           {/* Employee Routes */}
           <Route path="/employee/home" element={<EmployeeHome />} />
-          <Route path="/employee/leave-overview" element={<EmployeeLeaveOverview />} />
+          <Route
+            path="/employee/leave-overview"
+            element={<EmployeeLeaveOverview />}
+          />
           <Route path="/employee/profile" element={<EmployeeProfile />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
-          <Route path="/admin/equipment" element={<AdminEquipmentManagement />} />
-          <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
+          <Route
+            path="/admin/employees"
+            element={<AdminEmployeeManagement />}
+          />
+          <Route
+            path="/admin/equipment"
+            element={<AdminEquipmentManagement />}
+          />
+          <Route
+            path="/admin/create-employee"
+            element={<AdminCreateEmployee />}
+          />
           <Route
             path="/admin/individual-employee/:employeeId?"
             element={<AdminIndividualEmployee />}
           />
-          <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
+          <Route
+            path="/admin/leave-requests"
+            element={<AdminLeaveRequests />}
+          />
 
           {/* Temporary Reference Route */}
           {/* TODO: Delete this later */}
           <Route path="/reference" element={<ReferencePage />} />
-          <Route path="/temp-modals/leave-overview" element={<TempModalsLeaveOverviewPage />} />
-          <Route path="/temp-modals/admin-dash" element={<TempModalsAdminDashPage />} />
+          <Route
+            path="/temp-modals/leave-overview"
+            element={<TempModalsLeaveOverviewPage />}
+          />
+          <Route
+            path="/temp-modals/admin-dash"
+            element={<TempModalsAdminDashPage />}
+          />
+          <Route path="/apiplayground" element={<ApiPlayground />} />
         </Routes>
       </main>
     </div>

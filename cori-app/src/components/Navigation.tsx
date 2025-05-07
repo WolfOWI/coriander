@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import CoriBtn from "./buttons/CoriBtn";
+import { logout } from "../services/authService";
 
 const Navigation: React.FC = () => {
   return (
@@ -11,7 +13,9 @@ const Navigation: React.FC = () => {
 
           {/* Auth Links */}
           <div className="mb-4">
-            <small className="text-corigreen-500 text-uppercase">Authentication</small>
+            <small className="text-corigreen-500 text-uppercase">
+              Authentication
+            </small>
             <Link to="/" className="nav-link text-white">
               Login
             </Link>
@@ -25,7 +29,9 @@ const Navigation: React.FC = () => {
 
           {/* Employee Links */}
           <div className="mb-4">
-            <small className="text-corigreen-500 text-uppercase">Employee</small>
+            <small className="text-corigreen-500 text-uppercase">
+              Employee
+            </small>
             <Link to="/employee/home" className="nav-link text-white">
               Employee Home
             </Link>
@@ -61,16 +67,31 @@ const Navigation: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <small className="text-corigreen-500 text-uppercase">Reference</small>
+            <small className="text-corigreen-500 text-uppercase">
+              Reference
+            </small>
             <Link to="/reference" className="nav-link text-white">
               Custom Stuffies
             </Link>
-            <Link to="/temp-modals/leave-overview" className="nav-link text-white">
+            <Link
+              to="/temp-modals/leave-overview"
+              className="nav-link text-white"
+            >
               Modals: Leave Overv
             </Link>
             <Link to="/temp-modals/admin-dash" className="nav-link text-white">
               Modals: Admin Dash
             </Link>
+            <Link to="/apiplayground" className="nav-link text-white">
+              API playground
+            </Link>
+          </div>
+
+          {/* Must be alligned to the bottom */}
+          <div>
+            <CoriBtn type="submit" style="green" onClick={logout}>
+              Log out
+            </CoriBtn>
           </div>
         </div>
       </div>
