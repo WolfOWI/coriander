@@ -41,6 +41,7 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import WarningIcon from "@mui/icons-material/WarningRounded";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import UploadIcon from "@mui/icons-material/Upload";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -86,4 +87,5 @@ export const Icons = {
   Warning: WarningIcon,
   LinkOff: LinkOffIcon,
   Upload: UploadIcon,
+  Logout: LogoutIcon,
 };
