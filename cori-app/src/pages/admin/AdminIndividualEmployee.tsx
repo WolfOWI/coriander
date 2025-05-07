@@ -44,8 +44,9 @@ import {
 import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 
-// Types
+// Types / Interfaces
 import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "../../types/common";
+import { EmpUser } from "../../interfaces/empuser";
 
 // Equipment Interface
 interface Equipment {
@@ -108,28 +109,6 @@ interface AdminEmpDetailsResponse {
   performanceReviews: {
     $values: PerformanceReview[];
   };
-}
-
-// EmpUser Data Interface
-interface EmpUser {
-  userId: number;
-  fullName: string;
-  email: string;
-  googleId: string | null;
-  profilePicture: string;
-  role: number;
-  employeeId: number;
-  gender: Gender;
-  dateOfBirth: string;
-  phoneNumber: string;
-  jobTitle: string;
-  department: string;
-  salaryAmount: number;
-  payCycle: PayCycle;
-  lastPaidDate: string;
-  employType: EmployType;
-  employDate: string;
-  isSuspended: boolean;
 }
 
 const AdminIndividualEmployee: React.FC = () => {
