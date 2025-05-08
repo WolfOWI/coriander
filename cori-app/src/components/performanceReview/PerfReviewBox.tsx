@@ -15,22 +15,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import dayjs from "dayjs";
 import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUtils";
 
-interface PerformanceReview {
-  reviewId: number;
-  adminId: number;
-  adminName: string;
-  employeeId: number;
-  employeeName: string;
-  isOnline: boolean;
-  meetLocation: string | null;
-  meetLink: string;
-  startDate: string;
-  endDate: string;
-  rating: number;
-  comment: string;
-  docUrl: string;
-  status: number;
-}
+// Interfaces
+import { PerformanceReview } from "../../interfaces/performance_reviews/performanceReview";
 
 interface PerfReviewBoxProps {
   review: PerformanceReview;
@@ -93,7 +79,7 @@ function PerfReviewBox({ review, showPerson = true }: PerfReviewBoxProps) {
         {review.comment && <p className="text-zinc-500 text-[12px]">{review.comment}</p>}
         <div className="flex w-full items-center gap-4">
           {/* Rating */}
-          {review.rating > 0 && (
+          {review.rating && review.rating > 0 && (
             <div className="flex items-center gap-1">
               <StarRoundedIcon className="text-amber-300" />
               <p className="text-zinc-800 font-bold">{review.rating}</p>

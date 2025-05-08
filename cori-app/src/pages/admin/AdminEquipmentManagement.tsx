@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 
 // Types
 import { EquipmentCategory, EquipmentCondition } from "../../types/common";
+import { EmpUser } from "../../interfaces/people/empUser";
 
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
@@ -442,6 +443,8 @@ const AdminEquipmentManagement: React.FC = () => {
         showModal={showEditEquipDetailsModal}
         setShowModal={setShowEditEquipDetailsModal}
         equipment={selectedEquipment}
+        employeeId={selectedEquipment?.employeeId || null}
+        employDate={selectedEquipment?.employDate || null}
         onEditSuccess={handleEditSuccess}
       />
       <AssignSingleEquipToEmpModal
