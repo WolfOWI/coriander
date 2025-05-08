@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Spin } from "antd";
 import { healthCheckAPI } from "../../services/api.service";
+import Lottie from "lottie-react";
+import sleepingCat from "../../assets/lottie/sleepingCat.json";
+import successPop from "../../assets/lottie/successPop.json";
 
 interface ServerStatusModalProps {
   isVisible: boolean;
@@ -14,28 +17,20 @@ const ServerStatusModal: React.FC<ServerStatusModalProps> = ({ isVisible, onClos
 
   // Function to check if server is awake using lightweight health check
   const checkServerStatus = async () => {
-    console.log("🔍 Modal: Checking server status...");
     setIsChecking(true);
     setCheckCount((prev) => prev + 1);
     try {
       await healthCheckAPI.checkHealth();
       console.log("✅ Modal: Server is awake");
       setIsServerAwake(true);
-      // Add a small delay to show the "Server is back online" state
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("⏰ Showing 'Server is back online' state");
-      // Then wait another 2 seconds before closing
-      setTimeout(() => {
-        console.log("⏰ Delay complete, closing modal");
-        setIsChecking(false);
-        onClose();
-      }, 2000);
+      setIsChecking(false);
     } catch (error) {
       console.log("💤 Modal: Server is sleeping");
-      // Add a small delay before showing sleeping state
-      await new Promise((resolve) => setTimeout(resolve, 3000));
       setIsServerAwake(false);
-      setIsChecking(false);
+      // Allow 3 seconds to show checking state
+      setTimeout(() => {
+        setIsChecking(false);
+      }, 3000);
     }
   };
 
@@ -43,7 +38,6 @@ const ServerStatusModal: React.FC<ServerStatusModalProps> = ({ isVisible, onClos
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isVisible) {
-      console.log("👁️ Modal became visible, starting checks");
       setCheckCount(0); // Reset check count when modal becomes visible
       checkServerStatus();
       // Check every 10 seconds while modal is visible
@@ -51,38 +45,53 @@ const ServerStatusModal: React.FC<ServerStatusModalProps> = ({ isVisible, onClos
     }
     return () => {
       if (interval) {
-        console.log("👋 Modal cleanup - clearing interval");
         clearInterval(interval);
       }
     };
   }, [isVisible]);
 
   return (
-    <Modal
-      open={isVisible}
-      onCancel={onClose}
-      footer={null}
-      closable={!isChecking}
-      maskClosable={!isChecking}
-    >
-      <div className="flex flex-col items-center justify-center p-6 gap-4 text-center">
-        <h1 className="text-4xl font-bold">Oops!</h1>
-        <h3 className="text-lg">The server is not responding. It is either offline or sleeping.</h3>
-        <Spin size="large" spinning={isChecking} />
-        <h3 className="text-lg font-semibold">
-          {isChecking
-            ? checkCount === 1
-              ? "Checking Server Status..."
-              : `Let's Try Again (Attempt ${checkCount})...`
-            : isServerAwake
-            ? "Server is back online!"
-            : "Server is currently sleeping"}
-        </h3>
-        <p className="text-gray-600 text-center">
-          {!isServerAwake &&
-            !isChecking &&
-            "The server is waking up. This may take up to 50 seconds..."}
-        </p>
+    <Modal open={isVisible} onCancel={onClose} footer={null} closable={false}>
+      <div className="flex flex-col items-center justify-center p-6 text-center bg-white rounded-2xl">
+        {!isServerAwake ? (
+          <div>
+            <h1 className="text-4xl font-bold">Oh no!</h1>
+            <div className="flex items-center justify-center overflow-hidden h-40 pb-10">
+              <Lottie animationData={sleepingCat} loop={true} style={{ width: 400, height: 400 }} />
+            </div>
+            <h3 className="text-2xl font-semi-bold mt-2">The server is offline or sleeping.</h3>
+
+            {isChecking ? (
+              <div className="h-20 flex items-center justify-center gap-2">
+                <Spin />
+                <p className="text-gray-600 text-center">
+                  {checkCount === 1
+                    ? "Checking Server Status..."
+                    : `Trying Again (Attempt ${checkCount})...`}
+                </p>
+              </div>
+            ) : (
+              <div className="h-20 flex items-center justify-center">
+                <p className="text-gray-600 text-center px-10">
+                  Don't worry, we're waking it up. This can take up to 50 seconds.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div>
+            <h1 className="text-4xl font-bold">Connected!</h1>
+            <div className="flex items-center justify-center h-40">
+              <Lottie animationData={successPop} loop={false} style={{ width: 160, height: 160 }} />
+            </div>
+            <h3 className="text-2xl font-semi-bold mt-2">
+              The system is back online & has connected.
+            </h3>
+            <div className="h-20 flex items-center justify-center">
+              <p className="text-gray-600 text-center px-10">Thank you for your patience.</p>
+            </div>
+          </div>
+        )}
       </div>
     </Modal>
   );
