@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 
 // Types & Interfaces
 import { EmployType, Gender, PayCycle } from "../../types/common";
-import { EmpUser } from "../../interfaces/empuser";
+import { EmpUser } from "../../interfaces/people/empUser";
 
 // Utility Functions
 import { formatPhone } from "../../utils/formatUtils";

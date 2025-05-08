@@ -1,4 +1,6 @@
-import { EmployType, PayCycle, Gender, UserRole } from "../types/common";
+import { EmployType, PayCycle, Gender, UserRole } from "../../types/common";
+
+// In Backend: EmpUserDTO
 
 export interface EmpUser {
   // User Information

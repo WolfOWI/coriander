@@ -46,7 +46,8 @@ import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 
 // Types / Interfaces
 import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "../../types/common";
-import { EmpUser } from "../../interfaces/empuser";
+import { EmpUser } from "../../interfaces/people/empUser";
+import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
 
 // Equipment Interface
 interface Equipment {
@@ -58,15 +59,6 @@ interface Equipment {
   assignedDate: string;
   condition: EquipmentCondition;
   employDate: string;
-}
-
-// Leave Balance Interface
-interface LeaveBalance {
-  leaveBalanceId: number;
-  remainingDays: number;
-  leaveTypeName: string;
-  description: string;
-  defaultDays: number;
 }
 
 // Performance Review Interface
