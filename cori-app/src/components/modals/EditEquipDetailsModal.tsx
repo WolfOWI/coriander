@@ -9,7 +9,8 @@ interface EditEquipDetailsModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   equipment: Equipment | null;
-  employee: EmpUser | null;
+  employeeId: number | null;
+  employDate: string | null;
   onEditSuccess: () => void;
 }
 
@@ -17,7 +18,8 @@ function EditEquipDetailsModal({
   showModal,
   setShowModal,
   equipment,
-  employee,
+  employeeId,
+  employDate,
   onEditSuccess,
 }: EditEquipDetailsModalProps) {
   const [form] = Form.useForm();
@@ -125,7 +127,7 @@ function EditEquipDetailsModal({
               <Select.Option value={EquipmentCondition.Used}>Used</Select.Option>
             </Select>
           </Form.Item>
-          {equipment?.employeeId && (
+          {employeeId && (
             <Form.Item
               name="assignedDate"
               label="Assigned Date"
@@ -136,7 +138,7 @@ function EditEquipDetailsModal({
                 format="DD MMM YYYY"
                 allowClear={false}
                 maxDate={dayjs()} // Can't assign date after today
-                minDate={employee?.employDate ? dayjs(employee.employDate) : undefined} // Can't assign date before employment date
+                minDate={employDate ? dayjs(employDate) : undefined} // Can't assign date before employment date
               />
             </Form.Item>
           )}

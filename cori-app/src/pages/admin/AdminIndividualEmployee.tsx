@@ -619,7 +619,8 @@ const AdminIndividualEmployee: React.FC = () => {
           showModal={showManageEquipmentModal}
           setShowModal={setShowManageEquipmentModal}
           equipment={selectedEquipment}
-          employee={empUser}
+          employeeId={empUser?.employeeId}
+          employDate={empUser?.employDate}
           onEditSuccess={fetchEmployee}
         />
 
