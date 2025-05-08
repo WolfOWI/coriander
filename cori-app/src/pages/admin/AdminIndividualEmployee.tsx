@@ -49,6 +49,8 @@ import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "
 import { EmpUser } from "../../interfaces/people/empUser";
 import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
 import { PerformanceReview } from "../../interfaces/performance_reviews/performanceReview";
+import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetrics";
+
 // Equipment Interface
 interface Equipment {
   equipmentId: number;
@@ -59,15 +61,6 @@ interface Equipment {
   assignedDate: string;
   condition: EquipmentCondition;
   employDate: string;
-}
-
-// Employee Rating Metrics Interface
-interface EmpUserRatingMetrics {
-  employeeId: number;
-  fullName: string;
-  averageRating: number;
-  numberOfRatings: number;
-  mostRecentRating: number;
 }
 
 // Admin Employee Details Page Response Interface

@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 // Types & Interfaces
 import { EmployType, Gender, PayCycle } from "../../types/common";
 import { EmpUser } from "../../interfaces/people/empUser";
+import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetrics";
 
 // Utility Functions
 import { formatPhone } from "../../utils/formatUtils";
@@ -33,14 +34,6 @@ interface Equipment {
   equipmentName: string;
   assignedDate: string;
   condition: number;
-}
-
-interface EmpUserRatingMetrics {
-  employeeId: number;
-  fullName: string;
-  averageRating: number;
-  numberOfRatings: number;
-  mostRecentRating: number;
 }
 
 interface EmployeeProfileResponse {
