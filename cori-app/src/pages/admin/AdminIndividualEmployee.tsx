@@ -48,7 +48,7 @@ import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "../../types/common";
 import { EmpUser } from "../../interfaces/people/empUser";
 import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
-
+import { PerformanceReview } from "../../interfaces/performance_reviews/performanceReview";
 // Equipment Interface
 interface Equipment {
   equipmentId: number;
@@ -59,24 +59,6 @@ interface Equipment {
   assignedDate: string;
   condition: EquipmentCondition;
   employDate: string;
-}
-
-// Performance Review Interface
-interface PerformanceReview {
-  reviewId: number;
-  adminId: number;
-  adminName: string;
-  employeeId: number;
-  employeeName: string;
-  isOnline: boolean;
-  meetLocation: string | null;
-  meetLink: string;
-  startDate: string;
-  endDate: string;
-  rating: number;
-  comment: string;
-  docUrl: string;
-  status: ReviewStatus;
 }
 
 // Employee Rating Metrics Interface
