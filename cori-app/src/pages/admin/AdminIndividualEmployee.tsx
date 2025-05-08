@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
-import { Avatar, DatePicker, Dropdown, Tooltip, message, Button } from "antd";
+import { Avatar, DatePicker, Dropdown, Tooltip, message, Button, Spin } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -44,8 +44,9 @@ import {
 import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 
-// Types
+// Types / Interfaces
 import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "../../types/common";
+import { EmpUser } from "../../interfaces/empuser";
 
 // Equipment Interface
 interface Equipment {
@@ -108,28 +109,6 @@ interface AdminEmpDetailsResponse {
   performanceReviews: {
     $values: PerformanceReview[];
   };
-}
-
-// EmpUser Data Interface
-interface EmpUser {
-  userId: number;
-  fullName: string;
-  email: string;
-  googleId: string | null;
-  profilePicture: string;
-  role: number;
-  employeeId: number;
-  gender: Gender;
-  dateOfBirth: string;
-  phoneNumber: string;
-  jobTitle: string;
-  department: string;
-  salaryAmount: number;
-  payCycle: PayCycle;
-  lastPaidDate: string;
-  employType: EmployType;
-  employDate: string;
-  isSuspended: boolean;
 }
 
 const AdminIndividualEmployee: React.FC = () => {
@@ -195,7 +174,13 @@ const AdminIndividualEmployee: React.FC = () => {
   // Calculate the next pay day & store it in state
   useEffect(() => {
     if (empUser) {
-      setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate));
+      // If the employee has a last paid date, use that to calculate the next pay day
+      if (empUser.lastPaidDate) {
+        setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate));
+      } else {
+        // Else, use their employment date to calculate the next pay day
+        setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.employDate));
+      }
     }
   }, [empUser]);
 
@@ -237,8 +222,15 @@ const AdminIndividualEmployee: React.FC = () => {
   const onUndoPayment = async () => {
     // Check if empUser is defined
     if (empUser) {
-      // Calculate the previous pay day
-      const calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.lastPaidDate);
+      let calcPrevPayday: string;
+      if (empUser.lastPaidDate) {
+        // Calculate the previous pay day using the last paid date
+        calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.lastPaidDate);
+      } else {
+        // Calculate the previous pay day using the employment date
+        calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.employDate);
+      }
+
       // Format the previous pay day
       const previousPayDay = dayjs(calcPrevPayday).format("YYYY-MM-DD");
 
@@ -296,7 +288,12 @@ const AdminIndividualEmployee: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="w-full h-full flex flex-col justify-center items-center">
+        <Spin size="large" />
+      </div>
+    );
   if (!empUser)
     return (
       <div className="w-full h-full flex flex-col gap-4 justify-center items-center">

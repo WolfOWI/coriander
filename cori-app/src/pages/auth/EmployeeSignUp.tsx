@@ -27,7 +27,7 @@ const EmployeeSignUp: React.FC = () => {
           />
         </div>
         <div className="w-1/2 flex items-center justify-center mb-16">
-          <div className="flex flex-col items-center w-4/12">
+          <div className="flex flex-col items-center w-5/12">
             <h1 className="text-3xl font-bold mb-4 text-corigreen-500 ">
               Employee <span className="text-zinc-900 font-light">Signup</span>
             </h1>
