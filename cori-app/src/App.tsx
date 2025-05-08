@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
 import Navigation from "./components/Navigation";
 import "antd/dist/reset.css";
+import { ServerStatusProvider } from "./contexts/ServerStatusContext";
+import ServerStatusModal from "./components/common/ServerStatusModal";
+import { useServerStatus } from "./contexts/ServerStatusContext";
 
 // Configure day.js
 dayjs.locale("en");
@@ -30,6 +33,7 @@ import TempModalsAdminDashPage from "./pages/TempModalsAdminDashPage";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
+  const { isServerSleeping, checkServerStatus } = useServerStatus();
   const isAuthPage =
     location.pathname === "/" ||
     location.pathname === "/employee/signup" ||
@@ -68,6 +72,7 @@ const AppContent: React.FC = () => {
           <Route path="/temp-modals/admin-dash" element={<TempModalsAdminDashPage />} />
         </Routes>
       </main>
+      <ServerStatusModal isVisible={isServerSleeping} onClose={() => checkServerStatus()} />
     </div>
   );
 };
@@ -185,9 +190,11 @@ const App: React.FC = () => {
         },
       }}
     >
-      <Router>
-        <AppContent />
-      </Router>
+      <ServerStatusProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ServerStatusProvider>
     </ConfigProvider>
   );
 };
