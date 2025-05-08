@@ -83,11 +83,11 @@ const ServerStatusModal: React.FC<ServerStatusModalProps> = ({ isVisible, onClos
             <div className="flex items-center justify-center h-40">
               <Lottie animationData={successPop} loop={false} style={{ width: 160, height: 160 }} />
             </div>
-            <h3 className="text-2xl font-semi-bold mt-2">
-              The system is back online & has connected.
-            </h3>
+            <h3 className="text-2xl font-semi-bold mt-2">The system is back online.</h3>
             <div className="h-20 flex items-center justify-center">
-              <p className="text-gray-600 text-center px-10">Thank you for your patience.</p>
+              <p className="text-gray-600 text-center px-10">
+                Thank you for your patience. Please wait 3 seconds for the system to refresh.
+              </p>
             </div>
           </div>
         )}

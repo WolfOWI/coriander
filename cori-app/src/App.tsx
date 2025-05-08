@@ -6,7 +6,7 @@ import "dayjs/locale/en";
 import Navigation from "./components/Navigation";
 import "antd/dist/reset.css";
 import { ServerStatusProvider } from "./contexts/ServerStatusContext";
-import ServerStatusModal from "./components/common/ServerStatusModal";
+import ServerStatusModal from "./components/modals/ServerStatusModal";
 import { useServerStatus } from "./contexts/ServerStatusContext";
 
 // Configure day.js

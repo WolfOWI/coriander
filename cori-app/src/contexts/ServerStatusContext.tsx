@@ -43,9 +43,10 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       // Only refresh if we had shown the offline modal
       if (hasShownOfflineModal) {
+        // Wait 3 seconds before refreshing to give server time to fully wake up
         setTimeout(() => {
           window.location.reload();
-        }, 500);
+        }, 3000);
         setHasShownOfflineModal(false); // Reset the flag
       }
     } catch (error) {
