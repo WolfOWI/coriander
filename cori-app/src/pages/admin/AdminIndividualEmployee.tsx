@@ -50,18 +50,7 @@ import { EmpUser } from "../../interfaces/people/empUser";
 import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
 import { PerformanceReview } from "../../interfaces/performance_reviews/performanceReview";
 import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetrics";
-
-// Equipment Interface
-interface Equipment {
-  equipmentId: number;
-  employeeId: number;
-  equipmentCatId: number;
-  equipmentCategoryName: string;
-  equipmentName: string;
-  assignedDate: string;
-  condition: EquipmentCondition;
-  employDate: string;
-}
+import { Equipment } from "../../interfaces/equipment/equipment";
 
 // Admin Employee Details Page Response Interface
 interface AdminEmpDetailsResponse {
@@ -79,6 +68,12 @@ interface AdminEmpDetailsResponse {
 }
 
 const AdminIndividualEmployee: React.FC = () => {
+  // Get the employee ID from the URL params
+  const { employeeId } = useParams();
+
+  // Navigation
+  const navigate = useNavigate();
+
   // States
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
@@ -89,7 +84,7 @@ const AdminIndividualEmployee: React.FC = () => {
   const [performanceReviews, setPerformanceReviews] = useState<PerformanceReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextPayDay, setNextPayDay] = useState<string | null>(null);
-  const { employeeId } = useParams();
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
   // Modal States
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
@@ -99,13 +94,9 @@ const AdminIndividualEmployee: React.FC = () => {
   const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
   const [showUnlinkEquipmentModal, setShowUnlinkEquipmentModal] = useState(false);
   const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
-  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
   // Message System
   const [messageApi, ContextHolder] = message.useMessage();
-
-  // Navigation
-  const navigate = useNavigate();
 
   const fetchEmployee = async () => {
     try {
@@ -500,10 +491,7 @@ const AdminIndividualEmployee: React.FC = () => {
                     key={item.equipmentId}
                     item={item}
                     onEdit={() => {
-                      setSelectedEquipment({
-                        ...item,
-                        employDate: empUser?.employDate || "",
-                      });
+                      setSelectedEquipment(item);
                       setShowManageEquipmentModal(true);
                     }}
                     onUnlink={() => {
@@ -631,6 +619,7 @@ const AdminIndividualEmployee: React.FC = () => {
           showModal={showManageEquipmentModal}
           setShowModal={setShowManageEquipmentModal}
           equipment={selectedEquipment}
+          employee={empUser}
           onEditSuccess={fetchEmployee}
         />
 

@@ -3,17 +3,12 @@ import { Modal, Button, message } from "antd";
 import { Icons } from "../../constants/icons";
 import { equipmentAPI } from "../../services/api.service";
 import EquipmentTypeAvatar from "../avatars/EquipmentTypeAvatar";
+import { Equipment } from "../../interfaces/equipment/equipment";
 
 interface UnlinkEquipmentModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  equipment: {
-    equipmentId: number;
-    equipmentName: string;
-    equipmentCatId: number;
-    equipmentCategoryName: string;
-    condition: number;
-  } | null;
+  equipment: Equipment | null;
   onUnlinkSuccess: () => void;
 }
 
