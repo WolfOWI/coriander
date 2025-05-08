@@ -27,10 +27,9 @@ const ServerStatusModal: React.FC<ServerStatusModalProps> = ({ isVisible, onClos
     } catch (error) {
       console.log("💤 Modal: Server is sleeping");
       setIsServerAwake(false);
-      // Allow 3 seconds to show checking state
       setTimeout(() => {
         setIsChecking(false);
-      }, 3000);
+      }, 2500);
     }
   };
 
