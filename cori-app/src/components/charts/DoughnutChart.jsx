@@ -1,47 +1,61 @@
-import React from 'react';
-import { Card, CardContent, Typography } from '@mui/material';
+import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 
+const doughnutData = [
+  { id: 0, value: 12, label: '', color: '#88A764' }, // Full Time
+  { id: 1, value: 5, label: '', color: '#FF8904' },  // Part Time
+  { id: 2, value: 3, label: '', color: '#FFDF20' },  // Intern
+  { id: 3, value: 3, label: '', color: '#0092B8' },  // Contract
+  { id: 4, value: 1, label: '', color: '#FF6467' },  // Suspended
+];
+
+const doughnutLabels = ['Full Time', 'Part Time', 'Intern', 'Contract', 'Suspended'];
+
 const DoughnutChartCard = () => {
-  const employeeData = [
-    { id: 0, value: 16, label: 'Full Time', color: '#A3D79F' },
-    { id: 1, value: 8, label: 'Part Time', color: '#F4BFBF' },
-    { id: 2, value: 4, label: 'Intern', color: '#FBE8A6' },
-    { id: 3, value: 2, label: 'Contract', color: '#C3DDFD' },
-    { id: 4, value: 2, label: 'Suspended', color: '#E2D4F5' },
-  ];
-
   return (
-    <Card className="w-full max-w-md rounded-2xl shadow-md bg-white p-4">
-      <CardContent>
+    <div>
+      <PieChart
+        series={[
+          {
+            data: doughnutData,
+            innerRadius: 45,
+            outerRadius: 70,
+            cornerRadius: 4,
+            paddingAngle: 1,
+            arcLabel: () => '', // removes text on arcs
+          },
+        ]}
+        width={220}
+        height={160}
+        sx={{
+          '& .MuiPieArc-root': {
+            stroke: '#fff',
+            strokeWidth: 2,
+          },
+        }}
+        // 👇 This removes the side dots/labels completely
+        slotProps={{
+          legend: { hidden: true },
+        }}
+      />
+      <div className='flex flex-col items-center justify-center' style={{ marginTop: '-110px', marginBottom: '65px' }}>
+        <h1 className='text-3xl'>32</h1>
+        <p className='text-sm'>Employees</p>
+      </div>
 
-        <PieChart
-          series={[
-            {
-              data: employeeData,
-              innerRadius: 60,  // creates the "doughnut" hole
-              outerRadius: 90,  // size of the whole chart
-              cornerRadius: 4,  // optional: softens the slice edges
-            },
-          ]}
-          width={300}
-          height={300}
-          sx={{
-            '& .MuiPieArc-root': {
-              stroke: '#fff',
-              strokeWidth: 2,
-            },
-          }}
-        />
-
-        <Typography className="text-center mt-[-160px] text-xl font-bold text-gray-700">
-          32
-        </Typography>
-        <Typography className="text-center text-sm text-gray-500">
-          employees
-        </Typography>
-      </CardContent>
-    </Card>
+      {/* Custom Legend Row */}
+      <div className="flex flex-wrap justify-center gap-2 mt-2 text-sm">
+        {doughnutLabels.map((label, index) => (
+          <div key={index} className="flex items-center gap-1">
+            <span
+              className="inline-block w-3 h-3 rounded-full"
+              style={{ backgroundColor: doughnutData[index].color }}
+            />
+            <span className="text-gray-700">{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

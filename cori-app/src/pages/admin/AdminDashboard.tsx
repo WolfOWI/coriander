@@ -5,6 +5,11 @@ import "../../styles/adminDash.css"
 import { Col, Container, Row } from "react-bootstrap";
 import BarChartCard from "../../components/charts/BarChart";
 import DoughnutChartCard from "../../components/charts/DoughnutChart";
+import LeaveCardAdminDash from "../../components/leave/LeaveCardAdminDash";
+import AdminAddIcon from "../../assets/icons/AdminAddIcon.png";
+import TopRatedEmpCard from "../../components/cards/adminCards/TopRatedEmpAdm";
+import AdminCalendar from "../../components/calender";
+// import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 
 const AdminDashboard: React.FC = () => {
   
@@ -43,10 +48,46 @@ const AdminDashboard: React.FC = () => {
                 </Col>
 
                 {/* Leave Requests Card */}
-                <Col xs={12} md={6}>
-                  <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col shadow">
-                    <h2 className="text-xl text-zinc-900">Leave Requests</h2>
+                <Col xs={12} md={5}>
+                <div className="text-zinc-500 font-semibold text-center mb-2">Leave Requests</div>
+                  <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2">
+                    <LeaveCardAdminDash />
+                    <LeaveCardAdminDash />
+                    <LeaveCardAdminDash />
                   </div>
+                </Col>
+
+                <Col xs={12} md={7}>
+                {/* Creating PRM meetings and rating employee buttons - For Modal */}
+                  <Row className="g-3">
+                    <Col md={6}>
+                      <div className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full">
+                        <p className='text-sm font-bold mb-1'>New Performance Review</p>
+                          <div className="flex justify-end h-full">
+                            <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
+                          </div>
+                      </div>
+                    </Col>
+                    <Col md={6}>
+                      <div className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full">
+                        <p className='text-sm font-bold mb-1'>Rate Your Employee</p>
+                          <div className="flex justify-end h-full">
+                            <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
+                          </div>
+                      </div>
+                    </Col>
+                  </Row>
+
+                  {/* Top Rated employee list */}
+                  <Col xs={12} md={12}>
+                    <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">Top Rated Employees</div>
+                      <div className="bg-warmstone-50 p-2 rounded-2xl flex flex-col shadow">
+                        <TopRatedEmpCard />
+                        <TopRatedEmpCard />
+                        <TopRatedEmpCard />
+                      </div>
+                  </Col>
+
                 </Col>
 
               </Row>
@@ -54,7 +95,10 @@ const AdminDashboard: React.FC = () => {
 
             </Col>
             {/* Right Card -> Performance Review calender and meetCards */}
-            <Col lg="4" md="4">Hi Daar!</Col>
+            <Col lg="4" md="4">
+              <AdminCalendar />
+              {/* <PerfReviewBox /> */}
+            </Col>
           </Row>
         </Container>
       

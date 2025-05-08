@@ -33,14 +33,16 @@ const BarChartCard = () => {
         ...s,
         color: i === 0 ? '#CEDBC0' : '#88A764', // Light green and darker green
       }))}
-      width={350}
-      height={200}
+      width={380}
+      height={260}
       sx={{
         '& .MuiBarElement-root': {
           rx: 6, // rounded bars
         },
       }}
-      style ={{ marginLeft: '-30px' }}
+      style={{
+        marginLeft: '-30px',
+      }}
   />
   );
 };
