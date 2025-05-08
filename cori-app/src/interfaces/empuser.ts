@@ -1,12 +1,15 @@
-import { EmployType, PayCycle, Gender } from "../types/common";
+import { EmployType, PayCycle, Gender, UserRole } from "../types/common";
 
 export interface EmpUser {
+  // User Information
   userId: number;
   fullName: string;
   email: string;
   googleId: string | null;
-  profilePicture: string;
-  role: number;
+  profilePicture: string | null;
+  role: UserRole;
+
+  // Employee Information
   employeeId: number;
   gender: Gender;
   dateOfBirth: string;
@@ -15,7 +18,7 @@ export interface EmpUser {
   department: string;
   salaryAmount: number;
   payCycle: PayCycle;
-  lastPaidDate: string;
+  lastPaidDate: string | null;
   employType: EmployType;
   employDate: string;
   isSuspended: boolean;

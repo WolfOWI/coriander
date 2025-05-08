@@ -17,34 +17,13 @@ import { Icons } from "../../constants/icons";
 import { empUserAPI, pageAPI } from "../../services/api.service";
 import dayjs from "dayjs";
 
-// Types
+// Types & Interfaces
 import { EmployType, Gender, PayCycle } from "../../types/common";
+import { EmpUser } from "../../interfaces/empuser";
 
 // Utility Functions
 import { formatPhone } from "../../utils/formatUtils";
 import { formatEmploymentDuration } from "../../utils/dateUtils";
-
-// EmpUser Data Interface
-interface EmpUser {
-  userId: number;
-  fullName: string;
-  email: string;
-  googleId: string | null;
-  profilePicture: string;
-  role: number;
-  employeeId: number;
-  gender: Gender;
-  dateOfBirth: string;
-  phoneNumber: string;
-  jobTitle: string;
-  department: string;
-  salaryAmount: number;
-  payCycle: PayCycle;
-  lastPaidDate: string;
-  employType: EmployType;
-  employDate: string;
-  isSuspended: boolean;
-}
 
 interface Equipment {
   equipmentId: number;

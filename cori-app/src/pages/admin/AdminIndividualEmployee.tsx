@@ -174,7 +174,13 @@ const AdminIndividualEmployee: React.FC = () => {
   // Calculate the next pay day & store it in state
   useEffect(() => {
     if (empUser) {
-      setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate));
+      // If the employee has a last paid date, use that to calculate the next pay day
+      if (empUser.lastPaidDate) {
+        setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate));
+      } else {
+        // Else, use their employment date to calculate the next pay day
+        setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.employDate));
+      }
     }
   }, [empUser]);
 
@@ -216,8 +222,15 @@ const AdminIndividualEmployee: React.FC = () => {
   const onUndoPayment = async () => {
     // Check if empUser is defined
     if (empUser) {
-      // Calculate the previous pay day
-      const calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.lastPaidDate);
+      let calcPrevPayday: string;
+      if (empUser.lastPaidDate) {
+        // Calculate the previous pay day using the last paid date
+        calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.lastPaidDate);
+      } else {
+        // Calculate the previous pay day using the employment date
+        calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.employDate);
+      }
+
       // Format the previous pay day
       const previousPayDay = dayjs(calcPrevPayday).format("YYYY-MM-DD");
 
