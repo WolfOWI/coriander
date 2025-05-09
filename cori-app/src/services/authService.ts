@@ -1,5 +1,12 @@
 import api from "./api.service";
 import axios from "axios";
+import tokenService from "./tokenService";
+import { Navigate } from "react-router-dom"; // Import navigate for redirection
+
+export interface AuthResult {
+  errorCode: number;
+  message: string;
+}
 
 export interface CurrentUserDTO {
   userId: number;
@@ -13,52 +20,55 @@ export interface CurrentUserDTO {
   isVerified: boolean;
 }
 
-export async function getCurrentUser(): Promise<CurrentUserDTO | null> {
-  try {
-    // pull the token straight out of the "token" cookie
-    const tokenCookie = document.cookie
-      .split("; ")
-      .find((c) => c.startsWith("token="));
-    if (!tokenCookie) {
-      console.error("⚠️ No JWT token found in cookies");
-      return null;
-    }
-    const token = tokenCookie.split("=")[1];
-    console.log("🔑 Retrieved JWT token:", token);
-
-    // hit your decode-token endpoint
-    const { data } = await api.get<CurrentUserDTO>(`/Auth/decode-token/`, {
-      params: { token },
-    });
-
-    console.log("✅ decode-token response:", data);
-    return data;
-  } catch (err) {
-    console.error("❌ getCurrentUser failed:", err);
-    return null;
-  }
-}
-
-// ✅ Call 1: Google Login
-export const userGoogleLogin = async (
-  idToken: string
-): Promise<{ errorCode: number; message: string }> => {
-  console.log("🔐 userGoogleLogin: sending token to /google-login:", idToken);
-
+/**
+ * Logs in a user using their email and password.
+ *
+ * @param {string} email - The user's email.
+ * @param {string} password - The user's password.
+ * @returns {Promise<AuthResult>} The result of the login attempt.
+ */
+export const loginWithEmail = async (
+  email: string,
+  password: string
+): Promise<AuthResult> => {
   try {
     const res = await api.post(
-      "/Auth/google-login",
-      { idToken },
+      "/Auth/login",
+      { email, password },
       { withCredentials: true }
     );
-    console.log("✅ userGoogleLogin: success:", res.status, res.data);
     return {
       errorCode: res.status,
       message: res.data || "Login successful",
     };
   } catch (err: any) {
     const status = err?.response?.status || 500;
-    console.error("❌ userGoogleLogin: failed:", status, err);
+    return {
+      errorCode: status,
+      message: "Incorrect email or password",
+    };
+  }
+};
+
+/**
+ * Logs in a user using their Google ID token.
+ *
+ * @param {string} idToken - The Google ID token.
+ * @returns {Promise<AuthResult>} The result of the login attempt.
+ */
+export const loginWithGoogle = async (idToken: string): Promise<AuthResult> => {
+  try {
+    const res = await api.post(
+      "/Auth/google-login",
+      { idToken },
+      { withCredentials: true }
+    );
+    return {
+      errorCode: res.status,
+      message: res.data || "Google login successful",
+    };
+  } catch (err: any) {
+    const status = err?.response?.status || 500;
     return {
       errorCode: status,
       message: "Google login failed",
@@ -66,73 +76,242 @@ export const userGoogleLogin = async (
   }
 };
 
-export interface GoogleSignInResult {
-  errorCode: number;
-  message: string;
-}
-
 /**
- * All-in-one Google sign-in:
- * 1) calls userGoogleLogin(idToken)
- * 2) calls getCurrentUser()
- * → returns only errorCode/message
+ * Registers a user using their email and password.
+ *
+ * @param {object} dto - The registration payload.
+ * @returns {Promise<AuthResult>} The result of the registration attempt.
  */
-export async function fullGoogleSignIn(
-  idToken: string
-): Promise<GoogleSignInResult> {
-  console.log("🔑 fullGoogleSignIn → idToken:", idToken);
-
+export const registerWithEmail = async (dto: {
+  email: string;
+  password: string;
+  fullName: string;
+}): Promise<AuthResult> => {
   try {
-    // 1️⃣ perform the login step
-    const loginResult = await userGoogleLogin(idToken);
-    console.log("✅ userGoogleLogin result:", loginResult);
-
-    // if loginResult.errorCode !== 200, bubble it up
-    if (loginResult.errorCode !== 200) {
-      return loginResult;
-    }
-
-    // 2️⃣ fetch the current user
-    const user = await getCurrentUser();
-    console.log("📡 getCurrentUser result:", user);
-
-    // 3️⃣ check link status
-    if (!user || !user.isLinked) {
-      return {
-        errorCode: 403,
-        message: "User account not linked",
-      };
-    }
-
+    const res = await api.post("/Auth/register", dto);
     return {
-      errorCode: 200,
-      message: "Login successful, user linked",
+      errorCode: res.status,
+      message: res.data || "Registration successful",
     };
   } catch (err: any) {
-    console.error("🔴 fullGoogleSignIn unexpected error:", err);
+    const status = err?.response?.status || 500;
     return {
-      errorCode: err.response?.status ?? 500,
-      message: err.message || "Unknown error",
+      errorCode: status,
+      message: "Email registration failed",
     };
   }
-}
+};
 
-export async function logout(): Promise<void> {
+/**
+ * Registers a user using their Google ID token.
+ *
+ * @param {string} idToken - The Google ID token.
+ * @returns {Promise<AuthResult>} The result of the registration attempt.
+ */
+export const registerWithGoogle = async (
+  idToken: string
+): Promise<AuthResult> => {
   try {
-    // 1️⃣ Tell the backend to clear its cookie
+    const res = await api.post("/Auth/google-register", { idToken });
+    return {
+      errorCode: res.status,
+      message: res.data || "Google registration successful",
+    };
+  } catch (err: any) {
+    const status = err?.response?.status || 500;
+    return {
+      errorCode: status,
+      message: "Google registration failed",
+    };
+  }
+};
+
+// Full logins
+
+/**
+ * Performs a full email login process.
+ *
+ * @param {string} email - The user's email.
+ * @param {string} password - The user's password.
+ * @returns {Promise<AuthResult>} The result of the login process.
+ */
+export const fullEmailLogin = async (
+  email: string,
+  password: string
+): Promise<AuthResult> => {
+  // 1️⃣ Perform the email/password login
+  const loginResult = await loginWithEmail(email, password);
+  if (loginResult.errorCode !== 200) {
+    return loginResult;
+  }
+
+  // 2️⃣ Fetch user details
+  const user = await getCurrentUser();
+  if (!user) {
+    return { errorCode: 404, message: "Could not fetch user details." };
+  }
+
+  // 3️⃣ Ensure they’re “linked”
+  if (!user.isLinked) {
+    return { errorCode: 300, message: "User account not linked." };
+  }
+
+  // 4️⃣ Redirect based on role
+  if (user.adminId) {
+    window.location.href = "/admin/dashboard";
+  } else if (user.employeeId) {
+    window.location.href = "/employee/home";
+  } else {
+    return { errorCode: 403, message: "Unrecognized user role." };
+  }
+
+  return { errorCode: 200, message: "Login successful." };
+};
+
+/**
+ * Performs a full Google sign-in process.
+ *
+ * @param {string} idToken - The Google ID token.
+ * @returns {Promise<AuthResult>} The result of the sign-in process.
+ */
+export const fullGoogleSignIn = async (
+  idToken: string
+): Promise<AuthResult> => {
+  // Step 1: Perform the Google login
+  const loginResult = await loginWithGoogle(idToken);
+
+  // If login fails, return the error result
+  if (loginResult.errorCode !== 200) {
+    return loginResult;
+  }
+
+  // Step 2: Fetch the current user's details
+  const user = await getCurrentUser();
+
+  // Step 3: Check if the user's account is linked
+  if (!user || !user.isLinked) {
+    return {
+      errorCode: 200,
+      message: "User account not linked",
+    };
+  }
+
+  // Step 4: Check if the user is an Employee or an Admin and redirect
+  if (user.adminId) {
+    window.location.href = "/admin/dashboard"; // Redirect to admin dashboard
+  } else if (user.employeeId) {
+    window.location.href = "/employee/home"; // Redirect to employee home
+  } else {
+    return {
+      errorCode: 403,
+      message: "User role not recognized",
+    };
+  }
+
+  // Step 5: Return success if the user is linked and redirected
+  return {
+    errorCode: 200,
+    message: "Login successful",
+  };
+};
+
+// Session management
+
+/**
+ * Retrieves the current user's information by decoding the JWT token.
+ *
+ * @returns {Promise<CurrentUserDTO | null>} The current user's details or null.
+ */
+export const getCurrentUser = async (): Promise<CurrentUserDTO | null> => {
+  try {
+    const token = tokenService.getToken();
+    if (!token) {
+      return null;
+    }
+
+    const { data } = await api.get<CurrentUserDTO>("/Auth/decode-token", {
+      params: { token },
+    });
+
+    return data;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Retrieves the current user's information and redirects if not linked.
+ * This function is used to ensure that the user is linked before accessing certain pages.
+ *
+ * @returns {Promise<CurrentUserDTO | null>} The current user's details or null.
+ */
+export const getFullCurrentUser = async (): Promise<CurrentUserDTO | null> => {
+  const user = await getCurrentUser();
+
+  if (!user || !user.isLinked) {
+    window.location.href = "/#notlinked";
+    return null;
+  } else {
+    return user;
+  }
+};
+
+/**
+ * Checks if the user is linked and redirects them accordingly.
+ *
+ * @returns {Promise<CurrentUserDTO | null>} The current user's details or null.
+ */
+export const checkIfUserIsLinked = async (): Promise<AuthResult> => {
+  const user = await getCurrentUser();
+
+  if (!user || !user.isLinked) {
+    window.location.href = "/#notlinked";
+    console.log("User not linked");
+    return { errorCode: 400, message: "Your account haven't been linked yet" };
+  } else if (user.adminId) {
+    window.location.href = "/admin/dashboard"; // Redirect to admin dashboard
+    return { errorCode: 200, message: "Welcome " + user.fullName };
+  } else if (user.employeeId) {
+    window.location.href = "/employee/home"; // Redirect to employee home
+    return { errorCode: 200, message: "Welcome " + user.fullName };
+  }
+
+  // Default return statement to handle all code paths
+  return { errorCode: 500, message: "Unexpected error occurred" };
+};
+
+/**
+ * Retrieves the current user's secured information.
+ *
+ * @returns {Promise<CurrentUserDTO | null>} The current user's details or null.
+ */
+export const getSecuredUser = async (): Promise<CurrentUserDTO | null> => {
+  try {
+    const { data } = await api.get<CurrentUserDTO>("/Auth/me", {
+      withCredentials: true,
+    });
+    return data;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Logs out the current user.
+ *
+ * @param {boolean} [redirect=true] - Whether to redirect to the login page.
+ * @returns {Promise<void>} Resolves when the logout process is complete.
+ */
+export const logout = async (redirect = true): Promise<void> => {
+  try {
     await api.post("/Auth/logout", null, { withCredentials: true });
   } catch (err) {
     console.error("Logout request failed:", err);
   }
 
-  // 2️⃣ Remove the token from document.cookie
-  // (expires it immediately, path must match where you set it)
-  document.cookie = [
-    "token=",
-    "Path=/",
-    "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
-  ].join("; ");
+  tokenService.clearToken();
 
-  // 3️⃣ Redirect to your login page
-  window.location.href = "/";
-}
+  if (redirect) {
+    window.location.href = "/";
+  }
+};
