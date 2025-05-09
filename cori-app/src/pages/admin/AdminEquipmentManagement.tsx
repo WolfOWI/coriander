@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 
 // Types
 import { EquipmentCategory, EquipmentCondition } from "../../types/common";
+import { EmpUser } from "../../interfaces/people/empUser";
 
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
@@ -240,7 +241,7 @@ const AdminEquipmentManagement: React.FC = () => {
           >
             <div className="cursor-pointer">
               {record.employeeId ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 hover:bg-corigreen-200 p-2 rounded-xl transition-colors">
                   {record.profilePicture ? (
                     <Avatar
                       src={record.profilePicture}
@@ -261,11 +262,13 @@ const AdminEquipmentManagement: React.FC = () => {
                       )}
                     </div>
 
-                    <p className="text-sm text-zinc-500">{record.numberOfItems} items</p>
+                    <p className="text-sm text-zinc-500">
+                      {record.numberOfItems} item{record.numberOfItems === 1 ? "" : "s"}
+                    </p>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 hover:bg-zinc-50 p-2 rounded-xl transition-colors">
                   <div className="flex items-center justify-center bg-zinc-200 h-10 w-10 rounded-full">
                     <Icons.Person fontSize="medium" className="text-zinc-300" />
                   </div>
@@ -305,7 +308,7 @@ const AdminEquipmentManagement: React.FC = () => {
                 placement="bottom"
                 destroyTooltipOnHide
               >
-                <div className="flex flex-col cursor-pointer hover:bg-zinc-50 p-2 rounded-lg transition-colors">
+                <div className="flex flex-col cursor-pointer hover:bg-corigreen-200 p-2 rounded-xl transition-colors">
                   <p className="text-zinc-900">
                     {dayjs(record.assignedDate).format("DD MMM YYYY")}
                   </p>
@@ -440,6 +443,8 @@ const AdminEquipmentManagement: React.FC = () => {
         showModal={showEditEquipDetailsModal}
         setShowModal={setShowEditEquipDetailsModal}
         equipment={selectedEquipment}
+        employeeId={selectedEquipment?.employeeId || null}
+        employDate={selectedEquipment?.employDate || null}
         onEditSuccess={handleEditSuccess}
       />
       <AssignSingleEquipToEmpModal

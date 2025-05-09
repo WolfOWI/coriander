@@ -2,6 +2,7 @@ import React, { useState, JSX } from "react";
 
 // Import Components
 import CoriCircleBtn from "../buttons/CoriCircleBtn";
+import EquipCondiBadge from "../badges/EquipCondiBadge";
 
 // Functions
 import dayjs from "dayjs";
@@ -11,17 +12,7 @@ import { Icons } from "../../constants/icons";
 
 // Types
 import { EquipmentCondition, EquipmentCategory } from "../../types/common";
-import EquipCondiBadge from "../badges/EquipCondiBadge";
-
-interface Equipment {
-  equipmentId: number;
-  employeeId: number;
-  equipmentCatId: EquipmentCategory;
-  equipmentCategoryName: string;
-  equipmentName: string;
-  assignedDate: string;
-  condition: EquipmentCondition;
-}
+import { Equipment } from "../../interfaces/equipment/equipment";
 
 interface EquipmentListItemProps {
   item: Equipment | null;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,6 +10,9 @@ import dayjs from "dayjs";
 import "dayjs/locale/en";
 import Navigation from "./components/Navigation";
 import "antd/dist/reset.css";
+import { ServerStatusProvider } from "./contexts/ServerStatusContext";
+import ServerStatusModal from "./components/modals/ServerStatusModal";
+import { useServerStatus } from "./contexts/ServerStatusContext";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
@@ -38,6 +41,7 @@ import ApiPlayground from "./pages/apiPlayground/ApiPlayground";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
+  const { isServerSleeping, checkServerStatus } = useServerStatus();
   const isAuthPage =
     location.pathname === "/" ||
     location.pathname === "/employee/signup" ||
@@ -98,6 +102,10 @@ const AppContent: React.FC = () => {
           <Route path="/apiplayground" element={<ApiPlayground />} />
         </Routes>
       </main>
+      <ServerStatusModal
+        isVisible={isServerSleeping}
+        onClose={() => checkServerStatus()}
+      />
     </div>
   );
 };
@@ -215,9 +223,11 @@ const App: React.FC = () => {
         },
       }}
     >
-      <Router>
-        <AppContent />
-      </Router>
+      <ServerStatusProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ServerStatusProvider>
     </ConfigProvider>
   );
 };

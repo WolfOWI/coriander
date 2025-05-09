@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components
 import GaugeComponent from "react-gauge-component";
-import { Avatar, DatePicker, Dropdown, Tooltip, message, Button } from "antd";
+import { Avatar, DatePicker, Dropdown, Tooltip, message, Button, Spin } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -44,56 +44,13 @@ import {
 import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 
-// Types
+// Types / Interfaces
 import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "../../types/common";
-
-// Equipment Interface
-interface Equipment {
-  equipmentId: number;
-  employeeId: number;
-  equipmentCatId: number;
-  equipmentCategoryName: string;
-  equipmentName: string;
-  assignedDate: string;
-  condition: EquipmentCondition;
-  employDate: string;
-}
-
-// Leave Balance Interface
-interface LeaveBalance {
-  leaveBalanceId: number;
-  remainingDays: number;
-  leaveTypeName: string;
-  description: string;
-  defaultDays: number;
-}
-
-// Performance Review Interface
-interface PerformanceReview {
-  reviewId: number;
-  adminId: number;
-  adminName: string;
-  employeeId: number;
-  employeeName: string;
-  isOnline: boolean;
-  meetLocation: string | null;
-  meetLink: string;
-  startDate: string;
-  endDate: string;
-  rating: number;
-  comment: string;
-  docUrl: string;
-  status: ReviewStatus;
-}
-
-// Employee Rating Metrics Interface
-interface EmpUserRatingMetrics {
-  employeeId: number;
-  fullName: string;
-  averageRating: number;
-  numberOfRatings: number;
-  mostRecentRating: number;
-}
+import { EmpUser } from "../../interfaces/people/empUser";
+import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
+import { PerformanceReview } from "../../interfaces/performance_reviews/performanceReview";
+import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetrics";
+import { Equipment } from "../../interfaces/equipment/equipment";
 
 // Admin Employee Details Page Response Interface
 interface AdminEmpDetailsResponse {
@@ -110,29 +67,13 @@ interface AdminEmpDetailsResponse {
   };
 }
 
-// EmpUser Data Interface
-interface EmpUser {
-  userId: number;
-  fullName: string;
-  email: string;
-  googleId: string | null;
-  profilePicture: string;
-  role: number;
-  employeeId: number;
-  gender: Gender;
-  dateOfBirth: string;
-  phoneNumber: string;
-  jobTitle: string;
-  department: string;
-  salaryAmount: number;
-  payCycle: PayCycle;
-  lastPaidDate: string;
-  employType: EmployType;
-  employDate: string;
-  isSuspended: boolean;
-}
-
 const AdminIndividualEmployee: React.FC = () => {
+  // Get the employee ID from the URL params
+  const { employeeId } = useParams();
+
+  // Navigation
+  const navigate = useNavigate();
+
   // States
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
@@ -143,7 +84,7 @@ const AdminIndividualEmployee: React.FC = () => {
   const [performanceReviews, setPerformanceReviews] = useState<PerformanceReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextPayDay, setNextPayDay] = useState<string | null>(null);
-  const { employeeId } = useParams();
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
   // Modal States
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
@@ -153,13 +94,9 @@ const AdminIndividualEmployee: React.FC = () => {
   const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
   const [showUnlinkEquipmentModal, setShowUnlinkEquipmentModal] = useState(false);
   const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
-  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
   // Message System
   const [messageApi, ContextHolder] = message.useMessage();
-
-  // Navigation
-  const navigate = useNavigate();
 
   const fetchEmployee = async () => {
     try {
@@ -195,7 +132,13 @@ const AdminIndividualEmployee: React.FC = () => {
   // Calculate the next pay day & store it in state
   useEffect(() => {
     if (empUser) {
-      setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate));
+      // If the employee has a last paid date, use that to calculate the next pay day
+      if (empUser.lastPaidDate) {
+        setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate));
+      } else {
+        // Else, use their employment date to calculate the next pay day
+        setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.employDate));
+      }
     }
   }, [empUser]);
 
@@ -237,8 +180,15 @@ const AdminIndividualEmployee: React.FC = () => {
   const onUndoPayment = async () => {
     // Check if empUser is defined
     if (empUser) {
-      // Calculate the previous pay day
-      const calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.lastPaidDate);
+      let calcPrevPayday: string;
+      if (empUser.lastPaidDate) {
+        // Calculate the previous pay day using the last paid date
+        calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.lastPaidDate);
+      } else {
+        // Calculate the previous pay day using the employment date
+        calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.employDate);
+      }
+
       // Format the previous pay day
       const previousPayDay = dayjs(calcPrevPayday).format("YYYY-MM-DD");
 
@@ -296,7 +246,12 @@ const AdminIndividualEmployee: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="w-full h-full flex flex-col justify-center items-center">
+        <Spin size="large" />
+      </div>
+    );
   if (!empUser)
     return (
       <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
@@ -536,10 +491,7 @@ const AdminIndividualEmployee: React.FC = () => {
                     key={item.equipmentId}
                     item={item}
                     onEdit={() => {
-                      setSelectedEquipment({
-                        ...item,
-                        employDate: empUser?.employDate || "",
-                      });
+                      setSelectedEquipment(item);
                       setShowManageEquipmentModal(true);
                     }}
                     onUnlink={() => {
@@ -667,6 +619,8 @@ const AdminIndividualEmployee: React.FC = () => {
           showModal={showManageEquipmentModal}
           setShowModal={setShowManageEquipmentModal}
           equipment={selectedEquipment}
+          employeeId={empUser?.employeeId}
+          employDate={empUser?.employDate}
           onEditSuccess={fetchEmployee}
         />
 

@@ -1,28 +1,22 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar, Dropdown, Tooltip } from "antd";
+import { Table, Avatar, Dropdown, Tooltip, AutoComplete, Input } from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
 import { employeeAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
-
-// Types
-import { Gender, PayCycle, EmployType } from "../../types/common";
-
-// Import React Components
+import { Gender, PayCycle } from "../../types/common";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
-
-// Import Icons
 import { Icons } from "../../constants/icons";
-
-// Utility Functions
 import { formatRandAmount } from "../../utils/formatUtils";
 import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
 import dayjs from "dayjs";
 
+// Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
 
+// Record list type
 interface DataType {
   employeeId: number;
   fullName: string;
@@ -41,50 +35,20 @@ interface DataType {
   totalLeaveDays?: number;
 }
 
+// Table parameters type
 interface TableParams {
   pagination?: TablePaginationConfig;
   sortField?: string;
   sortOrder?: "ascend" | "descend" | null;
   filters?: Parameters<GetProp<TableProps, "onChange">>[1];
 }
-// DATA EXAMPLE
-// {
-//   "$id": "8",
-//   "userId": 11,
-//   "fullName": "Justine McKenzy",
-//   "email": "justine@yahoo.com",
-//   "profilePicture": null,
-//   "role": 1,
-//   "employeeId": 7,
-//   "gender": 1,
-//   "dateOfBirth": "1998-09-21",
-//   "phoneNumber": "093 237 4834",
-//   "jobTitle": "Assassin",
-//   "department": "Security",
-//   "salaryAmount": 10000,
-//   "payCycle": 0,
-//   "lastPaidDate": "2025-04-02",
-//   "employType": 1,
-//   "employDate": "2025-04-02",
-//   "isSuspended": false
-// }
 
 const AdminEmployeeManagement: React.FC = () => {
   const navigate = useNavigate();
 
-  // We store ALL the employee data in this state
-  // This is different from before where we only stored the current page's data
-  const [allData, setAllData] = useState<DataType[]>([]);
-
-  // Loading state to show when we're busy fetching data
+  const [searchValue, setSearchValue] = useState(""); // Searchbar value
+  const [allData, setAllData] = useState<DataType[]>([]); // Table data
   const [loading, setLoading] = useState(false);
-
-  // Table parameters tracks:
-  // - Current page
-  // - Items per page
-  // - Sorting order
-  // - Sorting field
-  // - Filters applied
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1, // Start on page 1
@@ -92,8 +56,6 @@ const AdminEmployeeManagement: React.FC = () => {
     },
   });
 
-  // This function runs once when the page loads to get ALL the employee data
-  // We use useCallback to make sure this function doesn't change unnecessarily
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -119,7 +81,6 @@ const AdminEmployeeManagement: React.FC = () => {
         totalLeaveDays: item.totalLeaveBalanceSum?.totalLeaveDays,
       }));
 
-      // Store ALL the data in our state
       setAllData(processedData);
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -128,16 +89,11 @@ const AdminEmployeeManagement: React.FC = () => {
     }
   }, []);
 
-  // Run fetchData when the component first loads
+  // When page loads
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []);
 
-  // Function runs when the user:
-  // - Changes pages
-  // - Changes how many items per page
-  // - Sorts the data
-  // - Applies filters
   const handleTableChange = useCallback(
     (
       pagination: TablePaginationConfig,
@@ -156,12 +112,29 @@ const AdminEmployeeManagement: React.FC = () => {
     []
   );
 
+  // Search Function
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
+  // Once employee is selected, navigate to the employee's page
+  const handleSelect = (value: string) => {
+    const employee = allData.find((emp) => emp.fullName === value);
+    if (employee) {
+      navigate(`/admin/individual-employee/${employee.employeeId}`);
+    }
+  };
+
   // useMemo to only recalculate the displayed data when:
   // - allData changes (new data from server)
   // - tableParams changes (user changed page/sort/filter)
   const processedData = useMemo(() => {
-    // Make a copy of all our data to work with
-    const data = [...allData];
+    let data = [...allData];
+
+    // Apply search filter if there's a search value
+    if (searchValue) {
+      data = data.filter((item) => item.fullName.toLowerCase().includes(searchValue.toLowerCase()));
+    }
 
     // If the user wants to sort the data
     if (tableParams.sortField && tableParams.sortOrder) {
@@ -186,7 +159,7 @@ const AdminEmployeeManagement: React.FC = () => {
     const end = start + pageSize;
 
     return data.slice(start, end);
-  }, [allData, tableParams]);
+  }, [allData, tableParams, searchValue]);
 
   const handleToggleSuspension = useCallback(
     async (employeeId: number) => {
@@ -417,10 +390,21 @@ const AdminEmployeeManagement: React.FC = () => {
           <Icons.DirectionsWalk fontSize="large" className="text-zinc-900" />
           <h1 className="text-3xl font-bold text-zinc-900">Employees</h1>
         </div>
-        <CoriBtn style="black" onClick={() => navigate("/admin/create-employee")}>
-          New
-          <Icons.Add />
-        </CoriBtn>
+        <div className="flex items-center gap-4">
+          <AutoComplete
+            value={searchValue}
+            options={allData.map((emp) => ({ value: emp.fullName }))}
+            onSelect={handleSelect}
+            onChange={handleSearch}
+            className="w-64"
+          >
+            <Input.Search placeholder="Search By Name" allowClear />
+          </AutoComplete>
+          <CoriBtn style="black" onClick={() => navigate("/admin/create-employee")}>
+            New
+            <Icons.Add />
+          </CoriBtn>
+        </div>
       </div>
       <Table<DataType>
         columns={columns}

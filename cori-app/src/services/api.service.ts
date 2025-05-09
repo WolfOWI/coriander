@@ -32,14 +32,20 @@ const apiClient: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-// TODO: This section might change if Ruan implements different user session management
-/**
- * Request Interceptor
- * Automatically adds the authentication token to all outgoing requests
- * if a token exists in localStorage.
- */
+// Global variable to store the server status check function
+let serverStatusCheck: (() => Promise<void>) | null = null;
+// Flag to prevent recursive health checks
+let isCheckingHealth = false;
+
+// Function to set the server status check function
+export const setServerStatusCheck = (checkFn: () => Promise<void>) => {
+  console.log("🔧 Setting up server status check function");
+  serverStatusCheck = checkFn;
+};
+
+// Request Interceptor
 apiClient.interceptors.request.use(
-  (config) => {
+  async (config) => {
     // Get the authentication token from localStorage
     // localStorage is a browser storage that persists even after page refresh
     const token = localStorage.getItem("authToken");
@@ -51,11 +57,30 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Check server status before making the request, but don't block the request
+    // and prevent recursive health checks
+    if (serverStatusCheck && !isCheckingHealth) {
+      console.log("🔄 Initiating server status check");
+      isCheckingHealth = true;
+      serverStatusCheck()
+        .catch((error) => {
+          // Ignore errors from health check
+          console.log("⚠️ Server status check error:", error.message);
+        })
+        .finally(() => {
+          console.log("🏁 Server status check completed");
+          isCheckingHealth = false;
+        });
+    } else if (isCheckingHealth) {
+      console.log("⏳ Skipping health check - one already in progress");
+    }
+
     // Return the modified config
     return config;
   },
   (error) => {
     // Reject the promise with the error
+    console.log("❌ Request interceptor error:", error.message);
     return Promise.reject(error);
   }
 );
@@ -242,6 +267,33 @@ export const equipmentAPI = {
 };
 
 // ------------------------------------------------------------
+
+// Add a lightweight health check endpoint
+export const healthCheckAPI = {
+  /**
+   * Simple health check that makes a GET request to the health endpoint
+   * @returns Promise containing the API response
+   */
+  checkHealth: (): Promise<AxiosResponse> => {
+    console.log("🏥 Starting health check request");
+    return apiClient
+      .get("/health", {
+        timeout: 5000, // 5 second timeout for health checks
+        headers: {
+          // Skip auth token for health checks
+          Authorization: undefined,
+        },
+      })
+      .then((response) => {
+        console.log("✅ Health check successful");
+        return response;
+      })
+      .catch((error) => {
+        console.log("❌ Health check failed:", error.message);
+        throw error;
+      });
+  },
+};
 
 // ############################################################
 // Export the configured axios instance
