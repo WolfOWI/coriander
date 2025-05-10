@@ -22,15 +22,17 @@ const AdminLeaveRequests: React.FC = () => {
   const tabOptions: TabOption[] = ["Pending", "Approved", "Rejected"];
 
   // Icon rendering function
-  const getLeaveIcon = (type: string) => {
-    const base = "material-symbols-outlined text-2xl me-2";
-    if (type.toLowerCase().includes("annual")) return <span className={base}>beach_access</span>;
-    if (type.toLowerCase().includes("family")) return <span className={base}>family_restroom</span>;
-    if (type.toLowerCase().includes("sick")) return <span className={base}>sick</span>;
-    if (type.toLowerCase().includes("compassionate")) return <span className={base}>heart_broken</span>;
-    if (type.toLowerCase().includes("study")) return <span className={base}>menu_book</span>;
-    return null;
-  };
+const getLeaveIcon = (type: string) => {
+  const base = "material-symbols-outlined text-2xl me-2";
+  if (type.toLowerCase().includes("Annual Leave")) return <span className={base}>beach_access</span>;
+  if (type.toLowerCase().includes("Family Responsibility Leave")) return <span className={base}>family_restroom</span>;
+  if (type.toLowerCase().includes("Sick Leave")) return <span className={base}>sick</span>;
+  if (type.toLowerCase().includes("Compassionate Leave")) return <span className={base}>heart_broken</span>;
+  if (type.toLowerCase().includes("Study Leave")) return <span className={base}>menu_book</span>;
+  if (type.toLowerCase().includes("Parental Leave")) return <span className={base}>child_friendly</span>;
+  if (type.toLowerCase().includes("Unpaid Leave")) return <span className={base}>money_off</span>;
+  return null;
+};
   
 
   const [requests, setRequests] = useState([
@@ -47,7 +49,7 @@ const AdminLeaveRequests: React.FC = () => {
     },
     {
       id: 4,
-      type: "3 Days Family Leave",
+      type: "3 Days Family Responsibility Leave",
       StartDate: "15 Sep",
       EndDate: "17 Sep",
       employee: "Lebo Mokoena",
@@ -80,7 +82,7 @@ const AdminLeaveRequests: React.FC = () => {
     },
     {
       id: 5,
-      type: "2 Days Maternity Leave",
+      type: "2 Days Parental Leave",
       StartDate: "1 Sep",
       EndDate: "2 Sep",
       employee: "Sarah Johnson",
@@ -91,7 +93,7 @@ const AdminLeaveRequests: React.FC = () => {
     },
     {
       id: 6,
-      type: "1 Day Paternity Leave",
+      type: "1 Day Parental Leave",
       StartDate: "10 Sep",
       EndDate: "10 Sep",
       employee: "Michael Brown",
@@ -102,7 +104,7 @@ const AdminLeaveRequests: React.FC = () => {
     },
     {
       id: 7,
-      type: "5 Days Bereavement Leave",
+      type: "5 Days Compassionate Leave",
       StartDate: "20 Sep",
       EndDate: "24 Sep",
       employee: "Emily Davis",
@@ -113,7 +115,7 @@ const AdminLeaveRequests: React.FC = () => {
     },
     {
       id: 8,
-      type: "4 Days Vacation Leave",
+      type: "4 Days Annual Leave",
       StartDate: "1 Oct",
       EndDate: "4 Oct",
       employee: "David Wilson",
@@ -124,7 +126,7 @@ const AdminLeaveRequests: React.FC = () => {
     },
     {
       id: 9,
-      type: "2 Days Personal Leave",
+      type: "2 Days Annual Leave",
       StartDate: "15 Oct",
       EndDate: "16 Oct",
       employee: "Sophia Martinez",
@@ -264,8 +266,8 @@ const AdminLeaveRequests: React.FC = () => {
             onClick={() => setActiveTab(tab)}
             className={`btn cori-btn ${
               activeTab === tab
-                ? "btn-primary bg-zinc-900 text-white"
-                : "btn-outline-primary border-zinc-900 text-zinc-900"
+                ? "btn-primary bg-zinc-900 text-white border-none"
+                : "btn-outline-primary border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white hover:border-none"
             }`}
           >
             {tab}
