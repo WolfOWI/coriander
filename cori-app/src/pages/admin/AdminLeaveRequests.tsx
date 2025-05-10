@@ -274,7 +274,7 @@ const AdminLeaveRequests: React.FC = () => {
       </div>
 
       {/* Custom Header Row */}
-      <div className="grid grid-cols-5 px-8 py-8 gap-4 text-sm font-medium text-zinc-700">
+      <div className="grid grid-cols-5 px-8 py-2 gap-4 text-sm font-medium text-zinc-700">
         <div className="flex items-center gap-1">
           Leave Type & Duration
           <ArrowDownOutlined className="text-s text-zinc-800" />
