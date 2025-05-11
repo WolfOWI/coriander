@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { LeaveStatus } from "../../types/common";
 
 // Icons
 import { ClockCircleOutlined } from "@ant-design/icons";
@@ -9,6 +10,7 @@ import { Progress } from "antd";
 
 // Badge
 import CoriBadge from "../../components/badges/CoriBadge";
+import LeaveRequestCard from "../../components/cards/empCards/LeaveRequestCard";
 
 // Icon rendering function
 const getLeaveIcon = (type: string) => {
@@ -27,48 +29,58 @@ const EmployeeLeaveOverview: React.FC = () => {
 
   const tabOptions: TabOption[] = ["All", "Approved", "Pending", "Rejected"];
 
-  const allRequests = [
-    {
-      id: 1,
-      type: "Compassion Leave",
-      days: "2 Days",
-      dates: "1 April 2025 • 3 April 2025",
-      comment:
-        "I'm taking some time off to recharge and focus on my well-being. It's important for me to step back and refresh my mind.",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      type: "Study Leave",
-      days: "15 Days",
-      dates: "18 Sept 2025 • 2 Oct 2025",
-      comment:
-        "I'm taking some time off to recharge and focus on my well-being. It's important for me to step back and refresh my mind.",
-      status: "Rejected",
-    },
-    {
-      id: 3,
-      type: "Annual Leave",
-      days: "3 Days",
-      dates: "15 Sept 2025 • 18 Sept 2025",
-      comment:
-        "I'm taking some time off to recharge and focus on my well-being. It's important for me to step back and refresh my mind.",
-      status: "Approved",
-    },
-    {
-      id: 4,
-      type: "Family Leave",
-      days: "2 Days",
-      dates: "18 Sept 2025 • 20 Sept 2025",
-      comment: "No comment",
-      status: "Pending",
-    },
-  ];
+  const allRequests = {
+    "$id": "1",
+    "$values": [
+      {
+        "$id": "2",
+        "leaveRequestId": 2,
+        "employeeId": 8,
+        "leaveTypeId": 2,
+        "startDate": "2025-04-01",
+        "endDate": "2025-04-17",
+        "comment": "Please",
+        "status": 1,
+        "createdAt": "2025-04-01T10:02:07.417Z",
+        "leaveTypeName": "Sick",
+        "description": "Leave taken when an employee is unable to perform work duties due to illness, injury, or medical treatment.",
+        "defaultDays": 10
+      },
+      {
+        "$id": "3",
+        "leaveRequestId": 7,
+        "employeeId": 8,
+        "leaveTypeId": 1,
+        "startDate": "2025-04-15",
+        "endDate": "2025-04-18",
+        "comment": "string",
+        "status": 0,
+        "createdAt": "2025-04-15T10:27:54.734Z",
+        "leaveTypeName": "Annual",
+        "description": "Paid leave provided annually to employees for rest and personal activities, typically scheduled in agreement with management.",
+        "defaultDays": 15
+      },
+      {
+        "$id": "4",
+        "leaveRequestId": 8,
+        "employeeId": 8,
+        "leaveTypeId": 2,
+        "startDate": "2025-02-15",
+        "endDate": "2025-02-18",
+        "comment": "string",
+        "status": 0,
+        "createdAt": "2025-04-15T10:27:54.734Z",
+        "leaveTypeName": "Sick",
+        "description": "Leave taken when an employee is unable to perform work duties due to illness, injury, or medical treatment.",
+        "defaultDays": 10
+      }
+    ]
+  }
 
   const filteredRequests =
     activeTab === "All"
-      ? allRequests
-      : allRequests.filter((req) => req.status === activeTab);
+      ? allRequests.$values
+      : allRequests.$values.filter((req) => req.status === LeaveStatus[activeTab]);
 
   const getStatusBadgeColor = (status: string) => {
     if (status === "Pending") return "yellow";
@@ -77,8 +89,10 @@ const EmployeeLeaveOverview: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto m-4">
-      {/* Page Title */}
+    <div className="max-w-7xl mx-auto m-4 h-[calc(100vh-32px)]">
+     <div className="flex flex-col justify-between h-full">
+     <div>
+        {/* Page Title */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <ClockCircleOutlined className="text-3xl text-zinc-900" />
@@ -106,38 +120,15 @@ const EmployeeLeaveOverview: React.FC = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* LEFT: Leave Requests in 2x2 layout */}
+      {/* LEFT: Leave Requests in 2x2 layout */}
+      <div className="grid gap-4 grid-cols-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:col-span-2">
           {filteredRequests.map((req) => (
-            <div
-              key={req.id}
-              className="bg-white rounded-2xl p-4 shadow-sm h-48 flex flex-col overflow-hidden"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  {getLeaveIcon(req.type)}
-                  <div>
-                    <p className="font-semibold text-zinc-900">{req.type}</p>
-                    <p className="text-sm text-zinc-600">{req.days}</p>
-                  </div>
-                </div>
-                <CoriBadge
-                  text={req.status}
-                  size="x-small"
-                  color={getStatusBadgeColor(req.status)}
-                />
-              </div>
-              <div>
-                <p className="text-sm text-zinc-800 mt-3">{req.dates}</p>
-                <p className="text-sm text-zinc-500 mt-2">{req.comment}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* RIGHT: Leave Balances and Summary (only for "All" tab) */}
-        {activeTab === "All" && (
+            <LeaveRequestCard req={req} />
+      ))}
+      </div>
+      {/* RIGHT: Leave Balances and Summary (only for "All" tab) */}
+      {activeTab === "All" && (
           <div className="flex flex-col gap-4">
             {/* Leave Summary Title */}
             <p className="text-sm font-medium text-zinc-700 px-2 -mb-2 text-center -mt-9">
@@ -211,13 +202,15 @@ const EmployeeLeaveOverview: React.FC = () => {
           </div>
         )}
       </div>
+      </div>
       {/* Leave Policies Notice Section */}
-      <div className="mt-12 bg-transparent text-center text-sm text-zinc-500">
+      <div className="text-center text-sm text-zinc-400 p-4 hover:text-zinc-500"> 
         <p className="max-w-4xl mx-auto">
         Employees must submit leave requests in advance for approval. Leave is subject to company policies and availability. <br />
         Unauthorized absences may impact benefits. Check your balance before applying.
         </p>
       </div>
+     </div>
     </div>
   );
 };
