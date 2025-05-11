@@ -75,7 +75,7 @@ const EmployeeLeaveOverview: React.FC = () => {
   const getStatusBadgeColor = (status: string) => {
     if (status === "Pending") return "yellow";
     if (status === "Rejected") return "red";
-    return "default";
+    return "green";
   };
 
   return (

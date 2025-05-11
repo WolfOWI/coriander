@@ -44,7 +44,7 @@ const CoriCircleBtn = ({
         break;
       case "red":
         btnStyles =
-          "bg-transparent text-red-700 border-2 border-red-700 hover:border-red-800 hover:text-red-800";
+          "bg-transparent text-red-500 border-2 border-red-500 hover:border-red-700 hover:text-red-700";
         break;
       default:
         btnStyles =
@@ -65,7 +65,7 @@ const CoriCircleBtn = ({
         break;
       case "red":
         btnStyles =
-          "bg-red-700 text-white border-2 border-red-700 hover:bg-red-800 hover:border-red-800";
+          "bg-red-500 text-white border-2 border-red-500 hover:bg-red-700 hover:border-red-700";
         break;
       default:
         btnStyles =

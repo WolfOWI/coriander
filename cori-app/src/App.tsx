@@ -186,6 +186,9 @@ const App: React.FC = () => {
           },
           Dropdown: {
             borderRadiusLG: 16,
+          }, 
+          Table : {
+            borderRadiusLG: 12,
           },
         },
       }}
