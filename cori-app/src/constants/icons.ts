@@ -42,6 +42,12 @@ import WarningIcon from "@mui/icons-material/WarningRounded";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import UploadIcon from "@mui/icons-material/Upload";
 import LogoutIcon from "@mui/icons-material/Logout";
+import BeachAccessIcon from "@mui/icons-material/BeachAccess";
+import SickIcon from "@mui/icons-material/Sick";
+import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
+import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -88,4 +94,10 @@ export const Icons = {
   LinkOff: LinkOffIcon,
   Upload: UploadIcon,
   Logout: LogoutIcon,
+  BeachAccess: BeachAccessIcon,
+  Sick: SickIcon,
+  ChildFriendly: ChildFriendlyIcon,
+  FamilyRestroom: FamilyRestroomIcon,
+  MenuBook: MenuBookIcon,
+  HeartBroken: HeartBrokenIcon,
 };
