@@ -4,7 +4,12 @@ import React, { useState } from "react";
 import { Tooltip } from "antd";
 
 // Icons
-import {ClockCircleOutlined, ArrowDownOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons";
+import {
+  ClockCircleOutlined,
+  ArrowDownOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import { Icons } from "../../constants/icons";
 
 // Badges
@@ -22,16 +27,15 @@ const AdminLeaveRequests: React.FC = () => {
   const tabOptions: TabOption[] = ["Pending", "Approved", "Rejected"];
 
   // Icon rendering function
-const getLeaveIcon = (type: string) => {
-  if (type.toLowerCase().includes("annual ")) return <Icons.BeachAccess fontSize = "large"/>;
-  if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize = "large"/>;
-  if (type.toLowerCase().includes("sick")) return <Icons.Sick fontSize = "large"/>;
-  if (type.toLowerCase().includes("compassion")) return <Icons.HeartBroken fontSize = "large"/>;
-  if (type.toLowerCase().includes("study")) return <Icons.MenuBook fontSize = "large"/>;
-  if (type.toLowerCase().includes("parental")) return <Icons.ChildFriendly fontSize = "large"/>;
-  return null;
-};
-  
+  const getLeaveIcon = (type: string) => {
+    if (type.toLowerCase().includes("annual")) return <Icons.BeachAccess fontSize="large" />;
+    if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize="large" />;
+    if (type.toLowerCase().includes("sick")) return <Icons.Sick fontSize="large" />;
+    if (type.toLowerCase().includes("compassion")) return <Icons.HeartBroken fontSize="large" />;
+    if (type.toLowerCase().includes("study")) return <Icons.MenuBook fontSize="large" />;
+    if (type.toLowerCase().includes("parental")) return <Icons.ChildFriendly fontSize="large" />;
+    return null;
+  };
 
   const [requests, setRequests] = useState([
     {
@@ -147,8 +151,8 @@ const getLeaveIcon = (type: string) => {
           <div className="flex flex-col">
             <p className="font-medium">{text}</p>
             <p className="text-xs text-zinc-500">
-            {record.StartDate} - {record.EndDate}
-          </p>
+              {record.StartDate} - {record.EndDate}
+            </p>
           </div>
         </div>
       ),
@@ -205,8 +209,8 @@ const getLeaveIcon = (type: string) => {
                   icon={<CheckOutlined className="text-s" />}
                   onClick={() =>
                     setRequests((prev) =>
-                      prev.map((req) =>
-                        req.id === record.id ? { ...req, status: "Approved" } : req // Update status to Approved
+                      prev.map(
+                        (req) => (req.id === record.id ? { ...req, status: "Approved" } : req) // Update status to Approved
                       )
                     )
                   }
@@ -218,8 +222,8 @@ const getLeaveIcon = (type: string) => {
                   icon={<CloseOutlined className="text-s" />}
                   onClick={() =>
                     setRequests((prev) =>
-                      prev.map((req) =>
-                        req.id === record.id ? { ...req, status: "Rejected" } : req // Update status to Rejected
+                      prev.map(
+                        (req) => (req.id === record.id ? { ...req, status: "Rejected" } : req) // Update status to Rejected
                       )
                     )
                   }
@@ -229,18 +233,12 @@ const getLeaveIcon = (type: string) => {
           )}
           {record.status === "Approved" && (
             <Tooltip title="Approved">
-              <CoriCircleBtn
-                style="default"
-                icon={<CheckOutlined className="text-s" />} 
-              />
+              <CoriCircleBtn style="default" icon={<CheckOutlined className="text-s" />} />
             </Tooltip>
           )}
           {record.status === "Rejected" && (
             <Tooltip title="Rejected">
-              <CoriCircleBtn
-                style="red"
-                icon={<CloseOutlined className="text-s" />}
-              />
+              <CoriCircleBtn style="red" icon={<CloseOutlined className="text-s" />} />
             </Tooltip>
           )}
         </div>
@@ -252,14 +250,12 @@ const getLeaveIcon = (type: string) => {
     <div className="max-w-7xl mx-auto m-4">
       {/* Page Title & Edit Policy  */}
       <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <ClockCircleOutlined className="text-3xl text-zinc-900" />
-                <h1 className="text-3xl font-bold text-zinc-900">Leave Requests</h1>
-              </div>
-              <CoriBtn style="black">
-                Edit Policy
-              </CoriBtn>
-            </div>
+        <div className="flex items-center gap-2">
+          <ClockCircleOutlined className="text-3xl text-zinc-900" />
+          <h1 className="text-3xl font-bold text-zinc-900">Leave Requests</h1>
+        </div>
+        <CoriBtn style="black">Edit Policy</CoriBtn>
+      </div>
 
       {/* Tab Buttons */}
       <div className="flex gap-2 mb-4">
