@@ -7,13 +7,13 @@ import { Tooltip } from "antd";
 import {ClockCircleOutlined, ArrowDownOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons";
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-
 // Badges
 import CoriBadge from "../../components/badges/CoriBadge";
 
 // Table
 import { Table } from "antd";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
+import CoriBtn from "../../components/buttons/CoriBtn";
 
 const AdminLeaveRequests: React.FC = () => {
   type TabOption = "Pending" | "Approved" | "Rejected";
@@ -252,11 +252,16 @@ const getLeaveIcon = (type: string) => {
 
   return (
     <div className="max-w-7xl mx-auto m-4">
-      {/* Page Title */}
-      <div className="flex items-center gap-2 mb-6">
-        <ClockCircleOutlined className="text-3xl text-zinc-900" />
-        <h1 className="text-3xl font-bold text-zinc-900">Leave Requests</h1>
-      </div>
+      {/* Page Title & Edit Policy  */}
+      <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <ClockCircleOutlined className="text-3xl text-zinc-900" />
+                <h1 className="text-3xl font-bold text-zinc-900">Leave Requests</h1>
+              </div>
+              <CoriBtn style="black">
+                Edit Policy
+              </CoriBtn>
+            </div>
 
       {/* Tab Buttons */}
       <div className="flex gap-2 mb-4">
@@ -295,20 +300,6 @@ const getLeaveIcon = (type: string) => {
           pagination={false}
           showHeader={false}
         />
-      </div>
-
-      {/* Spacer to push policy section to bottom if content is short */}
-      <div className="flex-grow"></div>
-
-      {/* Leave Policies Notice Section at Bottom */}
-      <div className="bg-white rounded-xl p-4 flex justify-between items-center text-sm shadow-sm mt-8">
-        <p className="text-red-400 max-w-3xl">
-          Employees must submit leave requests in advance for approval. Leave is subject to company policies and availability.
-          Unauthorized absences may impact benefits. Check your balance before applying.
-        </p>
-        <button className="btn cori-btn btn-outline-primary border-zinc-900 text-zinc-900">
-          Edit Policies
-        </button>
       </div>
     </div>
   );
