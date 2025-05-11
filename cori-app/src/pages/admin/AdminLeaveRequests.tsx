@@ -72,17 +72,6 @@ const AdminLeaveRequests: React.FC = () => {
       status: "Approved",
     },
     {
-      id: 3,
-      type: "1 Day Unpaid Leave",
-      StartDate: "28 Aug",
-      EndDate: "28 Aug",
-      employee: "Rita Moore",
-      employeeId: "EMP-0074",
-      balance: 0,
-      comment: "I'm taking some time off to recharge and focus on my well-being.",
-      status: "Rejected",
-    },
-    {
       id: 5,
       type: "2 Days Parental Leave",
       StartDate: "1 Sep",
@@ -143,6 +132,7 @@ const AdminLeaveRequests: React.FC = () => {
 
   const columns = [
     {
+      title: "Leave Type & Duration",
       dataIndex: "type",
       key: "type",
       render: (text: string, record: any) => (
@@ -158,6 +148,7 @@ const AdminLeaveRequests: React.FC = () => {
       ),
     },
     {
+      title: "Employee",
       dataIndex: "employee",
       key: "employee",
       className: "text-center",
@@ -169,6 +160,7 @@ const AdminLeaveRequests: React.FC = () => {
       ),
     },
     {
+      title: "Leave Balance",
       dataIndex: "balance",
       key: "balance",
       className: "text-center",
@@ -183,6 +175,7 @@ const AdminLeaveRequests: React.FC = () => {
       ),
     },
     {
+      title: "Comment",
       dataIndex: "comment",
       key: "comment",
       className: "text-center",
@@ -233,12 +226,12 @@ const AdminLeaveRequests: React.FC = () => {
           )}
           {record.status === "Approved" && (
             <Tooltip title="Approved">
-              <CoriCircleBtn style="default" icon={<CheckOutlined className="text-s" />} />
+              <CoriCircleBtn style="default" icon={<CheckOutlined className="text-s" />} disabled />
             </Tooltip>
           )}
           {record.status === "Rejected" && (
             <Tooltip title="Rejected">
-              <CoriCircleBtn style="red" icon={<CloseOutlined className="text-s" />} />
+              <CoriCircleBtn style="red" icon={<CloseOutlined className="text-s" />} disabled />
             </Tooltip>
           )}
         </div>
@@ -274,26 +267,9 @@ const AdminLeaveRequests: React.FC = () => {
         ))}
       </div>
 
-      {/* Custom Header Row */}
-      <div className="grid grid-cols-5 px-8 py-2 gap-4 text-sm font-medium text-zinc-700">
-        <div className="flex items-center gap-1">
-          Leave Type & Duration
-          <ArrowDownOutlined className="text-s text-zinc-800" />
-        </div>
-        <div className="text-center">Employee</div>
-        <div className="text-center">Leave Balance</div>
-        <div className="text-center">Comment</div>
-      </div>
-
       {/* Data Table */}
       <div className="overflow-hidden rounded-xl">
-        <Table
-          columns={columns}
-          dataSource={filteredData}
-          rowKey="id"
-          pagination={false}
-          showHeader={false}
-        />
+        <Table columns={columns} dataSource={filteredData} rowKey="id" pagination={false} />
       </div>
     </div>
   );
