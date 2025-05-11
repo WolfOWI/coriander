@@ -8,6 +8,7 @@ import "antd/dist/reset.css";
 import { ServerStatusProvider } from "./contexts/ServerStatusContext";
 import ServerStatusModal from "./components/modals/ServerStatusModal";
 import { useServerStatus } from "./contexts/ServerStatusContext";
+import "./styles/table.css";
 
 // Configure day.js
 dayjs.locale("en");
@@ -186,9 +187,17 @@ const App: React.FC = () => {
           },
           Dropdown: {
             borderRadiusLG: 16,
-          }, 
-          Table : {
-            borderRadiusLG: 12,
+          },
+          Table: {
+            colorBgSolidHover: "#e7e5e4",
+            borderRadiusLG: 16,
+            headerBg: "#e7e5e4",
+            headerBorderRadius: 16,
+            headerSplitColor: "transparent",
+            headerColor: "#71717a",
+            headerFilterHoverBg: "transparent",
+            headerSortActiveBg: "transparent",
+            headerSortHoverBg: "transparent",
           },
         },
       }}
