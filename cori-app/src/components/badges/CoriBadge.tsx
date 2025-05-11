@@ -69,19 +69,20 @@ function CoriBadge({ color, size, text, className }: BadgeProps) {
 
   return (
     <div
-      className={`${bgColor} ${pSize} h-fit ${className} ${
+      className={`${bgColor} ${pSize} ${className} flex items-center justify-center ${
         size === "medium" || size === "large" ? "rounded-xl" : "rounded-lg"
       }`}
     >
-      <p
+      <span
         className={`${textSize} ${
           color === "yellow" || color === "white" ? "text-zinc-900" : "text-warmstone-50"
         }`}
       >
         {text}
-      </p>
+      </span>
     </div>
   );
+  
 }
 
 export default CoriBadge;
