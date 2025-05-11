@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 // Icons
 import { ClockCircleOutlined } from "@ant-design/icons";
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+import { Icons } from "../../constants/icons";
 
 // Graphs
 import { Progress } from "antd";
@@ -12,14 +12,12 @@ import CoriBadge from "../../components/badges/CoriBadge";
 
 // Icon rendering function
 const getLeaveIcon = (type: string) => {
-  const base = "material-symbols-outlined text-2xl me-2";
-  if (type.toLowerCase().includes("Annual Leave")) return <span className={base}>beach_access</span>;
-  if (type.toLowerCase().includes("Family Responsibility Leave")) return <span className={base}>family_restroom</span>;
-  if (type.toLowerCase().includes("Sick Leave")) return <span className={base}>sick</span>;
-  if (type.toLowerCase().includes("Compassionate Leave")) return <span className={base}>heart_broken</span>;
-  if (type.toLowerCase().includes("Study Leave")) return <span className={base}>menu_book</span>;
-  if (type.toLowerCase().includes("Parental Leave")) return <span className={base}>child_friendly</span>;
-  if (type.toLowerCase().includes("Unpaid Leave")) return <span className={base}>money_off</span>;
+  if (type.toLowerCase().includes("annual ")) return <Icons.BeachAccess fontSize = "large"/>;
+  if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize = "large"/>;
+  if (type.toLowerCase().includes("sick")) return <Icons.Sick fontSize = "large"/>;
+  if (type.toLowerCase().includes("compassion")) return <Icons.HeartBroken fontSize = "large"/>;
+  if (type.toLowerCase().includes("study")) return <Icons.MenuBook fontSize = "large"/>;
+  if (type.toLowerCase().includes("parental")) return <Icons.ChildFriendly fontSize = "large"/>;
   return null;
 };
 
@@ -59,7 +57,7 @@ const EmployeeLeaveOverview: React.FC = () => {
     },
     {
       id: 4,
-      type: "Family Responsibility Leave",
+      type: "Family Leave",
       days: "2 Days",
       dates: "18 Sept 2025 • 20 Sept 2025",
       comment: "No comment",
@@ -114,10 +112,11 @@ const EmployeeLeaveOverview: React.FC = () => {
           {filteredRequests.map((req) => (
             <div
               key={req.id}
-              className="bg-white rounded-2xl p-4 shadow-sm h-48 flex flex-col justify-between"
+              className="bg-white rounded-2xl p-4 shadow-sm h-48 flex flex-col overflow-hidden"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
+                  {getLeaveIcon(req.type)}
                   <div>
                     <p className="font-semibold text-zinc-900">{req.type}</p>
                     <p className="text-sm text-zinc-600">{req.days}</p>

@@ -5,7 +5,7 @@ import { Tooltip } from "antd";
 
 // Icons
 import {ClockCircleOutlined, ArrowDownOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons";
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+import { Icons } from "../../constants/icons";
 
 // Badges
 import CoriBadge from "../../components/badges/CoriBadge";
@@ -23,14 +23,12 @@ const AdminLeaveRequests: React.FC = () => {
 
   // Icon rendering function
 const getLeaveIcon = (type: string) => {
-  const base = "material-symbols-outlined text-2xl me-2";
-  if (type.toLowerCase().includes("Annual Leave")) return <span className={base}>beach_access</span>;
-  if (type.toLowerCase().includes("Family Responsibility Leave")) return <span className={base}>family_restroom</span>;
-  if (type.toLowerCase().includes("Sick Leave")) return <span className={base}>sick</span>;
-  if (type.toLowerCase().includes("Compassionate Leave")) return <span className={base}>heart_broken</span>;
-  if (type.toLowerCase().includes("Study Leave")) return <span className={base}>menu_book</span>;
-  if (type.toLowerCase().includes("Parental Leave")) return <span className={base}>child_friendly</span>;
-  if (type.toLowerCase().includes("Unpaid Leave")) return <span className={base}>money_off</span>;
+  if (type.toLowerCase().includes("annual ")) return <Icons.BeachAccess fontSize = "large"/>;
+  if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize = "large"/>;
+  if (type.toLowerCase().includes("sick")) return <Icons.Sick fontSize = "large"/>;
+  if (type.toLowerCase().includes("compassion")) return <Icons.HeartBroken fontSize = "large"/>;
+  if (type.toLowerCase().includes("study")) return <Icons.MenuBook fontSize = "large"/>;
+  if (type.toLowerCase().includes("parental")) return <Icons.ChildFriendly fontSize = "large"/>;
   return null;
 };
   
@@ -144,14 +142,14 @@ const getLeaveIcon = (type: string) => {
       dataIndex: "type",
       key: "type",
       render: (text: string, record: any) => (
-        <div className="flex flex-col justify-center h-full">
-          <div className="flex items-center">
-            {getLeaveIcon(text)}
+        <div className="flex items-center gap-4 h-full">
+          {getLeaveIcon(text)}
+          <div className="flex flex-col">
             <p className="font-medium">{text}</p>
-        </div>
-          <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-500">
             {record.StartDate} - {record.EndDate}
           </p>
+          </div>
         </div>
       ),
     },
