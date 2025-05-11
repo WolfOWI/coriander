@@ -52,6 +52,7 @@
     "@mui/icons-material": "^7.0.0",
     "@mui/material": "^7.1.0",
     "@mui/x-charts": "^8.2.0",
+    "@react-oauth/google": "^0.12.2",
     "antd": "^5.24.6",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
@@ -64,6 +65,7 @@
     "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",
     "react-gauge-component": "^1.2.64",
+    "react-oauth": "^0.0.1",
     "react-router-dom": "^7.4.0"
   }
 }

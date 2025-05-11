@@ -248,7 +248,10 @@ export const getCurrentUser = async (): Promise<CurrentUserDTO | null> => {
 export const getFullCurrentUser = async (): Promise<CurrentUserDTO | null> => {
   const user = await getCurrentUser();
 
-  if (!user || !user.isLinked) {
+  if (!user) {
+    window.location.href = "/";
+    return null;
+  } else if (!user.isLinked) {
     window.location.href = "/#notlinked";
     return null;
   } else {
