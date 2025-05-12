@@ -1,46 +1,32 @@
 import React from "react";
-import Icon from "../../../assets/icons/AdminAddIcon.png"; // You can later customize this per employee
+ // Replace with the actual path to your icon
 import CoriBadge from "../../../components/badges/CoriBadge";
+import { Icons } from "../../../constants/icons";
 
-type TopRatedEmployee = {
-  employeeId: number;
+interface TopRatedEmployee {
+  profilePicture: string; // Optional, if you want to use a different image
   fullName: string;
+  jobTitle: string;
   averageRating: number;
-  numberOfRatings: number;
-  mostRecentRating: number;
-  jobTitle?: string; // Optional if available
-  employmentType?: string; // Optional if you want to use this in the badge
-};
+  employType: string; // Example: "Full Time", "Part Time", etc.
+}
 
-type TopRatedEmpCardProps = {
-  employees: TopRatedEmployee[];
-};
-
-const TopRatedEmpCard: React.FC<TopRatedEmpCardProps> = ({ employees }) => {
+const TopRatedEmpCard: React.FC<TopRatedEmployee> = ({ fullName, jobTitle, averageRating, employType, profilePicture }) => {
   return (
     <div className="p-1">
-      <div className="flex flex-col gap-2">
-        {employees.map((emp) => (
-          <div
-            key={emp.employeeId}
-            className="flex justify-between items-center p-2 hover:bg-zinc-100 rounded-xl"
-          >
-            <img
-              src={Icon}
-              alt={`${emp.fullName}`}
-              className="rounded-full w-11 h-11"
-            />
-            <div className="flex flex-col">
-              <span className="text-zinc-900 text-md">{emp.fullName}</span>
-              <span className="text-zinc-500 text-xs">
-                {emp.jobTitle ?? "Employee"}
-              </span>
-            </div>
-            <CoriBadge size="small" text={emp.employmentType ?? "Rating"} />
-            <span className="text-zinc-900">⭐ {emp.averageRating.toFixed(1)}</span>
+        <div className="flex justify-between items-center p-2 hover:bg-zinc-100 rounded-xl">
+        <img
+            src={profilePicture} // Use profilePicture if available, otherwise fallback to Icon
+            alt={fullName}
+            className="rounded-full w-11 h-11"
+          />
+          <div className="flex flex-col">
+            <span className="text-zinc-900 text-md">{fullName}</span>
+            <span className="text-zinc-500 text-xs">{jobTitle}</span>
           </div>
-        ))}
-      </div>
+          <CoriBadge size="small" text="Part Time"></CoriBadge>
+          <span className="text-zinc-900">⭐ {averageRating.toFixed(1)}</span>
+        </div>
     </div>
   );
 };

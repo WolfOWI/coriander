@@ -16,12 +16,13 @@
 }
 
 .react-calendar__month-view__days__day--weekend abbr {
-  color: #88A764 !important;
+  color: #C393AE !important;
 }
 
 /* Optional: remove default blue highlight */
 .react-calendar__tile--active {
-  background-color: #88A764 !important;
-  border-radius: 50%;
-  color: white;
+  background-color: transparent !important;
+  border: 2px solid #88A764 !important;
+  border-radius: 6px;
+  color: #88A764 !important;
 }

@@ -191,6 +191,13 @@ export const pageAPI = {
    */
   getEmployeeProfile: (id: string): Promise<AxiosResponse> =>
     apiClient.get(`/Page/employee-profile/${id}`),
+
+  /**
+   * getAdminDashboardData - Fetches data for the admin dashboard
+   * @returns Promise containing the API response
+   */
+  getAdminDashboardData: (): Promise<AxiosResponse> =>
+    apiClient.get("/Page/admin-dashboard"),
 };
 
 // EQUIPMENT API
