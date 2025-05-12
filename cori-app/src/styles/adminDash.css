@@ -21,7 +21,8 @@
 
 /* Optional: remove default blue highlight */
 .react-calendar__tile--active {
-  background-color: #88A764 !important;
-  border-radius: 50%;
-  color: white;
+  background-color: transparent !important;
+  border: 2px solid #88A764 !important;
+  border-radius: 6px;
+  color: white !important;
 }
