@@ -23,7 +23,8 @@ const apiClient: AxiosInstance = axios.create({
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
 
     // Define which headers are allowed in requests
-    "Access-Control-Allow-Headers": "Origin, Content-Type, Accept, Authorization",
+    "Access-Control-Allow-Headers":
+      "Origin, Content-Type, Accept, Authorization",
   },
 
   // Enable sending cookies and authentication headers with cross-origin requests
@@ -121,7 +122,8 @@ export const empUserAPI = {
    * @param id - The employee's ID (must be a number)
    * @returns Promise containing the API response
    */
-  getEmpUserById: (id: string): Promise<AxiosResponse> => apiClient.get(`/EmpUser/${id}`),
+  getEmpUserById: (id: string): Promise<AxiosResponse> =>
+    apiClient.get(`/EmpUser/${id}`),
 
   /**
    * Edit an emp user by their ID
@@ -137,7 +139,9 @@ export const empUserAPI = {
    * @param comparedEquipId - The equipment's ID to compare against
    * @returns Promise containing the API response
    */
-  getAllEmpUsersAndEquipStats: (comparedEquipId: number): Promise<AxiosResponse> =>
+  getAllEmpUsersAndEquipStats: (
+    comparedEquipId: number
+  ): Promise<AxiosResponse> =>
     apiClient.get(`/EmpUser/equip-stats/${comparedEquipId}`),
 };
 // ------------------------------------------------------------
@@ -158,7 +162,8 @@ export const employeeAPI = {
    * @param id - The employee's ID
    * @returns Promise containing the API response
    */
-  terminateEmpById: (id: string): Promise<AxiosResponse> => apiClient.delete(`/Employee/${id}`),
+  terminateEmpById: (id: string): Promise<AxiosResponse> =>
+    apiClient.delete(`/Employee/${id}`),
 };
 // ------------------------------------------------------------
 
@@ -177,7 +182,8 @@ export const pageAPI = {
    * Fetches the list of all employees for the admin employee management page
    * @returns Promise containing the API response
    */
-  getAdminEmpManagement: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-emp-management"),
+  getAdminEmpManagement: (): Promise<AxiosResponse> =>
+    apiClient.get("/Page/admin-emp-management"),
 
   /**
    * Fetches the list of all employees for the employee profile page
@@ -207,7 +213,8 @@ export const equipmentAPI = {
    * Fetches all unassigned equipment items
    * @returns Promise containing the API response
    */
-  getAllUnassignedEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment/unassigned"),
+  getAllUnassignedEquipItems: (): Promise<AxiosResponse> =>
+    apiClient.get("/Equipment/unassigned"),
 
   /**
    * Create a single or multiple equipment items (based on the request body)
@@ -232,7 +239,10 @@ export const equipmentAPI = {
    * @param equipIds - An array of equipment IDs
    * @returns A message confirming the assignment
    */
-  assignEquipItemOrItemsToEmp: (empId: number, equipIds: number[]): Promise<AxiosResponse> =>
+  assignEquipItemOrItemsToEmp: (
+    empId: number,
+    equipIds: number[]
+  ): Promise<AxiosResponse> =>
     apiClient.post(`/Equipment/assign-equipment/${empId}`, equipIds),
 
   /**
@@ -259,7 +269,8 @@ export const equipmentAPI = {
    * @param id - The equipment's ID
    * @returns Promise containing the API response
    */
-  deleteEquipItemById: (id: number): Promise<AxiosResponse> => apiClient.delete(`/Equipment/${id}`),
+  deleteEquipItemById: (id: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/Equipment/${id}`),
 };
 
 // ------------------------------------------------------------
