@@ -94,11 +94,15 @@ const AdminDashboard: React.FC = () => {
                     {leaveRequests.map((request: any) => (
                       <LeaveCardAdminDash
                         key={request.leaveRequestId}
-                        employeeName={request.employeeName}
-                        leaveType={request.leaveType}
-                        startDate={request.startDate}
-                        endDate={request.endDate}
-                        createdAt={request.createdAt}
+                        leave={{
+                          leaveRequestId: request.leaveRequestId,
+                          employeeId: request.employeeId,
+                          employeeName: request.employeeName,
+                          startDate: request.startDate,
+                          endDate: request.endDate,
+                          leaveType: request.leaveType,
+                          createdAt: request.createdAt,
+                        }}
                       />
                     ))}
 
