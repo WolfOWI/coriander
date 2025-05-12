@@ -42,13 +42,11 @@ const DoughnutChartCard: React.FC<DoughnutChartCardProps> = ({ employeeStatusTot
             strokeWidth: 2,
           },
         }}
-        slotProps={{
-          legend: { hidden: true },
-        }}
+        hideLegend = {true}
       />
       <div className='flex flex-col items-center justify-center' style={{ marginTop: '-110px', marginBottom: '65px' }}>
-        <h1 className='text-3xl'>{employeeStatusTotals.totalEmployees}</h1>
-        <p className='text-sm'>Employees</p>
+        <h1 className='text-zinc-900 font-semibold text-3xl'>{employeeStatusTotals.totalEmployees}</h1>
+        <p className='text-zinc-900 text-xs'>Employees</p>
       </div>
 
       {/* Custom Legend Row */}

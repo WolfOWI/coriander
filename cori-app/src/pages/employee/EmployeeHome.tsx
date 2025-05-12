@@ -16,7 +16,7 @@ import { Spin } from "antd"; // ✅ Used in loading state
 
 
 const EmployeeHome: React.FC = () => {
-  const { employeeId = "11" } = useParams(); // Default to "8"
+  const { employeeId = "11" } = useParams();
 
 
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);

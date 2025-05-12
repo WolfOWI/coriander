@@ -13,12 +13,19 @@ import AdminCalendar from "../../components/calender";
 //---
 import { pageAPI } from "../../services/api.service";
 
+//Modals
+import CreatePRModal from "../../components/modals/CreatePRModal";
+import EditPRModal from "../../components/modals/EditPRModal";
+
+
 // import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 
 const AdminDashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreatePRModal, setShowCreatePRModal] = useState(false);
+  const [showEditPRModal, setShowEditPRModal] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -117,7 +124,7 @@ const AdminDashboard: React.FC = () => {
                 {/* Creating PRM meetings and rating employee buttons - For Modal */}
                   <Row className="g-3">
                     <Col md={6}>
-                      <div className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full">
+                      <div className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer" onClick={() => setShowCreatePRModal(true)}>
                         <p className='text-sm font-bold mb-2'>New Performance Review</p>
                           <div className="flex justify-end h-full">
                             <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
@@ -125,7 +132,7 @@ const AdminDashboard: React.FC = () => {
                       </div>
                     </Col>
                     <Col md={6}>
-                      <div className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full">
+                      <div className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer" onClick={() => setShowEditPRModal(true)}>
                         <p className='text-sm font-bold mb-2'>Rate Your Employee</p>
                           <div className="flex justify-end h-full">
                             <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
@@ -134,6 +141,7 @@ const AdminDashboard: React.FC = () => {
                     </Col>
                   </Row>
 
+                  
                   {/* Top Rated employee list */}
                   <Col xs={12} md={12}>
                     <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">Top Rated Employees</div>
@@ -149,25 +157,16 @@ const AdminDashboard: React.FC = () => {
                             fullName={employeeData?.fullName || "Unknown"}
                             jobTitle={employeeData?.jobTitle || "Unknown"}
                             averageRating={ratingData?.averageRating || 0}
-                            employType={
-                              employeeData?.employType === 0
-                                ? "Full Time"
-                                : employeeData?.employType === 1
-                                ? "Part Time"
-                                : "Unknown"
-                            }
+                            employType={employeeData?.employType || "Unknown"}
                           />
                         );
                       })}
                       </div>
                   </Col>
-
                 </Col>
-
               </Row>
-
-
             </Col>
+
             {/* Right Card -> Performance Review calender and meetCards */}
             <Col lg="4" md="4">
               <AdminCalendar />
@@ -176,17 +175,26 @@ const AdminDashboard: React.FC = () => {
           </Row>
         </Container>
       
+      {/* CreatePRModal */}
+      <CreatePRModal
+        showModal={showCreatePRModal}
+        setShowModal={setShowCreatePRModal}
+        onCreateSuccess={() => {
+        console.log("Performance Review created successfully!");
+        }} 
+      />     
+
+      <EditPRModal
+        showModal={showEditPRModal}
+        setShowModal={setShowEditPRModal}
+        onEditSuccess={() => {
+        console.log("Performance Review updated successfully!");
+        }} 
+      />               
+      
       </div>
     </div>
   );
 };
 
 export default AdminDashboard;
-
-// const AdminDashboard: React.FC = () => {
-//   return(
-//     <div></div>
-//   )
-// }
-
-// export default AdminDashboard;
