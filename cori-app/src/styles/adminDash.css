@@ -16,7 +16,7 @@
 }
 
 .react-calendar__month-view__days__day--weekend abbr {
-  color: #88A764 !important;
+  color: #C393AE !important;
 }
 
 /* Optional: remove default blue highlight */
@@ -24,5 +24,5 @@
   background-color: transparent !important;
   border: 2px solid #88A764 !important;
   border-radius: 6px;
-  color: white !important;
+  color: #88A764 !important;
 }

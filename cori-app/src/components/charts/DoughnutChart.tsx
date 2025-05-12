@@ -52,7 +52,7 @@ const DoughnutChartCard: React.FC<DoughnutChartCardProps> = ({ employeeStatusTot
       </div>
 
       {/* Custom Legend Row */}
-      <div className="flex flex-wrap justify-center gap-2 mt-2 text-sm">
+      <div className="flex flex-wrap justify-center p-2 gap-2 mt-2 text-sm">
         {doughnutData.map((item) => (
           <div key={item.id} className="flex items-center gap-1">
             <span

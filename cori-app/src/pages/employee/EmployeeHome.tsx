@@ -146,7 +146,7 @@ const EmployeeHome: React.FC = () => {
               <Col xs={12} md={7}>
                   <div className="text-zinc-500 font-semibold text-center mb-2">Your Remaining Leave</div>
                     <div className="bg-red flex flex-col items-center">
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2">
                         {leaveBalances?.map((balance: any) => (
                             <LeaveBalanceBlock
                               key={balance.leaveBalanceId}

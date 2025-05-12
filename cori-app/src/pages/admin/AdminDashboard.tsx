@@ -50,6 +50,7 @@ const AdminDashboard: React.FC = () => {
   totalSuspendedEmployees: 0,
   };
   const leaveRequests = dashboardData?.leaveRequests?.$values || [];
+  const topRatedEmployees = dashboardData?.topRatedEmployees?.$values || [];
 
   return (
     <div className="max-w-7xl mx-auto m-4">
@@ -80,15 +81,16 @@ const AdminDashboard: React.FC = () => {
                 {/* Employment Overview Card */}
                 <Col xs={12} md={5}>
                   <div className="text-zinc-500 font-semibold text-center mb-2">Employment Overview</div>
-                    <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col shadow">
+                    <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow">
                     <DoughnutChartCard employeeStatusTotals={employeeStatusTotals} />
                     </div>
                 </Col>
 
                 {/* Leave Requests Card */}
                 <Col xs={12} md={5}>
+                <div className="w-full flex flex-col items-center">
                 <div className="text-zinc-500 font-semibold text-center mb-2">Leave Requests</div>
-                  <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2">
+                  <div className="w-full h-[330px] overflow-y-auto relative scrollbar-hide [&::-webkit-scrollbar]:hidden bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2">
                     {leaveRequests.map((request: any) => (
                       <LeaveCardAdminDash
                         key={request.leaveRequestId}
@@ -96,10 +98,14 @@ const AdminDashboard: React.FC = () => {
                         leaveType={request.leaveType}
                         startDate={request.startDate}
                         endDate={request.endDate}
-                        defaultDays={request.defaultDays}
+                        createdAt={request.createdAt}
                       />
                     ))}
 
+                  </div>
+                  {/* <div className="py-10 w-full bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0 text-transparent">
+                      _
+                  </div> */}
                   </div>
                 </Col>
 
@@ -108,7 +114,7 @@ const AdminDashboard: React.FC = () => {
                   <Row className="g-3">
                     <Col md={6}>
                       <div className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full">
-                        <p className='text-sm font-bold mb-1'>New Performance Review</p>
+                        <p className='text-sm font-bold mb-2'>New Performance Review</p>
                           <div className="flex justify-end h-full">
                             <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
                           </div>
@@ -116,7 +122,7 @@ const AdminDashboard: React.FC = () => {
                     </Col>
                     <Col md={6}>
                       <div className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full">
-                        <p className='text-sm font-bold mb-1'>Rate Your Employee</p>
+                        <p className='text-sm font-bold mb-2'>Rate Your Employee</p>
                           <div className="flex justify-end h-full">
                             <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
                           </div>
@@ -128,9 +134,27 @@ const AdminDashboard: React.FC = () => {
                   <Col xs={12} md={12}>
                     <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">Top Rated Employees</div>
                       <div className="bg-warmstone-50 p-2 rounded-2xl flex flex-col shadow">
-                      <TopRatedEmpCard />
-                      <TopRatedEmpCard />
-                      <TopRatedEmpCard />
+                      {topRatedEmployees.map((employee: any) => {
+                        const employeeData = employee.employees?.$values[0];
+                        const ratingData = employee.ratings?.$values[0];
+
+                        return (
+                          <TopRatedEmpCard
+                            key={employeeData?.employeeId}
+                            profilePicture={employeeData?.profilePicture}
+                            fullName={employeeData?.fullName || "Unknown"}
+                            jobTitle={employeeData?.jobTitle || "Unknown"}
+                            averageRating={ratingData?.averageRating || 0}
+                            employType={
+                              employeeData?.employType === 0
+                                ? "Full Time"
+                                : employeeData?.employType === 1
+                                ? "Part Time"
+                                : "Unknown"
+                            }
+                          />
+                        );
+                      })}
                       </div>
                   </Col>
 

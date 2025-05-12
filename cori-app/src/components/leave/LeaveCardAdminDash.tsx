@@ -5,8 +5,15 @@ interface LeaveRequest {
   leaveType: string;
   startDate: string;
   endDate: string;
-  defaultDays: number;
   createdAt: string;
+}
+
+function calculateLeaveDays(startDate: string, endDate: string): number {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const timeDiff = end.getTime() - start.getTime();
+  const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  return dayDiff + 1; // Include the start date
 }
 
 const LeaveCardAdminDash: React.FC<LeaveRequest> = ({ employeeName, leaveType, startDate, endDate, createdAt }) => {
@@ -18,7 +25,7 @@ const LeaveCardAdminDash: React.FC<LeaveRequest> = ({ employeeName, leaveType, s
       <h4 className="mt-2 font-medium text-sm">Leave Type: {leaveType}</h4>
       <div className='flex justify-between font-light text-sm'>
         <p>{new Date(startDate).toLocaleDateString()} - {new Date(endDate).toLocaleDateString()}</p>
-        <p>** Days</p>
+        <p className='font-medium'>{calculateLeaveDays(startDate, endDate)} Days</p>
       </div>
     </div>
   );
