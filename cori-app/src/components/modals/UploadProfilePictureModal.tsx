@@ -1,20 +1,21 @@
 import React, { useState } from "react";
-import { Modal, Upload, message } from "antd";
+import { Modal, Upload, message, Button, Space } from "antd";
 import { Icons } from "../../constants/icons";
 import { RcFile } from "antd/es/upload";
 import { empUserAPI, imageAPI } from "../../services/api.service";
+import { EmpUser } from "../../interfaces/people/empUser";
 
 interface UploadProfilePictureModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  employeeId: string;
+  empUser: EmpUser;
   onUploadSuccess: () => void;
 }
 
 function UploadProfilePictureModal({
   showModal,
   setShowModal,
-  employeeId,
+  empUser,
   onUploadSuccess,
 }: UploadProfilePictureModalProps) {
   const [messageApi, contextHolder] = message.useMessage();
@@ -26,11 +27,11 @@ function UploadProfilePictureModal({
     try {
       setUploading(true);
 
-      // Upload the image using the imageAPI
-      const relativeUrl = await imageAPI.upload(file);
+      // Upload the image using the profile-specific endpoint
+      const relativeUrl = await imageAPI.updateProfilePicture(empUser.userId, file);
 
-      // Update the employee's profile picture
-      await empUserAPI.updateEmpUserById(employeeId, {
+      // Update the employee's profile picture in the database
+      await empUserAPI.updateEmpUserById(empUser.employeeId.toString(), {
         profilePicture: relativeUrl,
       });
 
@@ -40,6 +41,25 @@ function UploadProfilePictureModal({
     } catch (error) {
       console.error("Error uploading image:", error);
       messageApi.error("Failed to upload image. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Function to handle profile picture deletion
+  const handleDelete = async () => {
+    try {
+      setUploading(true);
+
+      // Remove the profile picture (which also sets the profilePicture field to null)
+      await imageAPI.removeProfilePicture(empUser.userId);
+
+      messageApi.success("Profile picture removed successfully");
+      onUploadSuccess();
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error removing profile picture:", error);
+      messageApi.error("Failed to remove profile picture. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -74,7 +94,15 @@ function UploadProfilePictureModal({
         title={<h2 className="text-zinc-900 font-bold text-3xl">Upload Profile Picture</h2>}
         open={showModal}
         onCancel={() => setShowModal(false)}
-        footer={null}
+        footer={
+          empUser.profilePicture ? (
+            <div className="px-10 pb-10">
+              <Button danger onClick={handleDelete} disabled={uploading} className="w-full">
+                Remove Profile Picture
+              </Button>
+            </div>
+          ) : null
+        }
         width={400}
         styles={{
           header: {
@@ -85,11 +113,6 @@ function UploadProfilePictureModal({
           body: {
             paddingTop: 20,
             padding: 40,
-          },
-          footer: {
-            paddingLeft: 40,
-            paddingRight: 40,
-            paddingBottom: 40,
           },
         }}
       >
@@ -103,6 +126,8 @@ function UploadProfilePictureModal({
         >
           {imageUrl ? (
             <img src={imageUrl} alt="Preview" className="max-h-48 object-contain" />
+          ) : empUser.profilePicture ? (
+            <img src={empUser.profilePicture} alt="Current" className="max-h-48 object-contain" />
           ) : (
             <>
               <p className="ant-upload-drag-icon">

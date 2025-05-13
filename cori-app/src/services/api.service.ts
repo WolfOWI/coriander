@@ -294,7 +294,7 @@ export const healthCheckAPI = {
 // ------------------------------------------------------------
 export const imageAPI = {
   /**
-   * Uploads an image file to the server
+   * Uploads a general image file to the server
    * @param file - The file to upload
    * @returns Promise containing the API response with the image URL
    */
@@ -316,6 +316,38 @@ export const imageAPI = {
     const fileName = data.imageUrl.replace(/^\//, "").replace(/^uploads\//, "");
     // Return just the relative path
     return `/uploads/${fileName}`;
+  },
+
+  /**
+   * Updates a user's profile picture
+   * @param userId - The ID of the user
+   * @param file - The new profile picture file
+   * @returns Promise containing the API response with the image URL
+   */
+  updateProfilePicture: async (userId: number, file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const { data } = await apiClient.post(`/Image/profile-picture/${userId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (!data.imageUrl) {
+      throw new Error("No image URL returned from server");
+    }
+
+    return data.imageUrl;
+  },
+
+  /**
+   * Removes a user's profile picture
+   * @param userId - The ID of the user
+   * @returns Promise containing the API response
+   */
+  removeProfilePicture: async (userId: number): Promise<void> => {
+    await apiClient.delete(`/Image/profile-picture/${userId}`);
   },
 };
 // ------------------------------------------------------------

@@ -307,7 +307,7 @@ const EmployeeProfile: React.FC = () => {
       <UploadProfilePictureModal
         showModal={showUploadPictureModal}
         setShowModal={setShowUploadPictureModal}
-        employeeId={employeeId}
+        empUser={empUser}
         onUploadSuccess={fetchEmployee}
       />
     </>
