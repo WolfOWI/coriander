@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, Upload, message } from "antd";
 import { Icons } from "../../constants/icons";
 import { RcFile } from "antd/es/upload";
-import { empUserAPI } from "../../services/api.service";
+import { empUserAPI, imageAPI } from "../../services/api.service";
 
 interface UploadProfilePictureModalProps {
   showModal: boolean;
@@ -26,32 +26,10 @@ function UploadProfilePictureModal({
     try {
       setUploading(true);
 
-      // Create form data
-      const formData = new FormData();
-      formData.append("file", file);
+      // Upload the image using the imageAPI
+      const relativeUrl = await imageAPI.upload(file);
 
-      // Upload the image
-      const response = await fetch(`${process.env.VITE_API_URL}/Image/upload`, {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const data = await response.json();
-
-      if (!data.imageUrl) {
-        throw new Error("No image URL returned from server");
-      }
-
-      // Remove any leading slash and 'uploads' if present
-      const fileName = data.imageUrl.replace(/^\//, "").replace(/^uploads\//, "");
-      // Store just the relative path
-      const relativeUrl = `/uploads/${fileName}`;
-
+      // Update the employee's profile picture
       await empUserAPI.updateEmpUserById(employeeId, {
         profilePicture: relativeUrl,
       });

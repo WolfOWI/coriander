@@ -23,8 +23,7 @@ const apiClient: AxiosInstance = axios.create({
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
 
     // Define which headers are allowed in requests
-    "Access-Control-Allow-Headers":
-      "Origin, Content-Type, Accept, Authorization",
+    "Access-Control-Allow-Headers": "Origin, Content-Type, Accept, Authorization",
   },
 
   // Enable sending cookies and authentication headers with cross-origin requests
@@ -122,8 +121,7 @@ export const empUserAPI = {
    * @param id - The employee's ID (must be a number)
    * @returns Promise containing the API response
    */
-  getEmpUserById: (id: string): Promise<AxiosResponse> =>
-    apiClient.get(`/EmpUser/${id}`),
+  getEmpUserById: (id: string): Promise<AxiosResponse> => apiClient.get(`/EmpUser/${id}`),
 
   /**
    * Edit an emp user by their ID
@@ -139,9 +137,7 @@ export const empUserAPI = {
    * @param comparedEquipId - The equipment's ID to compare against
    * @returns Promise containing the API response
    */
-  getAllEmpUsersAndEquipStats: (
-    comparedEquipId: number
-  ): Promise<AxiosResponse> =>
+  getAllEmpUsersAndEquipStats: (comparedEquipId: number): Promise<AxiosResponse> =>
     apiClient.get(`/EmpUser/equip-stats/${comparedEquipId}`),
 };
 // ------------------------------------------------------------
@@ -162,8 +158,7 @@ export const employeeAPI = {
    * @param id - The employee's ID
    * @returns Promise containing the API response
    */
-  terminateEmpById: (id: string): Promise<AxiosResponse> =>
-    apiClient.delete(`/Employee/${id}`),
+  terminateEmpById: (id: string): Promise<AxiosResponse> => apiClient.delete(`/Employee/${id}`),
 };
 // ------------------------------------------------------------
 
@@ -182,8 +177,7 @@ export const pageAPI = {
    * Fetches the list of all employees for the admin employee management page
    * @returns Promise containing the API response
    */
-  getAdminEmpManagement: (): Promise<AxiosResponse> =>
-    apiClient.get("/Page/admin-emp-management"),
+  getAdminEmpManagement: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-emp-management"),
 
   /**
    * Fetches the list of all employees for the employee profile page
@@ -196,8 +190,7 @@ export const pageAPI = {
    * getAdminDashboardData - Fetches data for the admin dashboard
    * @returns Promise containing the API response
    */
-  getAdminDashboardData: (): Promise<AxiosResponse> =>
-    apiClient.get("/Page/admin-dashboard"),
+  getAdminDashboardData: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-dashboard"),
 };
 
 // EQUIPMENT API
@@ -213,8 +206,7 @@ export const equipmentAPI = {
    * Fetches all unassigned equipment items
    * @returns Promise containing the API response
    */
-  getAllUnassignedEquipItems: (): Promise<AxiosResponse> =>
-    apiClient.get("/Equipment/unassigned"),
+  getAllUnassignedEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment/unassigned"),
 
   /**
    * Create a single or multiple equipment items (based on the request body)
@@ -239,10 +231,7 @@ export const equipmentAPI = {
    * @param equipIds - An array of equipment IDs
    * @returns A message confirming the assignment
    */
-  assignEquipItemOrItemsToEmp: (
-    empId: number,
-    equipIds: number[]
-  ): Promise<AxiosResponse> =>
+  assignEquipItemOrItemsToEmp: (empId: number, equipIds: number[]): Promise<AxiosResponse> =>
     apiClient.post(`/Equipment/assign-equipment/${empId}`, equipIds),
 
   /**
@@ -269,8 +258,7 @@ export const equipmentAPI = {
    * @param id - The equipment's ID
    * @returns Promise containing the API response
    */
-  deleteEquipItemById: (id: number): Promise<AxiosResponse> =>
-    apiClient.delete(`/Equipment/${id}`),
+  deleteEquipItemById: (id: number): Promise<AxiosResponse> => apiClient.delete(`/Equipment/${id}`),
 };
 
 // ------------------------------------------------------------
@@ -302,19 +290,36 @@ export const healthCheckAPI = {
   },
 };
 
+// IMAGE API
+// ------------------------------------------------------------
+export const imageAPI = {
+  /**
+   * Uploads an image file to the server
+   * @param file - The file to upload
+   * @returns Promise containing the API response with the image URL
+   */
+  upload: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
 
-//-----------------------------------------------------------------------
-//Admin Page API
-//-----------------------------------------------------------------------
+    const { data } = await apiClient.post("/Image/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
+    if (!data.imageUrl) {
+      throw new Error("No image URL returned from server");
+    }
 
-
-
-
+    // Remove any leading slash and 'uploads' if present
+    const fileName = data.imageUrl.replace(/^\//, "").replace(/^uploads\//, "");
+    // Return just the relative path
+    return `/uploads/${fileName}`;
+  },
+};
+// ------------------------------------------------------------
 
 // ############################################################
 // Export the configured axios instance
 export default apiClient;
-
-
-
