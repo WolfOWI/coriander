@@ -28,6 +28,7 @@ import AssignEmpToOneOrManyEquipsModal from "../../components/modals/AssignEmpTo
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
+import UploadProfilePictureModal from "../../components/modals/UploadProfilePictureModal";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
@@ -95,6 +96,7 @@ const AdminIndividualEmployee: React.FC = () => {
   const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
   const [showUnlinkEquipmentModal, setShowUnlinkEquipmentModal] = useState(false);
   const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
+  const [showUploadPictureModal, setShowUploadPictureModal] = useState(false);
 
   // Message System
   const [messageApi, ContextHolder] = message.useMessage();
@@ -247,6 +249,13 @@ const AdminIndividualEmployee: React.FC = () => {
     }
   };
 
+  // Handle profile picture edit click
+  const handleProfilePictureEdit = () => {
+    if (empUser?.googleId === null) {
+      setShowUploadPictureModal(true);
+    }
+  };
+
   if (loading)
     return (
       <div className="w-full h-full flex flex-col justify-center items-center">
@@ -291,19 +300,29 @@ const AdminIndividualEmployee: React.FC = () => {
             {/* Employee Details */}
             <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col">
               <div className="flex gap-4">
-                {empUser.profilePicture ? (
-                  <Avatar
-                    src={getFullImageUrl(empUser.profilePicture)}
-                    size={104}
-                    className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
-                  />
-                ) : (
-                  <Avatar
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${empUser.fullName}`}
-                    size={104}
-                    className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
-                  />
-                )}
+                <div className="relative">
+                  {empUser.profilePicture ? (
+                    <Avatar
+                      src={getFullImageUrl(empUser.profilePicture)}
+                      size={104}
+                      className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
+                    />
+                  ) : (
+                    <Avatar
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${empUser.fullName}`}
+                      size={104}
+                      className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
+                    />
+                  )}
+                  {/* If user is not a google user */}
+                  {empUser.googleId === null && (
+                    <CoriCircleBtn
+                      icon={<Icons.Edit />}
+                      className="absolute bottom-0 right-0"
+                      onClick={handleProfilePictureEdit}
+                    />
+                  )}
+                </div>
                 <div className="flex flex-col gap-2">
                   <p className="text-sm text-zinc-500">Employee ID {empUser.employeeId}</p>
                   <div className="flex items-center gap-3">
@@ -656,6 +675,14 @@ const AdminIndividualEmployee: React.FC = () => {
           setShowModal={setShowTerminateEmployeeModal}
           employeeFullName={empUser?.fullName || "this employee"}
           employeeId={employeeId || ""}
+        />
+
+        {/* Profile Picture Modal */}
+        <UploadProfilePictureModal
+          showModal={showUploadPictureModal}
+          setShowModal={setShowUploadPictureModal}
+          empUser={empUser}
+          onUploadSuccess={fetchEmployee}
         />
       </div>
     </div>
