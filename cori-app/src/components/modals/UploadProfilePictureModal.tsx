@@ -93,33 +93,29 @@ function UploadProfilePictureModal({
     <>
       {contextHolder}
       <Modal
-        title={<h2 className="text-zinc-900 font-bold text-3xl">Upload Profile Picture</h2>}
+        title={
+          <div className="mb-4">
+            <h2 className="text-zinc-900 font-bold text-3xl">Profile Picture</h2>
+            <p className="text-zinc-500 text-sm mt-1 font-normal">
+              Upload or update your profile picture
+            </p>
+          </div>
+        }
         open={showModal}
         onCancel={() => {
           setPreviewUrl(undefined);
           setShowModal(false);
         }}
+        width={400}
         footer={
           empUser.profilePicture ? (
-            <div className="px-10 pb-10">
+            <div className="mb-2">
               <Button danger onClick={handleDelete} disabled={uploading} className="w-full">
                 Remove Profile Picture
               </Button>
             </div>
           ) : null
         }
-        width={400}
-        styles={{
-          header: {
-            paddingLeft: 40,
-            paddingRight: 40,
-            paddingTop: 40,
-          },
-          body: {
-            paddingTop: 20,
-            padding: 40,
-          },
-        }}
       >
         <Upload.Dragger
           name="file"
@@ -127,20 +123,43 @@ function UploadProfilePictureModal({
           showUploadList={false}
           beforeUpload={beforeUpload}
           disabled={uploading}
-          style={{ width: "100%" }}
+          style={{
+            width: "100%",
+            height: "300px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "12px",
+            borderColor: "#e5e7eb",
+            transition: "all 0.2s ease",
+            backgroundColor: "#f9fafb",
+          }}
         >
           {previewUrl ? (
-            <img src={previewUrl} alt="Preview" className="object-contain" />
+            <div className="w-full h-full flex items-center justify-center p-4">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="w-full h-full object-cover rounded-lg shadow-sm"
+              />
+            </div>
           ) : empUser.profilePicture ? (
-            <img src={currentImageUrl || ""} alt="Current" className="object-contain" />
+            <div className="w-full h-full flex items-center justify-center p-4">
+              <img
+                src={currentImageUrl || ""}
+                alt="Current"
+                className="w-full h-full object-cover rounded-lg shadow-sm"
+              />
+            </div>
           ) : (
-            <>
-              <p className="ant-upload-drag-icon">
-                <Icons.Upload className="text-4xl text-zinc-400" />
-              </p>
-              <p className="text-zinc-500 text-sm mb-2">Click or drag an image to upload</p>
-              <p className="text-zinc-400 text-xs">PNG, JPG up to 2MB</p>
-            </>
+            <div className="flex flex-col items-center justify-center h-full p-4">
+              <div className="p-4">
+                <Icons.Upload fontSize="large" className="text-zinc-400" />
+              </div>
+              <p className="text-zinc-700 text-base font-bold mb-2">Upload a Photo</p>
+              <p className="text-zinc-500 text-sm">Click or drag an image here</p>
+              <p className="text-zinc-400 text-xs mt-4">PNG, JPG up to 2MB</p>
+            </div>
           )}
         </Upload.Dragger>
       </Modal>
