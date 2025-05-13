@@ -6,6 +6,7 @@ import { Icons } from "../../constants/icons";
 import { empUserAPI, equipmentAPI } from "../../services/api.service";
 import { EquipmentCondition } from "../../types/common";
 import dayjs from "dayjs";
+import { getFullImageUrl } from "../../utils/imageUtils";
 
 interface AssignSingleEquipToEmpModalProps {
   showModal: boolean;
@@ -132,7 +133,11 @@ function AssignSingleEquipToEmpModal({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {emp.profilePicture ? (
-            <img src={emp.profilePicture} alt={emp.fullName} className="w-8 h-8 rounded-full" />
+            <img
+              src={getFullImageUrl(emp.profilePicture) || ""}
+              alt={emp.fullName}
+              className="w-8 h-8 rounded-full"
+            />
           ) : (
             <div className="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center">
               <Icons.Person className="text-zinc-400" fontSize="small" />

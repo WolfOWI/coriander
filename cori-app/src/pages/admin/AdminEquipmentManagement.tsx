@@ -4,6 +4,8 @@ import { Table, Avatar, Tooltip, Button, Dropdown, Popover, message, DatePicker 
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
 import { equipmentAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
+import { formatRandAmount } from "../../utils/formatUtils";
+import { getFullImageUrl } from "../../utils/imageUtils";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
@@ -244,7 +246,7 @@ const AdminEquipmentManagement: React.FC = () => {
                 <div className="flex items-center gap-2 hover:bg-corigreen-200 p-2 rounded-xl transition-colors">
                   {record.profilePicture ? (
                     <Avatar
-                      src={record.profilePicture}
+                      src={getFullImageUrl(record.profilePicture)}
                       className="bg-corigreen-500 h-10 w-10 rounded-full object-cover border-1 border-corigreen-300"
                     />
                   ) : (

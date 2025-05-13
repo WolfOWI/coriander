@@ -8,9 +8,15 @@ import { Gender, PayCycle } from "../../types/common";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 import { Icons } from "../../constants/icons";
-import { formatRandAmount } from "../../utils/formatUtils";
-import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
+import { formatRandAmount, formatPhone } from "../../utils/formatUtils";
+import {
+  isDateInPast,
+  formatTimestampToDate,
+  calculateNextPayDay,
+  formatEmploymentDuration,
+} from "../../utils/dateUtils";
 import dayjs from "dayjs";
+import { getFullImageUrl } from "../../utils/imageUtils";
 
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
@@ -185,7 +191,7 @@ const AdminEmployeeManagement: React.FC = () => {
           <div className="flex items-center gap-2">
             {record.profilePicture ? (
               <Avatar
-                src={record.profilePicture}
+                src={getFullImageUrl(record.profilePicture)}
                 className="bg-warmstone-600 h-12 w-12 rounded-full object-cover border-2 border-zinc-700"
               />
             ) : (

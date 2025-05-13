@@ -43,6 +43,7 @@ import {
 } from "../../utils/dateUtils";
 import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
+import { getFullImageUrl } from "../../utils/imageUtils";
 
 // Types / Interfaces
 import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "../../types/common";
@@ -292,7 +293,7 @@ const AdminIndividualEmployee: React.FC = () => {
               <div className="flex gap-4">
                 {empUser.profilePicture ? (
                   <Avatar
-                    src={empUser.profilePicture}
+                    src={getFullImageUrl(empUser.profilePicture)}
                     size={104}
                     className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
                   />
