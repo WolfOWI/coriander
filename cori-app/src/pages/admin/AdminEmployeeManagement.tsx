@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar, Dropdown, Tooltip, AutoComplete, Input } from "antd";
+import { Table, Avatar, Dropdown, Tooltip, Input } from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
 import { employeeAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
@@ -121,14 +121,6 @@ const AdminEmployeeManagement: React.FC = () => {
   // Search Function
   const handleSearch = (value: string) => {
     setSearchValue(value);
-  };
-
-  // Once employee is selected, navigate to the employee's page
-  const handleSelect = (value: string) => {
-    const employee = allData.find((emp) => emp.fullName === value);
-    if (employee) {
-      navigate(`/admin/individual-employee/${employee.employeeId}`);
-    }
   };
 
   // useMemo to only recalculate the displayed data when:
@@ -397,15 +389,13 @@ const AdminEmployeeManagement: React.FC = () => {
           <h1 className="text-3xl font-bold text-zinc-900">Employees</h1>
         </div>
         <div className="flex items-center gap-4">
-          <AutoComplete
-            value={searchValue}
-            options={allData.map((emp) => ({ value: emp.fullName }))}
-            onSelect={handleSelect}
-            onChange={handleSearch}
+          <Input.Search
+            placeholder="Search By Name"
+            allowClear
             className="w-64"
-          >
-            <Input.Search placeholder="Search By Name" allowClear />
-          </AutoComplete>
+            value={searchValue}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
           <CoriBtn style="black" onClick={() => navigate("/admin/create-employee")}>
             New
             <Icons.Add />
