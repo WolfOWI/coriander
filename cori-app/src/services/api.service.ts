@@ -319,7 +319,7 @@ export const imageAPI = {
   },
 
   /**
-   * Updates a user's profile picture
+   * Updates a user's profile picture by uploading a new file and updating the user's profilePicture field
    * @param userId - The ID of the user
    * @param file - The new profile picture file
    * @returns Promise containing the API response with the image URL
@@ -342,7 +342,7 @@ export const imageAPI = {
   },
 
   /**
-   * Removes a user's profile picture
+   * Removes a user's profile picture by deleting the file and setting the user's profilePicture field to null
    * @param userId - The ID of the user
    * @returns Promise containing the API response
    */

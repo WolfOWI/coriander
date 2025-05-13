@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { Modal, Upload, message, Button, Space } from "antd";
+import React, { useEffect, useState } from "react";
+import { Modal, Upload, message, Button } from "antd";
 import { Icons } from "../../constants/icons";
 import { RcFile } from "antd/es/upload";
 import { empUserAPI, imageAPI } from "../../services/api.service";
 import { EmpUser } from "../../interfaces/people/empUser";
+import { getFullImageUrl } from "../../utils/imageUtils";
 
 interface UploadProfilePictureModalProps {
   showModal: boolean;
@@ -20,7 +21,13 @@ function UploadProfilePictureModal({
 }: UploadProfilePictureModalProps) {
   const [messageApi, contextHolder] = message.useMessage();
   const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>();
+  const [previewUrl, setPreviewUrl] = useState<string>();
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+
+  // Set the current image URL
+  useEffect(() => {
+    setCurrentImageUrl(getFullImageUrl(empUser.profilePicture));
+  }, [empUser.profilePicture]);
 
   // Function to handle file upload
   const handleUpload = async (file: RcFile) => {
@@ -28,12 +35,7 @@ function UploadProfilePictureModal({
       setUploading(true);
 
       // Upload the image using the profile-specific endpoint
-      const relativeUrl = await imageAPI.updateProfilePicture(empUser.userId, file);
-
-      // Update the employee's profile picture in the database
-      await empUserAPI.updateEmpUserById(empUser.employeeId.toString(), {
-        profilePicture: relativeUrl,
-      });
+      await imageAPI.updateProfilePicture(empUser.userId, file);
 
       messageApi.success("Profile picture updated successfully");
       onUploadSuccess();
@@ -80,7 +82,7 @@ function UploadProfilePictureModal({
     }
 
     // Create preview URL for the upload modal
-    setImageUrl(URL.createObjectURL(file));
+    setPreviewUrl(URL.createObjectURL(file));
 
     // Manually handle the upload
     handleUpload(file);
@@ -93,7 +95,10 @@ function UploadProfilePictureModal({
       <Modal
         title={<h2 className="text-zinc-900 font-bold text-3xl">Upload Profile Picture</h2>}
         open={showModal}
-        onCancel={() => setShowModal(false)}
+        onCancel={() => {
+          setPreviewUrl(undefined);
+          setShowModal(false);
+        }}
         footer={
           empUser.profilePicture ? (
             <div className="px-10 pb-10">
@@ -122,12 +127,12 @@ function UploadProfilePictureModal({
           showUploadList={false}
           beforeUpload={beforeUpload}
           disabled={uploading}
-          className="w-full"
+          style={{ width: "100%" }}
         >
-          {imageUrl ? (
-            <img src={imageUrl} alt="Preview" className="max-h-48 object-contain" />
+          {previewUrl ? (
+            <img src={previewUrl} alt="Preview" className="object-contain" />
           ) : empUser.profilePicture ? (
-            <img src={empUser.profilePicture} alt="Current" className="max-h-48 object-contain" />
+            <img src={currentImageUrl || ""} alt="Current" className="object-contain" />
           ) : (
             <>
               <p className="ant-upload-drag-icon">
