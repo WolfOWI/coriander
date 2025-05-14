@@ -1,25 +1,27 @@
 import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 
-interface DoughnutChartCardProps {
-  employeeStatusTotals: {
-    totalEmployees: number;
-    totalFullTimeEmployees: number;
-    totalPartTimeEmployees: number;
-    totalInternEmployees: number;
-    totalContractEmployees: number;
-    totalSuspendedEmployees: number;
-  };
-}
+  interface DoughnutChartCardProps {
+    employeeStatusTotals: {
+      totalEmployees: number;
+      totalFullTimeEmployees: number;
+      totalPartTimeEmployees: number;
+      totalInternEmployees: number;
+      totalContractEmployees: number;
+      totalSuspendedEmployees: number;
+    };
+  }
 
-const DoughnutChartCard: React.FC<DoughnutChartCardProps> = ({ employeeStatusTotals }) => {
-  const doughnutData = [
-    { id: 0, value: employeeStatusTotals.totalFullTimeEmployees, label: 'Full Time', color: '#88A764' },
-    { id: 1, value: employeeStatusTotals.totalPartTimeEmployees, label: 'Part Time', color: '#FF8904' },
-    { id: 2, value: employeeStatusTotals.totalInternEmployees, label: 'Intern', color: '#FFDF20' },
-    { id: 3, value: employeeStatusTotals.totalContractEmployees, label: 'Contract', color: '#0092B8' },
-    { id: 4, value: employeeStatusTotals.totalSuspendedEmployees, label: 'Suspended', color: '#FF6467' },
-  ];
+  // The DoughnutChartCard component displays a doughnut chart with employee status totals
+  const DoughnutChartCard: React.FC<DoughnutChartCardProps> = ({ employeeStatusTotals }) => {
+    // Structure the Data for the doughnut chart
+    const doughnutData = [
+      { id: 0, value: employeeStatusTotals.totalFullTimeEmployees, label: 'Full Time', color: '#88A764' },
+      { id: 1, value: employeeStatusTotals.totalPartTimeEmployees, label: 'Part Time', color: '#FF8904' },
+      { id: 2, value: employeeStatusTotals.totalInternEmployees, label: 'Intern', color: '#FFDF20' },
+      { id: 3, value: employeeStatusTotals.totalContractEmployees, label: 'Contract', color: '#0092B8' },
+      { id: 4, value: employeeStatusTotals.totalSuspendedEmployees, label: 'Suspended', color: '#FF6467' },
+    ];
 
   return (
     <div>

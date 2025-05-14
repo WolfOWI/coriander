@@ -3,30 +3,34 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/adminDash.css"
 import { Col, Container, Row } from "react-bootstrap";
+
+//Custom Components
 import BarChartCard from "../../components/charts/BarChart";
 import DoughnutChartCard from "../../components/charts/DoughnutChart";
 import LeaveCardAdminDash from "../../components/leave/LeaveCardAdminDash";
-import AdminAddIcon from "../../assets/icons/AdminAddIcon.png";
 import TopRatedEmpCard from "../../components/cards/adminCards/TopRatedEmpAdm";
 import AdminCalendar from "../../components/calender";
 
-//---
+//Functionality
 import { pageAPI } from "../../services/api.service";
 
 //Modals
 import CreatePRModal from "../../components/modals/CreatePRModal";
 import EditPRModal from "../../components/modals/EditPRModal";
 
-
-// import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
+//Assets
+import AdminAddIcon from "../../assets/icons/AdminAddIcon.png";
+import { Spin } from "antd";
 
 const AdminDashboard: React.FC = () => {
+  // State variables
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreatePRModal, setShowCreatePRModal] = useState(false);
   const [showEditPRModal, setShowEditPRModal] = useState(false);
 
+  // Fetch dashboard data from the API
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -44,10 +48,17 @@ const AdminDashboard: React.FC = () => {
     fetchDashboardData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+      <div className="w-full h-full flex flex-col justify-center items-center">
+        <Spin size="large" />
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
+  // Destructure the data from the API response
   const empUserRatingMetrics = dashboardData?.empUserRatingMetrics?.$values || [];
+  //Default values for employee status totals
+  // If the API response is empty or undefined
   const employeeStatusTotals = dashboardData?.employeeStatusTotals || {
   totalEmployees: 0,
   totalFullTimeEmployees: 0,

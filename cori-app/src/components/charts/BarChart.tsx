@@ -1,18 +1,19 @@
 import React from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 
-interface BarChartCardProps {
-  empUserRatingMetrics: Array<{
-    fullName: string;
-    averageRating: number;
-    mostRecentRating: number;
-  }>;
-}
-
-const BarChartCard: React.FC<BarChartCardProps> = ({ empUserRatingMetrics }) => {
-  if (!empUserRatingMetrics || empUserRatingMetrics.length === 0) {
-    return <div className="text-center text-zinc-500">No data available</div>;
+  interface BarChartCardProps {
+    empUserRatingMetrics: Array<{
+      fullName: string;
+      averageRating: number;
+      mostRecentRating: number;
+    }>;
   }
+
+  // Conditional rendering for the BarChartCard component
+  const BarChartCard: React.FC<BarChartCardProps> = ({ empUserRatingMetrics }) => {
+    if (!empUserRatingMetrics || empUserRatingMetrics.length === 0) {
+      return <div className="text-center text-zinc-500">No data available</div>;
+    }
 
   // Transform the empUserRatingMetrics data into chartData
   const labels = empUserRatingMetrics.map((emp) => emp.fullName);
