@@ -351,7 +351,29 @@ export const imageAPI = {
   },
 };
 // ------------------------------------------------------------
+/* EmpLeaveRequests API */
+export const empLeaveRequestsAPI = {
+  /**
+   * Fetches all pending leave requests
+   * @returns Promise containing the API response
+   */
+  getPendingLeaveRequests: (): Promise<AxiosResponse> =>
+    apiClient.get('/EmpLeaveRequest/GetAllPending'),
 
+    /**
+   * Fetches all approved leave requests
+   * @returns Promise containing the API response
+   */
+    getApprovedLeaveRequests: (): Promise<AxiosResponse> =>
+      apiClient.get('/EmpLeaveRequest/GetAllApproved'),
+
+      /**
+   * Fetches all rejected leave requests
+   * @returns Promise containing the API response
+   */
+  getRejectedLeaveRequests: (): Promise<AxiosResponse> =>
+    apiClient.get('/EmpLeaveRequest/GetAllRejected'),
+}
 // ############################################################
 // Export the configured axios instance
 export default apiClient;

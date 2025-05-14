@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, use } from "react";
+import { empLeaveRequestsAPI } from "../../services/api.service";
+import dayjs from "dayjs";
+import { calculateDurationInDays } from "../../utils/dateUtils";
 
 // Import Components
 import { Tooltip } from "antd";
@@ -21,10 +24,61 @@ import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import CoriBtn from "../../components/buttons/CoriBtn";
 
 const AdminLeaveRequests: React.FC = () => {
+
+  const [displayingLeaveRequests, setDisplayingLeaveRequests] = useState<any[]>([]);
+
+  const fetchPendingLeaveRequests = async () => {
+    try {
+      const response = await empLeaveRequestsAPI.getPendingLeaveRequests();
+      setDisplayingLeaveRequests(response.data.$values);
+    } catch (error) {
+      console.error("Error fetching leave requests:", error);
+    }
+  };
+  useEffect(() => {
+    fetchPendingLeaveRequests();
+  }, []);
+
+  const fetchApprovedLeaveRequests = async () => { 
+    try { 
+      const response = await empLeaveRequestsAPI.getApprovedLeaveRequests();
+      setDisplayingLeaveRequests(response.data.$values);
+    }
+    
+   catch (error) {
+   console.error("Error fetching approved requests:", error);
+
+  }}
+
+  const fetchRejectedLeaveRequests = async () => { 
+    try { 
+      const response = await empLeaveRequestsAPI.getRejectedLeaveRequests();
+      setDisplayingLeaveRequests(response.data.$values);
+    }
+    
+   catch (error) {
+   console.error("Error fetching rejected requests:", error);
+
+  }}
+
   type TabOption = "Pending" | "Approved" | "Rejected";
   const [activeTab, setActiveTab] = useState<TabOption>("Pending");
 
   const tabOptions: TabOption[] = ["Pending", "Approved", "Rejected"];
+
+  useEffect(() => {
+    if (activeTab === "Pending") {
+      fetchPendingLeaveRequests();
+    }
+    else if (activeTab === "Approved") {
+      fetchApprovedLeaveRequests();
+    }
+    else if (activeTab === "Rejected") {
+      fetchRejectedLeaveRequests();
+    }
+  
+  }, [activeTab]); 
+
 
   // Icon rendering function
   const getLeaveIcon = (type: string) => {
@@ -37,111 +91,18 @@ const AdminLeaveRequests: React.FC = () => {
     return null;
   };
 
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      type: "3 Days Annual Leave",
-      StartDate: "12 Sep",
-      EndDate: "14 Sep",
-      employee: "Jennifer Aniston",
-      employeeId: "EMP-0093",
-      balance: 4,
-      comment: "Taking time off to recharge",
-      status: "Pending",
-    },
-    {
-      id: 4,
-      type: "3 Days Family Responsibility Leave",
-      StartDate: "15 Sep",
-      EndDate: "17 Sep",
-      employee: "Lebo Mokoena",
-      employeeId: "EMP-0104",
-      balance: 2,
-      comment: "Attending family emergency",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      type: "2 Days Sick Leave",
-      StartDate: "5 Sep",
-      EndDate: "6 Sep",
-      employee: "Chad Smith",
-      employeeId: "EMP-0021",
-      balance: 6,
-      comment: "Medical appointment",
-      status: "Approved",
-    },
-    {
-      id: 5,
-      type: "2 Days Parental Leave",
-      StartDate: "1 Sep",
-      EndDate: "2 Sep",
-      employee: "Sarah Johnson",
-      employeeId: "EMP-0056",
-      balance: 5,
-      comment: "Preparing for the arrival of my baby",
-      status: "Approved",
-    },
-    {
-      id: 6,
-      type: "1 Day Parental Leave",
-      StartDate: "10 Sep",
-      EndDate: "10 Sep",
-      employee: "Michael Brown",
-      employeeId: "EMP-0067",
-      balance: 3,
-      comment: "",
-      status: "Rejected",
-    },
-    {
-      id: 7,
-      type: "5 Days Compassionate Leave",
-      StartDate: "20 Sep",
-      EndDate: "24 Sep",
-      employee: "Emily Davis",
-      employeeId: "EMP-0088",
-      balance: 1,
-      comment: "In memory of my grandmother",
-      status: "Pending",
-    },
-    {
-      id: 8,
-      type: "4 Days Annual Leave",
-      StartDate: "1 Oct",
-      EndDate: "4 Oct",
-      employee: "David Wilson",
-      employeeId: "EMP-0099",
-      balance: 2,
-      comment: "Taking a break to travel",
-      status: "Approved",
-    },
-    {
-      id: 9,
-      type: "2 Days Annual Leave",
-      StartDate: "15 Oct",
-      EndDate: "16 Oct",
-      employee: "Sophia Martinez",
-      employeeId: "EMP-0100",
-      balance: 3,
-      comment: "Need time for personal matters",
-      status: "Rejected",
-    },
-  ]);
-
-  const filteredData = requests.filter((item) => item.status === activeTab); // Filter data based on the active tab
-
   const columns = [
     {
       title: "Leave Type & Duration",
-      dataIndex: "type",
-      key: "type",
+      dataIndex: "startDate",
+      key: "$id",
       render: (text: string, record: any) => (
         <div className="flex items-center gap-4 h-full">
-          {getLeaveIcon(text)}
+          {getLeaveIcon(record.leaveTypeName)}
           <div className="flex flex-col">
-            <p className="font-medium">{text}</p>
+            <p className="font-medium">{calculateDurationInDays(record.startDate, record.endDate)} Days {record.leaveTypeName} Leave</p>
             <p className="text-xs text-zinc-500">
-              {record.StartDate} - {record.EndDate}
+              {dayjs(record.startDate).format("DD MMM YYYY")} - {dayjs(record.endDate).format("DD MMM YYYY")}
             </p>
           </div>
         </div>
@@ -149,27 +110,27 @@ const AdminLeaveRequests: React.FC = () => {
     },
     {
       title: "Employee",
-      dataIndex: "employee",
-      key: "employee",
+      dataIndex: "fullName",
+      key: "fullName",
       className: "text-center",
       render: (text: string, record: any) => (
         <div className="flex flex-col items-center justify-center h-full">
-          <p className="font-medium">{text}</p>
-          <p className="text-xs text-zinc-500">{record.employeeId}</p>
+          <p className="font-normal text-xs">{record.fullName}</p>
+          <p className="text-xs text-zinc-500">ID-00{record.employeeId}</p>
         </div>
       ),
     },
     {
       title: "Leave Balance",
-      dataIndex: "balance",
-      key: "balance",
+      dataIndex: "remainingDays",
+      key: "remainingDays",
       className: "text-center",
-      render: (balance: number) => (
+      render: (balance: number, record: any) => (
         <div className="flex justify-center items-center h-full">
           <CoriBadge
-            text={`${balance} days`}
+            text={`${record.remainingDays} days`}
             size="x-small"
-            color={balance < 2 ? "red" : "green"}
+            color={record.remainingDays < calculateDurationInDays(record.startDate, record.endDate) ? "red" : "green"}
           />
         </div>
       ),
@@ -179,10 +140,10 @@ const AdminLeaveRequests: React.FC = () => {
       dataIndex: "comment",
       key: "comment",
       className: "text-center",
-      render: (comment: string) =>
+      render: (comment: string, record: any) =>
         comment ? (
           <div className="flex items-center justify-center h-full">
-            <p className="text-xs text-zinc-500">{comment}</p>
+            <p className="text-xs text-zinc-500">{record.comment}</p>
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">
@@ -194,42 +155,38 @@ const AdminLeaveRequests: React.FC = () => {
       key: "Actions",
       render: (_: any, record: any) => (
         <div className="flex justify-end items-center gap-2 pe-4 h-full">
-          {record.status === "Pending" && (
+          {record.status === 0 && (
             <>
-              <Tooltip title="Approve">
                 <CoriCircleBtn
                   style="default"
                   icon={<CheckOutlined className="text-s" />}
-                  onClick={() =>
-                    setRequests((prev) =>
-                      prev.map(
-                        (req) => (req.id === record.id ? { ...req, status: "Approved" } : req) // Update status to Approved
-                      )
-                    )
-                  }
+                  // onClick={() =>
+                  //   setRequests((prev) =>
+                  //     prev.map(
+                  //       (req) => (req.id === record.id ? { ...req, status: "Approved" } : req) // Update status to Approved
+                  //     )
+                  //   )
+                  // }
                 />
-              </Tooltip>
-              <Tooltip title="Reject">
                 <CoriCircleBtn
                   style="red"
                   icon={<CloseOutlined className="text-s" />}
-                  onClick={() =>
-                    setRequests((prev) =>
-                      prev.map(
-                        (req) => (req.id === record.id ? { ...req, status: "Rejected" } : req) // Update status to Rejected
-                      )
-                    )
-                  }
+                  // onClick={() =>
+                  //   setRequests((prev) =>
+                  //     prev.map(
+                  //       (req) => (req.id === record.id ? { ...req, status: "Rejected" } : req) // Update status to Rejected
+                  //     )
+                  //   )
+                  // }
                 />
-              </Tooltip>
             </>
           )}
-          {record.status === "Approved" && (
+          {record.status === 1 && (
             <Tooltip title="Approved">
               <CoriCircleBtn style="default" icon={<CheckOutlined className="text-s" />} disabled />
             </Tooltip>
           )}
-          {record.status === "Rejected" && (
+          {record.status === 2 && (
             <Tooltip title="Rejected">
               <CoriCircleBtn style="red" icon={<CloseOutlined className="text-s" />} disabled />
             </Tooltip>
@@ -269,7 +226,7 @@ const AdminLeaveRequests: React.FC = () => {
 
       {/* Data Table */}
       <div className="overflow-hidden rounded-xl">
-        <Table columns={columns} dataSource={filteredData} rowKey="id" pagination={false} />
+        <Table columns={columns} dataSource={displayingLeaveRequests} rowKey="id" pagination={false} />
       </div>
     </div>
   );
