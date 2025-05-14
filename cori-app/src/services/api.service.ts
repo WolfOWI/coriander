@@ -191,6 +191,14 @@ export const pageAPI = {
    * @returns Promise containing the API response
    */
   getAdminDashboardData: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-dashboard"),
+
+  /**
+   * getEmployeeLeaveData - Fetches data for the employeeLeaveOverview
+   * @returns Promise containing the API response
+   */
+  getEmployeeLeaveData: (id: string): Promise<AxiosResponse> =>
+    apiClient.get(`/Page/employee-leave-overview/${id}`),
+
 };
 
 // EQUIPMENT API
