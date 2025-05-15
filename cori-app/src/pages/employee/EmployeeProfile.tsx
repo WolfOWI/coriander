@@ -7,6 +7,7 @@ import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import EmpEditEmpDetailsModal from "../../components/modals/EmpEditEmpDetailsModal";
 import UploadProfilePictureModal from "../../components/modals/UploadProfilePictureModal";
+import ProfilePicUploadBtn from "../../components/uploading/ProfilePicUploadBtn";
 
 // 3rd Party Components
 import { Avatar, message } from "antd";
@@ -48,33 +49,27 @@ interface EmployeeProfileResponse {
 
 const EmployeeProfile: React.FC = () => {
   const [profileData, setProfileData] = useState<EmployeeProfileResponse | null>(null);
+
   const [loading, setLoading] = useState(true);
-  // const { employeeId } = useParams();
-  // TODO Temporary set employee ID (TODO: Fetch from logged in user)
-  const employeeId = "4";
+  const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
-  // Modal States
-  const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
-  const [showUploadPictureModal, setShowUploadPictureModal] = useState(false);
+  // const { employeeId } = useParams();
+  // TODO Temporary set employee ID (TODO: Fetch from logged in user)
+  const employeeId = "5";
 
-  // Message System
-  const [messageApi, contextHolder] = message.useMessage();
-
-  // Function to fetch employee data
+  // Fetch employee data
   const fetchEmployee = async () => {
     try {
       if (employeeId) {
-        // Fetch the page details by employee Id
         const response = await pageAPI.getEmployeeProfile(employeeId);
         setProfileData(response.data);
       } else {
-        // Show an error message if no ID provided
         messageApi.error("No ID found - can't display employee details");
       }
     } catch (error) {
       console.error("Error fetching employee:", error);
-      // Show an error message if something went wrong
       messageApi.error("Something went wrong");
     } finally {
       setLoading(false);
@@ -86,22 +81,23 @@ const EmployeeProfile: React.FC = () => {
     fetchEmployee();
   }, [employeeId, navigate]);
 
+  const handleProfilePicUploadSuccess = (url: string) => {
+    // console.log("Profile picture URL:", url);
+    // Update the employee profile picture url
+    empUserAPI.updateEmpUserById(employeeId, { profilePicture: url });
+    // Fetch the employee data again
+    fetchEmployee();
+  };
+
   // useEffect(() => {
-  //   console.log(empUser);
-  // }, [empUser]);
+  //   console.log(profileData);
+  // }, [profileData]);
 
   if (loading) return <div>Loading...</div>;
 
   if (!profileData) return <div>No employee found</div>;
 
   const { empUser, empUserRatingMetrics, equipment } = profileData;
-
-  // Handle profile picture edit click
-  const handleProfilePictureEdit = () => {
-    if (empUser.googleId === null) {
-      setShowUploadPictureModal(true);
-    }
-  };
 
   return (
     <>
@@ -126,16 +122,15 @@ const EmployeeProfile: React.FC = () => {
               {empUser.profilePicture ? (
                 <div className="relative">
                   <Avatar
-                    src={getFullImageUrl(empUser.profilePicture)}
+                    src={empUser.profilePicture}
                     size={128}
                     className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
                   />
                   {/* If user is not a google user */}
                   {empUser.googleId === null ? (
-                    <CoriCircleBtn
-                      icon={<Icons.Edit />}
+                    <ProfilePicUploadBtn
+                      onUploadSuccess={handleProfilePicUploadSuccess}
                       className="absolute bottom-0 right-0"
-                      onClick={handleProfilePictureEdit}
                     />
                   ) : (
                     <CoriCircleBtn
@@ -154,11 +149,9 @@ const EmployeeProfile: React.FC = () => {
                   />
                   {/* If user is not a google user */}
                   {empUser.googleId === null ? (
-                    <CoriCircleBtn
-                      icon={<Icons.Edit />}
-                      style="black"
+                    <ProfilePicUploadBtn
+                      onUploadSuccess={handleProfilePicUploadSuccess}
                       className="absolute bottom-0 right-0"
-                      onClick={handleProfilePictureEdit}
                     />
                   ) : (
                     <CoriCircleBtn
@@ -303,12 +296,6 @@ const EmployeeProfile: React.FC = () => {
         setShowModal={setShowEditDetailsModal}
         employee={empUser}
         onUpdate={fetchEmployee}
-      />
-      <UploadProfilePictureModal
-        showModal={showUploadPictureModal}
-        setShowModal={setShowUploadPictureModal}
-        empUser={empUser}
-        onUploadSuccess={fetchEmployee}
       />
     </>
   );
