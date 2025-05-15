@@ -6,6 +6,7 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import EmpEditEmpDetailsModal from "../../components/modals/EmpEditEmpDetailsModal";
+import UploadProfilePictureModal from "../../components/modals/UploadProfilePictureModal";
 
 // 3rd Party Components
 import { Avatar, message } from "antd";
@@ -25,6 +26,7 @@ import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetri
 // Utility Functions
 import { formatPhone } from "../../utils/formatUtils";
 import { formatEmploymentDuration } from "../../utils/dateUtils";
+import { getFullImageUrl } from "../../utils/imageUtils";
 
 interface Equipment {
   equipmentId: number;
@@ -49,11 +51,12 @@ const EmployeeProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   // const { employeeId } = useParams();
   // TODO Temporary set employee ID (TODO: Fetch from logged in user)
-  const employeeId = "8";
+  const employeeId = "4";
   const navigate = useNavigate();
 
   // Modal States
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
+  const [showUploadPictureModal, setShowUploadPictureModal] = useState(false);
 
   // Message System
   const [messageApi, contextHolder] = message.useMessage();
@@ -93,6 +96,13 @@ const EmployeeProfile: React.FC = () => {
 
   const { empUser, empUserRatingMetrics, equipment } = profileData;
 
+  // Handle profile picture edit click
+  const handleProfilePictureEdit = () => {
+    if (empUser.googleId === null) {
+      setShowUploadPictureModal(true);
+    }
+  };
+
   return (
     <>
       {contextHolder}
@@ -116,13 +126,17 @@ const EmployeeProfile: React.FC = () => {
               {empUser.profilePicture ? (
                 <div className="relative">
                   <Avatar
-                    src={empUser.profilePicture}
+                    src={getFullImageUrl(empUser.profilePicture)}
                     size={128}
                     className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
                   />
                   {/* If user is not a google user */}
                   {empUser.googleId === null ? (
-                    <CoriCircleBtn icon={<Icons.Edit />} className="absolute bottom-0 right-0" />
+                    <CoriCircleBtn
+                      icon={<Icons.Edit />}
+                      className="absolute bottom-0 right-0"
+                      onClick={handleProfilePictureEdit}
+                    />
                   ) : (
                     <CoriCircleBtn
                       icon={<Icons.Google />}
@@ -144,6 +158,7 @@ const EmployeeProfile: React.FC = () => {
                       icon={<Icons.Edit />}
                       style="black"
                       className="absolute bottom-0 right-0"
+                      onClick={handleProfilePictureEdit}
                     />
                   ) : (
                     <CoriCircleBtn
@@ -288,6 +303,12 @@ const EmployeeProfile: React.FC = () => {
         setShowModal={setShowEditDetailsModal}
         employee={empUser}
         onUpdate={fetchEmployee}
+      />
+      <UploadProfilePictureModal
+        showModal={showUploadPictureModal}
+        setShowModal={setShowUploadPictureModal}
+        empUser={empUser}
+        onUploadSuccess={fetchEmployee}
       />
     </>
   );

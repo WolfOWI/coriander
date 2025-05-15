@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar, Dropdown, Tooltip, AutoComplete, Input } from "antd";
+import { Table, Avatar, Dropdown, Tooltip, Input } from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
 import { employeeAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
@@ -8,9 +8,15 @@ import { Gender, PayCycle } from "../../types/common";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 import { Icons } from "../../constants/icons";
-import { formatRandAmount } from "../../utils/formatUtils";
-import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
+import { formatRandAmount, formatPhone } from "../../utils/formatUtils";
+import {
+  isDateInPast,
+  formatTimestampToDate,
+  calculateNextPayDay,
+  formatEmploymentDuration,
+} from "../../utils/dateUtils";
 import dayjs from "dayjs";
+import { getFullImageUrl } from "../../utils/imageUtils";
 
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
@@ -117,14 +123,6 @@ const AdminEmployeeManagement: React.FC = () => {
     setSearchValue(value);
   };
 
-  // Once employee is selected, navigate to the employee's page
-  const handleSelect = (value: string) => {
-    const employee = allData.find((emp) => emp.fullName === value);
-    if (employee) {
-      navigate(`/admin/individual-employee/${employee.employeeId}`);
-    }
-  };
-
   // useMemo to only recalculate the displayed data when:
   // - allData changes (new data from server)
   // - tableParams changes (user changed page/sort/filter)
@@ -185,7 +183,7 @@ const AdminEmployeeManagement: React.FC = () => {
           <div className="flex items-center gap-2">
             {record.profilePicture ? (
               <Avatar
-                src={record.profilePicture}
+                src={getFullImageUrl(record.profilePicture)}
                 className="bg-warmstone-600 h-12 w-12 rounded-full object-cover border-2 border-zinc-700"
               />
             ) : (
@@ -391,15 +389,13 @@ const AdminEmployeeManagement: React.FC = () => {
           <h1 className="text-3xl font-bold text-zinc-900">Employees</h1>
         </div>
         <div className="flex items-center gap-4">
-          <AutoComplete
-            value={searchValue}
-            options={allData.map((emp) => ({ value: emp.fullName }))}
-            onSelect={handleSelect}
-            onChange={handleSearch}
+          <Input.Search
+            placeholder="Search By Name"
+            allowClear
             className="w-64"
-          >
-            <Input.Search placeholder="Search By Name" allowClear />
-          </AutoComplete>
+            value={searchValue}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
           <CoriBtn style="black" onClick={() => navigate("/admin/create-employee")}>
             New
             <Icons.Add />

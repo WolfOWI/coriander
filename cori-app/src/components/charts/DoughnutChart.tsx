@@ -1,27 +1,27 @@
 import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 
-type StatusTotals = {
-  totalEmployees: number;
-  totalFullTimeEmployees: number;
-  totalPartTimeEmployees: number;
-  totalContractEmployees: number;
-  totalInternEmployees: number;
-  totalSuspendedEmployees: number;
-};
+  interface DoughnutChartCardProps {
+    employeeStatusTotals: {
+      totalEmployees: number;
+      totalFullTimeEmployees: number;
+      totalPartTimeEmployees: number;
+      totalInternEmployees: number;
+      totalContractEmployees: number;
+      totalSuspendedEmployees: number;
+    };
+  }
 
-type DoughnutChartCardProps = {
-  data: StatusTotals;
-};
-
-const DoughnutChartCard: React.FC<DoughnutChartCardProps> = ({ data }) => {
-  const doughnutData = [
-    { id: 0, value: data.totalFullTimeEmployees, label: 'Full Time', color: '#88A764' },
-    { id: 1, value: data.totalPartTimeEmployees, label: 'Part Time', color: '#FF8904' },
-    { id: 2, value: data.totalInternEmployees, label: 'Intern', color: '#FFDF20' },
-    { id: 3, value: data.totalContractEmployees, label: 'Contract', color: '#0092B8' },
-    { id: 4, value: data.totalSuspendedEmployees, label: 'Suspended', color: '#FF6467' },
-  ];
+  // The DoughnutChartCard component displays a doughnut chart with employee status totals
+  const DoughnutChartCard: React.FC<DoughnutChartCardProps> = ({ employeeStatusTotals }) => {
+    // Structure the Data for the doughnut chart
+    const doughnutData = [
+      { id: 0, value: employeeStatusTotals.totalFullTimeEmployees, label: 'Full Time', color: '#88A764' },
+      { id: 1, value: employeeStatusTotals.totalPartTimeEmployees, label: 'Part Time', color: '#FF8904' },
+      { id: 2, value: employeeStatusTotals.totalInternEmployees, label: 'Intern', color: '#FFDF20' },
+      { id: 3, value: employeeStatusTotals.totalContractEmployees, label: 'Contract', color: '#0092B8' },
+      { id: 4, value: employeeStatusTotals.totalSuspendedEmployees, label: 'Suspended', color: '#FF6467' },
+    ];
 
   return (
     <div>
@@ -33,7 +33,7 @@ const DoughnutChartCard: React.FC<DoughnutChartCardProps> = ({ data }) => {
             outerRadius: 70,
             cornerRadius: 4,
             paddingAngle: 1,
-            arcLabel: () => '',
+            arcLabel: () => '', // removes text on arcs
           },
         ]}
         width={220}
@@ -44,16 +44,21 @@ const DoughnutChartCard: React.FC<DoughnutChartCardProps> = ({ data }) => {
             strokeWidth: 2,
           },
         }}
+        hideLegend = {true}
       />
       <div className='flex flex-col items-center justify-center' style={{ marginTop: '-110px', marginBottom: '65px' }}>
-        <h1 className='text-3xl'>{data.totalEmployees}</h1>
-        <p className='text-sm'>Employees</p>
+        <h1 className='text-zinc-900 font-semibold text-3xl'>{employeeStatusTotals.totalEmployees}</h1>
+        <p className='text-zinc-900 text-xs'>Employees</p>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-2 mt-2 text-sm">
-        {doughnutData.map((item, index) => (
-          <div key={index} className="flex items-center gap-1">
-            <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+      {/* Custom Legend Row */}
+      <div className="flex flex-wrap justify-center p-2 gap-2 mt-2 text-sm">
+        {doughnutData.map((item) => (
+          <div key={item.id} className="flex items-center gap-1">
+            <span
+              className="inline-block w-3 h-3 rounded-full"
+              style={{ backgroundColor: item.color }}
+            />
             <span className="text-gray-700">{item.label}</span>
           </div>
         ))}

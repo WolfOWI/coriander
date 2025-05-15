@@ -14,6 +14,7 @@ interface PrimaryBtnProps {
   primary?: boolean;
   secondary?: boolean;
   icon: React.ReactElement<{ fontSize?: "small" | "medium" | "large" }>;
+  disabled?: boolean;
 }
 
 // Add props using destructuring
@@ -25,6 +26,7 @@ const CoriCircleBtn = ({
   primary,
   secondary = false,
   icon,
+  disabled = false,
 }: PrimaryBtnProps) => {
   // Default styles
   let btnStyles = "";
@@ -80,6 +82,7 @@ const CoriCircleBtn = ({
       onClick={onClick}
       type={type}
       className={`${btnStyles} flex items-center justify-center h-8 w-8 rounded-full cori-btn ${className}`}
+      disabled={disabled}
     >
       {React.isValidElement(icon) && React.cloneElement(icon, { fontSize: "small" })}
     </Button>

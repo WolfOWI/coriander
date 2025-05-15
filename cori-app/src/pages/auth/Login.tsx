@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { fullGoogleSignIn, fullEmailLogin } from "../../services/authService";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { Form, Input, message } from "antd";
+import { Form, Input, message, notification } from "antd";
 
 import VeriCodeForm from "../../components/auth/VeriCodeForm";
 import UnlinkedMessage from "../../components/auth/UnlinkedMessage";
@@ -31,13 +31,7 @@ const Login: React.FC = () => {
   }, []);
 
   // Email login handler
-  const handleEmailLogin = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
+  const handleEmailLogin = async ({ email, password }: { email: string; password: string }) => {
     messageApi.open({
       key: messageKey,
       type: "loading",
@@ -107,12 +101,11 @@ const Login: React.FC = () => {
       <div className="relative">
         {/* TODO: Remove this later */}
         <div className="absolute top-0 right-0 flex flex-col gap-2">
-          <CoriBtn
-            type="submit"
-            style="black"
-            onClick={() => navigate("/employee/home")}
-          >
+          <CoriBtn type="submit" style="black" onClick={() => navigate("/employee/home")}>
             Go to Home
+          </CoriBtn>
+          <CoriBtn type="submit" style="black" onClick={() => navigate("/employee/profile")}>
+            Skip Login To Emp Profile
           </CoriBtn>
           <CoriBtn
             secondary
@@ -183,18 +176,14 @@ const Login: React.FC = () => {
                     name="email"
                     label="Email"
                     normalize={(value: string) => value.toLowerCase().trim()}
-                    rules={[
-                      { required: true, message: "Please enter an email" },
-                    ]}
+                    rules={[{ required: true, message: "Please enter an email" }]}
                   >
                     <Input type="email" />
                   </Form.Item>
                   <Form.Item
                     name="password"
                     label="Password"
-                    rules={[
-                      { required: true, message: "Please enter a password" },
-                    ]}
+                    rules={[{ required: true, message: "Please enter a password" }]}
                   >
                     <Input type="password" />
                   </Form.Item>
@@ -226,9 +215,7 @@ const Login: React.FC = () => {
                 </p>
               </div>
             )}
-            {showOTPForm && (
-              <VeriCodeForm showLoginScreen={() => setShowOTPForm(false)} />
-            )}
+            {showOTPForm && <VeriCodeForm showLoginScreen={() => setShowOTPForm(false)} />}
             {showUnlinkedMessage && (
               <UnlinkedMessage onLogOut={() => setShowUnlinkedMessage(false)} />
             )}

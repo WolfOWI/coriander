@@ -91,6 +91,13 @@ const isDateInPast = (date: string): boolean => {
   return dayjs(date).isBefore(dayjs());
 };
 
+// Calculate duration in days between two dates
+const calculateDurationInDays = (startDate: string, endDate: string): number => {
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+  return end.diff(start, "day");
+}
+
 export {
   formatEmploymentDuration,
   calculateNextPayDay,
@@ -99,4 +106,5 @@ export {
   formatTimestampToTime,
   combineDateTimeToTimestamp,
   isDateInPast,
+  calculateDurationInDays
 };
