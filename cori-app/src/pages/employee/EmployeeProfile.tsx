@@ -26,6 +26,7 @@ import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetri
 // Utility Functions
 import { formatPhone } from "../../utils/formatUtils";
 import { formatEmploymentDuration } from "../../utils/dateUtils";
+import { generatePayrollPDF } from "../../utils/pdfUtils";
 
 interface Equipment {
   equipmentId: number;
@@ -121,7 +122,10 @@ const EmployeeProfile: React.FC = () => {
               <Icons.Edit />
               Edit Details
             </CoriBtn>
-            <CoriBtn style="black">Export Payroll Info</CoriBtn>
+            <CoriBtn style="black" onClick={() => generatePayrollPDF(empUser)}>
+              <Icons.Download />
+              Payroll PDF
+            </CoriBtn>
           </div>
         </div>
         {/* Page Content */}
