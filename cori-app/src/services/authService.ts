@@ -20,121 +20,145 @@ export interface CurrentUserDTO {
   isVerified: boolean;
 }
 
-// REGISTRATION / SIGNUP ------------------------------------
+// Sign Up Functions ----------------------------------------------------------------------------
 
-export async function registerWithEmail(userData: {
-  fullName: string;
+// Email Sign ups
+// requestEmailVerification
+export async function requestEmailVerification(input: {
   email: string;
-  password: string;
-  confirmPassword: string;
-  role: string;
-  profilePicturePath?: string;
-}): Promise<{ errorCode: number; message: string }> {
+  fullName: string;
+}): Promise<AuthResult> {
   try {
-    const res = await api.post("/Auth/register", userData, {
+    const res = await api.post("/Auth/request-verification", input, {
       withCredentials: true,
     });
+
     return {
       errorCode: res.status,
       message: res.data || "Verification code sent to email",
     };
   } catch (err: any) {
     const code = err?.response?.status || 500;
-    const message = err?.response?.data || "Email registration failed";
+    const message = err?.response?.data || "Verification request failed";
     return { errorCode: code, message };
   }
 }
 
-export async function employeeSignup2FA(verifiedData: {
+// employeeSignup2FA
+export async function employeeSignup2FA(form: {
   email: string;
-  code: string;
   fullName: string;
   password: string;
-  role: string;
-  profilePicturePath?: string;
-}): Promise<{ errorCode: number; message: string }> {
+  code: string;
+  profileImage?: File;
+}): Promise<AuthResult> {
   try {
-    const res = await api.post("/Auth/register-verified", verifiedData, {
-      withCredentials: true,
-    });
-    return {
-      errorCode: res.status,
-      message: res.data || "Account successfully created",
-    };
-  } catch (err: any) {
-    const code = err?.response?.status || 500;
-    const message = err?.response?.data || "Verification failed";
-    return { errorCode: code, message };
-  }
-}
+    const formData = new FormData();
+    formData.append("Email", form.email);
+    formData.append("FullName", form.fullName);
+    formData.append("Password", form.password);
+    formData.append("Code", form.code);
+    formData.append("Role", "1"); // 1 = Employee
+    if (form.profileImage) {
+      formData.append("ProfileImage", form.profileImage);
+    }
 
-export async function adminSignup2FA(data: {
-  email: string;
-  code: string;
-  fullName: string;
-  password: string;
-  role: string; // should be "Admin"
-  profilePicturePath?: string;
-}): Promise<{ errorCode: number; message: string }> {
-  try {
-    const res = await api.post("/Auth/register-admin-verified", data, {
+    const res = await api.post("/Auth/register-verified", formData, {
       withCredentials: true,
     });
 
     return {
       errorCode: res.status,
-      message: res.data || "Admin registered successfully",
+      message: res.data || "Employee account created",
     };
   } catch (err: any) {
     const code = err?.response?.status || 500;
-    const message = err?.response?.data || "Admin registration failed";
+    const message = err?.response?.data || "Employee signup failed";
     return { errorCode: code, message };
   }
 }
 
-export async function registerEmployeeWithGoogle(
-  idToken: string
-): Promise<{ errorCode: number; message: string }> {
+// adminSignup2FA
+export async function adminSignup2FA(form: {
+  email: string;
+  fullName: string;
+  password: string;
+  code: string;
+  profileImage?: File;
+}): Promise<AuthResult> {
   try {
-    const res = await api.post(
-      "/Auth/google-register",
-      { idToken },
-      { withCredentials: true }
-    );
+    const formData = new FormData();
+    formData.append("Email", form.email);
+    formData.append("FullName", form.fullName);
+    formData.append("Password", form.password);
+    formData.append("Code", form.code);
+    formData.append("Role", "2"); // 2 = Admin
+    if (form.profileImage) {
+      formData.append("ProfileImage", form.profileImage);
+    }
+
+    const res = await api.post("/Auth/register-admin-verified", formData, {
+      withCredentials: true,
+    });
+
     return {
       errorCode: res.status,
-      message: res.data || "Google registration request received",
+      message: res.data || "Admin account created",
     };
   } catch (err: any) {
     const code = err?.response?.status || 500;
-    const message = err?.response?.data || "Google registration failed";
+    const message = err?.response?.data || "Admin signup failed";
     return { errorCode: code, message };
   }
 }
 
-export async function registerAdminWithGoogle(
+// Google Sign ups
+
+// employeeGoogleSignUp
+/**
+ * Registers a user using their Google ID token.
+ *
+ * @param {string} idToken - The Google ID token.
+ * @returns {Promise<AuthResult>} The result of the registration attempt.
+ */
+export const employeeGoogleSignUp = async (
   idToken: string
-): Promise<{ errorCode: number; message: string }> {
+): Promise<AuthResult> => {
   try {
-    const res = await api.post(
-      "/Auth/google-register-admin", // ⬅️ This assumes your backend uses this route
-      { idToken },
-      { withCredentials: true }
-    );
+    const res = await api.post("/Auth/google-register", { idToken });
     return {
       errorCode: res.status,
-      message: res.data || "Admin Google registration successful",
+      message: res.data || "Google registration successful",
     };
   } catch (err: any) {
-    const code = err?.response?.status || 500;
-    const message = err?.response?.data || "Admin Google registration failed";
-    return { errorCode: code, message };
+    const status = err?.response?.status || 500;
+    return {
+      errorCode: status,
+      message: "Google registration failed",
+    };
   }
-}
+};
 
-// -------------------------------------
+// adminGoogleSignUp
+export const adminGoogleSignUp = async (
+  idToken: string
+): Promise<AuthResult> => {
+  try {
+    const res = await api.post("/Auth/google-register-admin", { idToken });
+    return {
+      errorCode: res.status,
+      message: res.data || "Google registration successful",
+    };
+  } catch (err: any) {
+    const status = err?.response?.status || 500;
+    return {
+      errorCode: status,
+      message: "Google registration failed",
+    };
+  }
+};
 
-// LOGINS ------------------------------------
+// Login Functions ----------------------------------------------------------------------------
 
 /**
  * Logs in a user using their email and password.
@@ -191,6 +215,8 @@ export const loginWithGoogle = async (idToken: string): Promise<AuthResult> => {
     };
   }
 };
+
+// Full logins - Login + session management ------------------------------------------------------------
 
 /**
  * Performs a full email login process.
@@ -279,9 +305,7 @@ export const fullGoogleSignIn = async (
   };
 };
 
-// ------------------------------
-
-// Session management -------------------
+// Session management ----------------------------------------------------------------------------
 
 /**
  * Retrieves the current user's information by decoding the JWT token.
