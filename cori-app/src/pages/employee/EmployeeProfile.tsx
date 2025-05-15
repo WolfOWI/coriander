@@ -55,7 +55,7 @@ const EmployeeProfile: React.FC = () => {
 
   // const { employeeId } = useParams();
   // TODO Temporary set employee ID (TODO: Fetch from logged in user)
-  const employeeId = "5";
+  const employeeId = "7";
 
   // Fetch employee data
   const fetchEmployee = async () => {
@@ -79,10 +79,12 @@ const EmployeeProfile: React.FC = () => {
     fetchEmployee();
   }, [employeeId, navigate]);
 
-  const handleProfilePicUploadSuccess = (url: string) => {
+  const handleProfilePicUploadSuccess = async (url: string) => {
     // console.log("Profile picture URL:", url);
-    empUserAPI.updateEmpUserById(employeeId, { profilePicture: url });
-    // Refresh data
+    const response = await empUserAPI.updateEmpUserById(employeeId, { profilePicture: url });
+
+    // wait for response before fetching employee data
+    await response.data;
     fetchEmployee();
   };
 

@@ -22,8 +22,8 @@ const ProfilePicUploadBtn: React.FC<ProfilePicUploadBtnProps> = ({
   const openWidget = () => {
     const widget = window.cloudinary.createUploadWidget(
       {
-        cloudName: "dbhdt90fq",
-        uploadPreset: "cori_profile_pics",
+        cloudName: process.env.VITE_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: process.env.VITE_CLOUDINARY_PROFPICS_PRESET,
         sources: ["local", "url", "camera"],
         multiple: false,
         cropping: true,
