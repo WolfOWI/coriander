@@ -6,11 +6,10 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import EmpEditEmpDetailsModal from "../../components/modals/EmpEditEmpDetailsModal";
-import UploadProfilePictureModal from "../../components/modals/UploadProfilePictureModal";
 import ProfilePicUploadBtn from "../../components/uploading/ProfilePicUploadBtn";
 
 // 3rd Party Components
-import { Avatar, message } from "antd";
+import { Avatar, message, Spin } from "antd";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
@@ -27,7 +26,6 @@ import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetri
 // Utility Functions
 import { formatPhone } from "../../utils/formatUtils";
 import { formatEmploymentDuration } from "../../utils/dateUtils";
-import { getFullImageUrl } from "../../utils/imageUtils";
 
 interface Equipment {
   equipmentId: number;
@@ -83,9 +81,8 @@ const EmployeeProfile: React.FC = () => {
 
   const handleProfilePicUploadSuccess = (url: string) => {
     // console.log("Profile picture URL:", url);
-    // Update the employee profile picture url
     empUserAPI.updateEmpUserById(employeeId, { profilePicture: url });
-    // Fetch the employee data again
+    // Refresh data
     fetchEmployee();
   };
 
@@ -93,7 +90,12 @@ const EmployeeProfile: React.FC = () => {
   //   console.log(profileData);
   // }, [profileData]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="w-full h-full flex flex-col justify-center items-center">
+        <Spin size="large" />
+      </div>
+    );
 
   if (!profileData) return <div>No employee found</div>;
 
