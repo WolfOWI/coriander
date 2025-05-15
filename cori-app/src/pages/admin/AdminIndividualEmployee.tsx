@@ -29,7 +29,6 @@ import AssignEmpToOneOrManyEquipsModal from "../../components/modals/AssignEmpTo
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
-import UploadProfilePictureModal from "../../components/modals/UploadProfilePictureModal";
 
 // Import Icons
 import { Icons } from "../../constants/icons";

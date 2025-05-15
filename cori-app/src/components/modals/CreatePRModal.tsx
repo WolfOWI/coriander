@@ -283,7 +283,7 @@ function CreatePRModal({ showModal, setShowModal, onCreateSuccess }: CreatePRMod
             {/* If employee's googleId is null and meeting is online, show the alert */}
             {selectedEmpUser?.googleId === null && isOnline === true && (
               <Alert
-                message={`The selected employee doesn't have a Google account & thus a link cannot be generated. Either select in-person meeting or generate a link manually.`}
+                message={`Please Note: The selected employee doesn't have a Google account, and won't be able to join a Google Meet. Either select in-person meeting or use a different meeting platform.`}
                 type="info"
                 showIcon
                 className="mb-4"
@@ -311,33 +311,7 @@ function CreatePRModal({ showModal, setShowModal, onCreateSuccess }: CreatePRMod
                     { required: true, message: "A meeting url is required for online meetings." },
                   ]}
                 >
-                  <div className="flex gap-2">
-                    <Input type="text" />
-                    {/* If employee's googleId is null and meeting is online, show the alert */}
-                    {selectedEmpUser?.googleId === null && isOnline === true ? (
-                      <CoriBtn
-                        className="h-12 w-fit text-nowrap"
-                        secondary
-                        onClick={(e) => {
-                          e!.preventDefault(); // Prevents field validations on btn click
-                          window.open("https://meet.google.com", "_blank");
-                        }}
-                      >
-                        Visit Google Meet
-                      </CoriBtn>
-                    ) : (
-                      <CoriBtn
-                        className="h-12 w-fit text-nowrap"
-                        secondary
-                        onClick={(e) => {
-                          e!.preventDefault(); // Prevents field validations on btn click
-                          console.log("Generate Link clicked");
-                        }}
-                      >
-                        Generate Link
-                      </CoriBtn>
-                    )}
-                  </div>
+                  <Input type="text" />
                 </Form.Item>
               </div>
             )}
