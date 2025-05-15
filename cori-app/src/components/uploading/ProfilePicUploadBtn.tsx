@@ -28,6 +28,8 @@ const ProfilePicUploadBtn: React.FC<ProfilePicUploadBtnProps> = ({
         multiple: false,
         cropping: true,
         defaultSource: "local",
+        resourceType: "image",
+        maxFileSize: 2000000, // 2MB
       },
       (error: any, result: any) => {
         if (!error && result && result.event === "success") {
