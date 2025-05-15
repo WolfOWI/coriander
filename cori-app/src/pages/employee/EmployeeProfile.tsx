@@ -99,7 +99,14 @@ const EmployeeProfile: React.FC = () => {
       </div>
     );
 
-  if (!profileData) return <div>No employee found</div>;
+  if (!profileData)
+    return (
+      <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
+        <h2 className="text-zinc-900 font-bold text-3xl text-center">
+          Your Profile Couldn't Be Loaded
+        </h2>
+      </div>
+    );
 
   const { empUser, empUserRatingMetrics, equipment } = profileData;
 
