@@ -20,6 +20,9 @@ import { Icons } from "../../constants/icons";
 import GoogleIcon from "../../assets/icons/googleIcon.png";
 import { getFullImageUrl } from "../../utils/imageUtils";
 
+//Functionality
+import { performanceReviewsAPI } from "../../services/api.service";
+
 interface CreatePRModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
@@ -131,28 +134,52 @@ function CreatePRModal({ showModal, setShowModal, onCreateSuccess }: CreatePRMod
   // Handle the creation of the performance review
   const handleCreate = async () => {
     try {
-      // Validate the form fields
       const values = await form.validateFields();
 
-      // TODO: Create the performance review
-      //   await equipmentAPI.createEquipItemOrItems([values]);
-      messageApi.success("Not yet implemented but success message will be shown here");
-      // messageApi.success("Performance Review was created successfully");
+      // Combine date and time range into start and end datetime
+      const startDate = values.startDate;
+      const [startTime, endTime] = values.startTime;
+
+      const fullStartDate = dayjs(startDate)
+        .hour(startTime.hour())
+        .minute(startTime.minute())
+        .second(0)
+        .toISOString();
+
+      const fullEndDate = dayjs(startDate)
+        .hour(endTime.hour())
+        .minute(endTime.minute())
+        .second(0)
+        .toISOString();
+
+      const payload = {
+        adminId: 1, // Replace with actual admin ID (possibly from auth context or props)
+        employeeId: values.employeeId,
+        isOnline: values.isOnline,
+        meetLocation: values.meetLocation || null,
+        meetLink: values.meetLink || null,
+        startDate: fullStartDate,
+        endDate: fullEndDate,
+        rating: null,
+        comment: null,
+        docUrl: null,
+      };
+
+      await performanceReviewsAPI.CreatePerformanceReview(payload);
+
+      messageApi.success("Performance review created successfully");
 
       // Reset form and close modal
       form.resetFields();
       setShowModal(false);
-
-      // Notify parent of success
       onCreateSuccess();
     } catch (error: any) {
       if (error.errorFields) {
-        // Form validation error
         messageApi.error("Please fill out all fields correctly.");
         return;
       }
-      messageApi.error("Error: The performance review was not created.");
       console.error("Error creating performance review:", error);
+      messageApi.error("Error: The performance review was not created.");
     }
   };
 

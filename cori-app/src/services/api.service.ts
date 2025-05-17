@@ -374,6 +374,45 @@ export const empLeaveRequestsAPI = {
   getRejectedLeaveRequests: (): Promise<AxiosResponse> =>
     apiClient.get('/EmpLeaveRequest/GetAllRejected'),
 }
+
+// Performance Review API
+// ------------------------------------------------------------
+export const performanceReviewsAPI = {
+  /**
+   * Fetches all performance reviews for a specific employee
+   * @param empId - The employee's ID
+   * @returns Promise containing the API response
+   */
+
+  /**
+   * Creates a new performance review for an employee
+   * @param empId - The employee's ID
+   * @param data - The performance review data
+   * @returns Promise containing the API response
+   */
+  CreatePerformanceReview: (data: object): Promise<AxiosResponse> =>
+    apiClient.post(`/PerformanceReview/CreatePerformanceReview`, data),
+
+  /**
+   * Gets all upcoming performance reviews
+   */
+  GetAllUpcomingPrm: (): Promise<AxiosResponse> =>
+    apiClient.get('/PerformanceReview/GetAllUpcomingPrm'),
+  
+  /**
+   * Updates an existing performance review by its ID
+   * @param id - The performance review's ID
+   * @param data - The updated performance review data
+   * @returns Promise containing the API response
+   */
+  UpdatePerformanceReview: (id: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/PerformanceReview/UpdatePerformanceReview/${id}`, data),
+
+  
+
+}
+
+
 // ############################################################
 // Export the configured axios instance
 export default apiClient;

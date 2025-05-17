@@ -108,7 +108,7 @@ const AdminDashboard: React.FC = () => {
                 <Col xs={12} md={5}>
                 <div className="w-full flex flex-col items-center">
                 <div className="text-zinc-500 font-semibold text-center mb-2">Leave Requests</div>
-                  <div className="w-full h-[330px] overflow-y-auto relative scrollbar-hide [&::-webkit-scrollbar]:hidden bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2">
+                  <div className="w-full h-[350px] overflow-y-auto relative scrollbar-hide [&::-webkit-scrollbar]:hidden bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2">
                     {leaveRequests.map((request: any) => (
                       <LeaveCardAdminDash
                         key={request.leaveRequestId}
