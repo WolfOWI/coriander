@@ -10,6 +10,10 @@ const config: Config = {
     },
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  //   Handle CSS imports
+  moduleNameMapper: {
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+  },
 };
 
 export default config;

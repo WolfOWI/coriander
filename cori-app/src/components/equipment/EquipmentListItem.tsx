@@ -38,25 +38,25 @@ function EquipmentListItem({
 
   switch (item.equipmentCatId) {
     case EquipmentCategory.Cellphone:
-      deviceIcon = <Icons.Phone fontSize="large" />;
+      deviceIcon = <Icons.Phone fontSize="large" data-testid="phone-icon" />;
       break;
     case EquipmentCategory.Tablet:
-      deviceIcon = <Icons.Tablet fontSize="large" />;
+      deviceIcon = <Icons.Tablet fontSize="large" data-testid="tablet-icon" />;
       break;
     case EquipmentCategory.Laptop:
-      deviceIcon = <Icons.Laptop fontSize="large" />;
+      deviceIcon = <Icons.Laptop fontSize="large" data-testid="laptop-icon" />;
       break;
     case EquipmentCategory.Monitor:
-      deviceIcon = <Icons.Monitor fontSize="large" />;
+      deviceIcon = <Icons.Monitor fontSize="large" data-testid="monitor-icon" />;
       break;
     case EquipmentCategory.Headset:
-      deviceIcon = <Icons.Headset fontSize="large" />;
+      deviceIcon = <Icons.Headset fontSize="large" data-testid="headset-icon" />;
       break;
     case EquipmentCategory.Keyboard:
-      deviceIcon = <Icons.Keyboard fontSize="large" />;
+      deviceIcon = <Icons.Keyboard fontSize="large" data-testid="keyboard-icon" />;
       break;
     default:
-      deviceIcon = <Icons.DeviceUnknown fontSize="large" />;
+      deviceIcon = <Icons.DeviceUnknown fontSize="large" data-testid="unknown-device-icon" />;
       break;
   }
 
@@ -81,6 +81,7 @@ function EquipmentListItem({
                 icon={<Icons.Edit />}
                 onClick={onEdit}
                 className="hidden group-hover:flex transition-all duration-300"
+                aria-label="edit"
               />
               <CoriCircleBtn
                 secondary
@@ -88,12 +89,14 @@ function EquipmentListItem({
                 icon={<Icons.LinkOff />}
                 onClick={onUnlink}
                 className="hidden group-hover:flex transition-all duration-300"
+                aria-label="unlink"
               />
               <CoriCircleBtn
                 style="red"
                 icon={<Icons.Delete />}
                 onClick={onDelete}
                 className="hidden group-hover:flex transition-all duration-300"
+                aria-label="delete"
               />
             </>
           )}
