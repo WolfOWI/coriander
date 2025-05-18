@@ -51,6 +51,9 @@ import HeartBrokenIcon from "@mui/icons-material/HeartBrokenRounded";
 import DownloadIcon from "@mui/icons-material/DownloadRounded";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoomRounded";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnreadRounded";
+import LanguageIcon from "@mui/icons-material/LanguageRounded";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeopleRounded";
+import ChatIcon from "@mui/icons-material/ChatRounded";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -106,4 +109,7 @@ export const Icons = {
   Download: DownloadIcon,
   MeetingRoom: MeetingRoomIcon,
   MarkChatUnread: MarkChatUnreadIcon,
+  Language: LanguageIcon,
+  EmojiPeople: EmojiPeopleIcon,
+  Chat: ChatIcon,
 };

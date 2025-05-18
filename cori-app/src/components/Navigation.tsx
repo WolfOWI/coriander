@@ -84,6 +84,9 @@ const Navigation: React.FC = () => {
               <Link to="/apiplayground" className="nav-link text-white">
                 API Playground - do not remove
               </Link>
+              <Link to="/temp-new-gathering-box" className="nav-link text-white">
+                New Meeting / Gathering Box
+              </Link>
             </div>
           </div>
 

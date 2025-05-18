@@ -36,6 +36,7 @@ import ReferencePage from "./pages/Reference";
 import TempModalsLeaveOverviewPage from "./pages/TempModalsLeaveOverviewPage";
 import TempModalsAdminDashPage from "./pages/TempModalsAdminDashPage";
 import ApiPlayground from "./pages/apiPlayground/ApiPlayground";
+import TempNewGatheringBoxPage from "./pages/TempNewGatheringBoxPage";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
@@ -79,6 +80,7 @@ const AppContent: React.FC = () => {
           <Route path="/temp-modals/leave-overview" element={<TempModalsLeaveOverviewPage />} />
           <Route path="/temp-modals/admin-dash" element={<TempModalsAdminDashPage />} />
           <Route path="/apiplayground" element={<ApiPlayground />} />
+          <Route path="/temp-new-gathering-box" element={<TempNewGatheringBoxPage />} />
         </Routes>
       </main>
       <ServerStatusModal isVisible={isServerSleeping} onClose={() => checkServerStatus()} />
