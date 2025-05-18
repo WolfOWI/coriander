@@ -16,7 +16,10 @@ import { BarChart } from "@mui/x-charts/BarChart";
     }
 
   // Transform the empUserRatingMetrics data into chartData
-  const labels = empUserRatingMetrics.map((emp) => emp.fullName);
+  const labels = empUserRatingMetrics.map((emp) => {
+    const [firstName, ...rest] = emp.fullName.split(" ");
+    return [firstName, rest.join(" ")].join("\n");
+  });
   const chartData = {
     labels,
     series: [

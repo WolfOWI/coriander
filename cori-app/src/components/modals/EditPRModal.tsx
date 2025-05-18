@@ -4,17 +4,13 @@ import {
   Modal,
   Button,
   Form,
-  Input,
   Select,
   message,
-  DatePicker,
-  TimePicker,
   Rate,
   Upload,
   Switch,
 } from "antd";
 import dayjs from "dayjs";
-import CoriBtn from "../buttons/CoriBtn";
 import TextArea from "antd/es/input/TextArea";
 import { Icons } from "../../constants/icons";
 
@@ -98,35 +94,38 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
 
   // Handle the editing of the performance review
   const handleEdit = async () => {
-  try {
-    // Validate the form fields
-    const values = await form.validateFields();
+    try {
+      // Validate the form fields
+      const values = await form.validateFields();
 
-    const updatedValues = {
-      ...values,
-      status: 2, // Always set to Completed
-    };
+      const updatedValues = {
+        ...values,
+        status: 2, // Always set to Completed
+      };
 
-    // Call the update API with reviewId and updatedValues
-    await performanceReviewsAPI.UpdatePerformanceReview(updatedValues.reviewId, updatedValues);
+      // Log the data being sent to the backend
+      console.log("Updating Performance Review with:", updatedValues);
 
-    messageApi.success("Performance Review was edited successfully");
+      // Call the update API with reviewId and updatedValues
+      await performanceReviewsAPI.UpdatePerformanceReview(updatedValues.reviewId, updatedValues);
 
-    // Reset form and close modal
-    form.resetFields();
-    setShowModal(false);
+      messageApi.success("Performance Review was edited successfully");
 
-    // Notify parent of success
-    onEditSuccess();
-  } catch (error: any) {
-    if (error.errorFields) {
-      messageApi.error("Please fill out all fields correctly.");
-      return;
+      // Reset form and close modal
+      form.resetFields();
+      setShowModal(false);
+
+      // Notify parent of success
+      onEditSuccess();
+    } catch (error: any) {
+      if (error.errorFields) {
+        messageApi.error("Please fill out all fields correctly.");
+        return;
+      }
+      messageApi.error("Error: The performance review was not updated.");
+      console.error("Error updating performance review:", error);
     }
-    messageApi.error("Error: The performance review was not updated.");
-    console.error("Error updating performance review:", error);
-  }
-};
+  };
 
   // Handle the cancellation of the performance review creation
   const handleCancel = () => {
@@ -198,13 +197,7 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
             </Select>
           </Form.Item>
           <Form.Item name="rating" label="Rating">
-            <div className="flex gap-2">
-              <Rate
-                onChange={(value) => console.log(value)}
-                allowClear
-                className="text-corigreen-500 text-3xl flex gap-1"
-              />
-            </div>
+            <Rate allowClear className="text-corigreen-500 text-3xl flex gap-1" />
           </Form.Item>
 
           <Form.Item name="comment" label="Comment">
