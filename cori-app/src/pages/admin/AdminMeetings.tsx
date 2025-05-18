@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Icons } from "../../constants/icons";
 import CoriBtn from "../../components/buttons/CoriBtn";
+import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
 
 const AdminMeetings: React.FC = () => {
   type TabOption = "All" | "General Meetings" | "Performance Reviews" | "Completed";
@@ -11,9 +12,12 @@ const AdminMeetings: React.FC = () => {
     <div className="max-w-7xl mx-auto m-4">
       {/* Page Header */}
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-          <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
-          <h1 className="text-3xl font-bold text-zinc-900">Meetings</h1>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
+            <h1 className="text-3xl font-bold text-zinc-900">Meetings</h1>
+          </div>
+          <MeetRequestsBadge requests={6} />
         </div>
         <div className="flex items-center gap-2">
           <CoriBtn>New Review Meet</CoriBtn>
