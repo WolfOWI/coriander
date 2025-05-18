@@ -56,7 +56,7 @@ const EmployeeProfile: React.FC = () => {
 
   // const { employeeId } = useParams();
   // TODO Temporary set employee ID (TODO: Fetch from logged in user)
-  const employeeId = "7";
+  const employeeId = "8";
 
   // Fetch employee data
   const fetchEmployee = async () => {
