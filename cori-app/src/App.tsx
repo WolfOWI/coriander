@@ -1,10 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
@@ -27,12 +22,14 @@ import AdminSignUp from "./pages/auth/AdminSignUp";
 import EmployeeHome from "./pages/employee/EmployeeHome";
 import EmployeeLeaveOverview from "./pages/employee/EmployeeLeaveOverview";
 import EmployeeProfile from "./pages/employee/EmployeeProfile";
+import EmployeeMeetings from "./pages/employee/EmployeeMeetings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminEmployeeManagement from "./pages/admin/AdminEmployeeManagement";
 import AdminCreateEmployee from "./pages/admin/AdminCreateEmployee";
 import AdminIndividualEmployee from "./pages/admin/AdminIndividualEmployee";
 import AdminEquipmentManagement from "./pages/admin/AdminEquipmentManagement";
 import AdminLeaveRequests from "./pages/admin/AdminLeaveRequests";
+import AdminMeetings from "./pages/admin/AdminMeetings";
 
 // TODO: Delete these later
 import ReferencePage from "./pages/Reference";
@@ -60,53 +57,31 @@ const AppContent: React.FC = () => {
 
           {/* Employee Routes */}
           <Route path="/employee/home" element={<EmployeeHome />} />
-          <Route
-            path="/employee/leave-overview"
-            element={<EmployeeLeaveOverview />}
-          />
+          <Route path="/employee/leave-overview" element={<EmployeeLeaveOverview />} />
           <Route path="/employee/profile" element={<EmployeeProfile />} />
+          <Route path="/employee/meetings" element={<EmployeeMeetings />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route
-            path="/admin/employees"
-            element={<AdminEmployeeManagement />}
-          />
-          <Route
-            path="/admin/equipment"
-            element={<AdminEquipmentManagement />}
-          />
-          <Route
-            path="/admin/create-employee"
-            element={<AdminCreateEmployee />}
-          />
+          <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
+          <Route path="/admin/equipment" element={<AdminEquipmentManagement />} />
+          <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
           <Route
             path="/admin/individual-employee/:employeeId?"
             element={<AdminIndividualEmployee />}
           />
-          <Route
-            path="/admin/leave-requests"
-            element={<AdminLeaveRequests />}
-          />
+          <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
+          <Route path="/admin/meetings" element={<AdminMeetings />} />
 
           {/* Temporary Reference Route */}
           {/* TODO: Delete this later */}
           <Route path="/reference" element={<ReferencePage />} />
-          <Route
-            path="/temp-modals/leave-overview"
-            element={<TempModalsLeaveOverviewPage />}
-          />
-          <Route
-            path="/temp-modals/admin-dash"
-            element={<TempModalsAdminDashPage />}
-          />
+          <Route path="/temp-modals/leave-overview" element={<TempModalsLeaveOverviewPage />} />
+          <Route path="/temp-modals/admin-dash" element={<TempModalsAdminDashPage />} />
           <Route path="/apiplayground" element={<ApiPlayground />} />
         </Routes>
       </main>
-      <ServerStatusModal
-        isVisible={isServerSleeping}
-        onClose={() => checkServerStatus()}
-      />
+      <ServerStatusModal isVisible={isServerSleeping} onClose={() => checkServerStatus()} />
     </div>
   );
 };
