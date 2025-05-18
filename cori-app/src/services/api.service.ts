@@ -198,7 +198,6 @@ export const pageAPI = {
    */
   getEmployeeLeaveData: (id: string): Promise<AxiosResponse> =>
     apiClient.get(`/Page/employee-leave-overview/${id}`),
-
 };
 
 // EQUIPMENT API
@@ -322,10 +321,10 @@ export const empLeaveRequestsAPI = {
    * @returns Promise containing the API response
    */
   getRejectedLeaveRequests: (): Promise<AxiosResponse> =>
-    apiClient.get('/EmpLeaveRequest/GetAllRejected'),
-}
+    apiClient.get("/EmpLeaveRequest/GetAllRejected"),
+};
 
-// Performance Review API
+// PERFORMANCE REVIEW API
 // ------------------------------------------------------------
 export const performanceReviewsAPI = {
   /**
@@ -347,8 +346,16 @@ export const performanceReviewsAPI = {
    * Gets all upcoming performance reviews
    */
   GetAllUpcomingPrm: (): Promise<AxiosResponse> =>
-    apiClient.get('/PerformanceReview/GetAllUpcomingPrm'),
-  
+    apiClient.get("/PerformanceReview/GetAllUpcomingPrm"),
+
+  /**
+   * Gets all upcoming performance reviews for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllUpcomingPrmByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/PerformanceReview/GetAllUpcomingPrmByAdminId/${adminId}`),
+
   /**
    * Updates an existing performance review by its ID
    * @param id - The performance review's ID
@@ -357,10 +364,131 @@ export const performanceReviewsAPI = {
    */
   UpdatePerformanceReview: (id: number, data: object): Promise<AxiosResponse> =>
     apiClient.put(`/PerformanceReview/UpdatePerformanceReview/${id}`, data),
+};
+// ------------------------------------------------------------
 
-  
+// MEETING API
+// ------------------------------------------------------------
+export const meetingAPI = {
+  /**
+   * Fetches all meeting requests (meetings with either rejected or requested status) for a specific employee
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAllRequestsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Meeting/GetAllRequestsByEmpId/${employeeId}`),
 
-}
+  /**
+   * Fetches all upcoming meetings for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllUpcomingByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Meeting/GetAllUpcomingByAdminId/${adminId}`),
+
+  /**
+   * Creates a new meeting request (done by an employee)
+   * @param data - The meeting request data
+   * @returns Promise containing the API response
+   */
+  createMeetingRequest: (data: object): Promise<AxiosResponse> =>
+    apiClient.post(`/Meeting/CreateRequest`, data),
+
+  /**
+   * Confirms and schedules a meeting request (done by an admin) and "creates" (updates) a meeting
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  confirmAndScheduleMeeting: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/ConfirmAndSchedule/${meetingId}`),
+
+  /**
+   * An admin updates a meeting's details by its ID
+   * @param meetingId - The meeting's ID
+   * @param data - The updated meeting request data
+   * @returns Promise containing the API response
+   */
+  updateMeeting: (meetingId: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/Update/${meetingId}`, data),
+
+  /**
+   * An employee update a meeting request by its ID
+   * @param meetingId - The meeting's ID
+   * @param data - The updated meeting request data
+   * @returns Promise containing the API response
+   */
+  updateMeetingRequest: (meetingId: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/UpdateRequest/${meetingId}`, data),
+
+  /**
+   * An admin rejects a meeting request by its ID
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  rejectMeetingRequest: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/Reject/${meetingId}`),
+
+  /**
+   * An admin marks a meeting request as completed
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  markAsCompletedMeeting: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/MarkAsCompleted/${meetingId}`),
+
+  /**
+   * An admin deletes a meeting request by its ID
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  deleteMeetingRequest: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/Meeting/Delete/${meetingId}`),
+};
+// ------------------------------------------------------------
+
+// GATHERING API
+// ------------------------------------------------------------
+export const gatheringAPI = {
+  /**
+   * Fetches all gatherings (performance reviews + general meetings) for a specific employee
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAllGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/all-by-empId/${employeeId}`),
+
+  /**
+   * Fetches all upcoming gatherings (performance reviews + general meetings) for a specific employee
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAllUpcomingGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/upcoming-by-empId/${employeeId}`),
+
+  /**
+   * Fetches all completed gatherings (performance reviews + general meetings) for a specific employee
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAllCompletedGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/completed-by-empId/${employeeId}`),
+
+  /**
+   * Fetches all upcoming gatherings (performance reviews + general meetings) for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllUpcomingGatheringsByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/upcoming-by-adminId/${adminId}`),
+
+  /**
+   * Fetches all completed gatherings (performance reviews + general meetings) for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllCompletedGatheringsByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/completed-by-adminId/${adminId}`),
+};
 // ------------------------------------------------------------
 
 // ############################################################
