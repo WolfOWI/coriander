@@ -12,7 +12,7 @@ import TopRatedEmpCard from "../../components/cards/adminCards/TopRatedEmpAdm";
 import AdminCalendar from "../../components/calender";
 
 //Functionality
-import { pageAPI } from "../../services/api.service";
+import { empUserAPI, pageAPI } from "../../services/api.service";
 
 //Modals
 import CreatePRModal from "../../components/modals/CreatePRModal";
@@ -35,6 +35,7 @@ const AdminDashboard: React.FC = () => {
     try {
       const response = await pageAPI.getAdminDashboardData(2); //set adminId = 2 *Change later
       setDashboardData(response.data);
+      console.log("Dashboard Data:", response.data);
     } catch (err) {
       setError("Failed to load dashboard data.");
     } finally {
@@ -168,7 +169,8 @@ const AdminDashboard: React.FC = () => {
                             fullName={employeeData?.fullName || "Unknown"}
                             jobTitle={employeeData?.jobTitle || "Unknown"}
                             averageRating={ratingData?.averageRating || 0}
-                            employType={employeeData?.employType || "Unknown"}
+                            employType={employeeData?.employType}
+                            isSuspended={employeeData?.isSuspended}
                           />
                         );
                       })}
