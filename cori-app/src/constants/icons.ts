@@ -48,6 +48,7 @@ import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
+import DownloadIcon from "@mui/icons-material/Download";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -100,4 +101,5 @@ export const Icons = {
   FamilyRestroom: FamilyRestroomIcon,
   MenuBook: MenuBookIcon,
   HeartBroken: HeartBrokenIcon,
+  Download: DownloadIcon,
 };

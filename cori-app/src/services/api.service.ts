@@ -271,7 +271,8 @@ export const equipmentAPI = {
 
 // ------------------------------------------------------------
 
-// Add a lightweight health check endpoint
+// HEALTH CHECK API
+// ------------------------------------------------------------
 export const healthCheckAPI = {
   /**
    * Simple health check that makes a GET request to the health endpoint
@@ -297,91 +298,71 @@ export const healthCheckAPI = {
       });
   },
 };
-
-// IMAGE API
 // ------------------------------------------------------------
-export const imageAPI = {
-  /**
-   * Uploads a general image file to the server
-   * @param file - The file to upload
-   * @returns Promise containing the API response with the image URL
-   */
-  upload: async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
 
-    const { data } = await apiClient.post("/Image/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    if (!data.imageUrl) {
-      throw new Error("No image URL returned from server");
-    }
-
-    // Remove any leading slash and 'uploads' if present
-    const fileName = data.imageUrl.replace(/^\//, "").replace(/^uploads\//, "");
-    // Return just the relative path
-    return `/uploads/${fileName}`;
-  },
-
-  /**
-   * Updates a user's profile picture by uploading a new file and updating the user's profilePicture field
-   * @param userId - The ID of the user
-   * @param file - The new profile picture file
-   * @returns Promise containing the API response with the image URL
-   */
-  updateProfilePicture: async (userId: number, file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const { data } = await apiClient.post(`/Image/profile-picture/${userId}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    if (!data.imageUrl) {
-      throw new Error("No image URL returned from server");
-    }
-
-    return data.imageUrl;
-  },
-
-  /**
-   * Removes a user's profile picture by deleting the file and setting the user's profilePicture field to null
-   * @param userId - The ID of the user
-   * @returns Promise containing the API response
-   */
-  removeProfilePicture: async (userId: number): Promise<void> => {
-    await apiClient.delete(`/Image/profile-picture/${userId}`);
-  },
-};
+// EMPLOYEE LEAVE REQUESTS API
 // ------------------------------------------------------------
-/* EmpLeaveRequests API */
 export const empLeaveRequestsAPI = {
   /**
    * Fetches all pending leave requests
    * @returns Promise containing the API response
    */
   getPendingLeaveRequests: (): Promise<AxiosResponse> =>
-    apiClient.get('/EmpLeaveRequest/GetAllPending'),
+    apiClient.get("/EmpLeaveRequest/GetAllPending"),
 
-    /**
+  /**
    * Fetches all approved leave requests
    * @returns Promise containing the API response
    */
-    getApprovedLeaveRequests: (): Promise<AxiosResponse> =>
-      apiClient.get('/EmpLeaveRequest/GetAllApproved'),
+  getApprovedLeaveRequests: (): Promise<AxiosResponse> =>
+    apiClient.get("/EmpLeaveRequest/GetAllApproved"),
 
-      /**
+  /**
    * Fetches all rejected leave requests
    * @returns Promise containing the API response
    */
   getRejectedLeaveRequests: (): Promise<AxiosResponse> =>
     apiClient.get('/EmpLeaveRequest/GetAllRejected'),
 }
+
+// Performance Review API
+// ------------------------------------------------------------
+export const performanceReviewsAPI = {
+  /**
+   * Fetches all performance reviews for a specific employee
+   * @param empId - The employee's ID
+   * @returns Promise containing the API response
+   */
+
+  /**
+   * Creates a new performance review for an employee
+   * @param empId - The employee's ID
+   * @param data - The performance review data
+   * @returns Promise containing the API response
+   */
+  CreatePerformanceReview: (data: object): Promise<AxiosResponse> =>
+    apiClient.post(`/PerformanceReview/CreatePerformanceReview`, data),
+
+  /**
+   * Gets all upcoming performance reviews
+   */
+  GetAllUpcomingPrm: (): Promise<AxiosResponse> =>
+    apiClient.get('/PerformanceReview/GetAllUpcomingPrm'),
+  
+  /**
+   * Updates an existing performance review by its ID
+   * @param id - The performance review's ID
+   * @param data - The updated performance review data
+   * @returns Promise containing the API response
+   */
+  UpdatePerformanceReview: (id: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/PerformanceReview/UpdatePerformanceReview/${id}`, data),
+
+  
+
+}
+// ------------------------------------------------------------
+
 // ############################################################
 // Export the configured axios instance
 export default apiClient;

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { performanceReviewsAPI } from "../../services/api.service";
 import {
   Modal,
   Button,
@@ -17,6 +18,24 @@ import CoriBtn from "../buttons/CoriBtn";
 import TextArea from "antd/es/input/TextArea";
 import { Icons } from "../../constants/icons";
 
+export interface PerformanceReviewDTO {
+  reviewId: number;
+  adminId: number;
+  adminName: string;
+  employeeId: number;
+  employeeName: string;
+  isOnline: boolean;
+  meetLocation: string;
+  meetLink: string;
+  startDate: string;
+  endDate: string;
+  rating: number;
+  comment: string;
+  docUrl: string;
+  status: number;
+}
+
+
 interface EditPRModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
@@ -26,33 +45,88 @@ interface EditPRModalProps {
 function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProps) {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [reviews, setReviews] = useState<PerformanceReviewDTO[]>([]);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchUpcoming = async () => {
+      try {
+        const response = await performanceReviewsAPI.GetAllUpcomingPrm();
+        const reviewsArray = Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(response.data?.$values)
+          ? response.data.$values
+          : [];
+        setReviews(reviewsArray);
+      } catch (error) {
+        messageApi.error("Failed to fetch upcoming reviews");
+        setReviews([]);
+      }
+    };
+    fetchUpcoming();
+  }, []);
+
+  // When employee is selected, auto-select review and set date/time fields
+  const handleEmployeeChange = (employeeId: number) => {
+    setSelectedEmployeeId(employeeId);
+    const employeeReviews = reviews.filter(r => r.employeeId === employeeId);
+    if (employeeReviews.length > 0) {
+      const review = employeeReviews[0];
+      form.setFieldsValue({
+        reviewId: review.reviewId,
+        // Add more fields here if you want to show date/time in the form
+        // For example, if you have startDate/endDate fields in the form:
+        // startDate: dayjs(review.startDate),
+        // endDate: dayjs(review.endDate),
+      });
+    } else {
+      form.setFieldsValue({ reviewId: undefined });
+    }
+  };
+
+  // When review is selected, update date/time fields if needed
+  const handleReviewChange = (reviewId: number) => {
+    const review = reviews.find(r => r.reviewId === reviewId);
+    if (review) {
+      // If you have date/time fields in the form, set them here
+      // form.setFieldsValue({
+      //   startDate: dayjs(review.startDate),
+      //   endDate: dayjs(review.endDate),
+      // });
+    }
+  };
 
   // Handle the editing of the performance review
   const handleEdit = async () => {
-    try {
-      // Validate the form fields
-      const values = await form.validateFields();
+  try {
+    // Validate the form fields
+    const values = await form.validateFields();
 
-      // TODO: Edit the performance review
-      //   await equipmentAPI.createEquipItemOrItems([values]);
-      messageApi.success("Performance Review was edited successfully");
+    const updatedValues = {
+      ...values,
+      status: 2, // Always set to Completed
+    };
 
-      // Reset form and close modal
-      form.resetFields();
-      setShowModal(false);
+    // Call the update API with reviewId and updatedValues
+    await performanceReviewsAPI.UpdatePerformanceReview(updatedValues.reviewId, updatedValues);
 
-      // Notify parent of success
-      onEditSuccess();
-    } catch (error: any) {
-      if (error.errorFields) {
-        // Form validation error
-        messageApi.error("Please fill out all fields correctly.");
-        return;
-      }
-      messageApi.error("Error: The performance review was not updated.");
-      console.error("Error updating performance review:", error);
+    messageApi.success("Performance Review was edited successfully");
+
+    // Reset form and close modal
+    form.resetFields();
+    setShowModal(false);
+
+    // Notify parent of success
+    onEditSuccess();
+  } catch (error: any) {
+    if (error.errorFields) {
+      messageApi.error("Please fill out all fields correctly.");
+      return;
     }
-  };
+    messageApi.error("Error: The performance review was not updated.");
+    console.error("Error updating performance review:", error);
+  }
+};
 
   // Handle the cancellation of the performance review creation
   const handleCancel = () => {
@@ -100,10 +174,12 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
             label="Employee"
             rules={[{ required: true, message: "Please select an employee" }]}
           >
-            <Select>
-              <Select.Option value={1}>Employee 1</Select.Option>
-              <Select.Option value={2}>Employee 2</Select.Option>
-              <Select.Option value={3}>Employee 3</Select.Option>
+            <Select onChange={handleEmployeeChange}>
+              {(reviews || []).map((review) => (
+                <Select.Option key={review.employeeId} value={review.employeeId}>
+                  {review.employeeName}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item
@@ -111,10 +187,14 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
             label="Performance Review Date & Time"
             rules={[{ required: true, message: "Please select a review" }]}
           >
-            <Select>
-              <Select.Option value={1}>01 Jan 2025 • 10:00 - 11:00</Select.Option>
-              <Select.Option value={2}>02 Jan 2025 • 10:00 - 11:00</Select.Option>
-              <Select.Option value={3}>03 Jan 2025 • 10:00 - 11:00</Select.Option>
+            <Select onChange={handleReviewChange}>
+              {reviews
+                .filter(r => selectedEmployeeId == null || r.employeeId === selectedEmployeeId)
+                .map((review) => (
+                  <Select.Option key={review.reviewId} value={review.reviewId}>
+                    {review.startDate && dayjs(review.startDate).format("DD MMM YYYY • HH:mm")} - {dayjs(review.endDate).format("HH:mm")}
+                  </Select.Option>
+                ))}
             </Select>
           </Form.Item>
           <Form.Item name="rating" label="Rating">
