@@ -1,6 +1,7 @@
 import { GatheringType, MeetStatus, ReviewStatus } from "../../types/common";
 
 export interface Gathering {
+  $id: string;
   id: number;
   type: GatheringType;
   adminId: number;

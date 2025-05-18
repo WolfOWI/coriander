@@ -17,10 +17,10 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
-import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 import ProfilePicUploadBtn from "../../components/uploading/ProfilePicUploadBtn";
+import EmpGatheringBox from "../../components/gathering/EmpGatheringBox";
 
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
@@ -50,9 +50,9 @@ import { getFullImageUrl } from "../../utils/imageUtils";
 import { Gender, PayCycle } from "../../types/common";
 import { EmpUser } from "../../interfaces/people/empUser";
 import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
-import { PerformanceReview } from "../../interfaces/performance_reviews/performanceReview";
 import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetrics";
 import { Equipment } from "../../interfaces/equipment/equipment";
+import { Gathering } from "../../interfaces/gathering/gathering";
 
 // Admin Employee Details Page Response Interface
 interface AdminEmpDetailsResponse {
@@ -64,8 +64,8 @@ interface AdminEmpDetailsResponse {
     $values: LeaveBalance[];
   };
   empUserRatingMetrics: EmpUserRatingMetrics;
-  performanceReviews: {
-    $values: PerformanceReview[];
+  gatherings: {
+    $values: Gathering[];
   };
 }
 
@@ -83,7 +83,7 @@ const AdminIndividualEmployee: React.FC = () => {
   const [empUserRatingMetrics, setEmpUserRatingMetrics] = useState<EmpUserRatingMetrics | null>(
     null
   );
-  const [performanceReviews, setPerformanceReviews] = useState<PerformanceReview[]>([]);
+  const [gatherings, setGatherings] = useState<Gathering[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextPayDay, setNextPayDay] = useState<string | null>(null);
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
@@ -112,7 +112,7 @@ const AdminIndividualEmployee: React.FC = () => {
         // TODO Set leave balances in a specific order
         setLeaveBalances(data.leaveBalances.$values);
         setEmpUserRatingMetrics(data.empUserRatingMetrics);
-        setPerformanceReviews(data.performanceReviews.$values);
+        setGatherings(data.gatherings.$values);
       } else {
         // If no ID provided, redirect to employee management page
         navigate("/admin/employees");
@@ -590,15 +590,15 @@ const AdminIndividualEmployee: React.FC = () => {
                   </div>
                 </div>
                 <div className="w-full flex flex-col items-center gap-2">
-                  <h2 className="text-zinc-500 font-semibold">Performance Reviews</h2>
+                  <h2 className="text-zinc-500 font-semibold">Meetings</h2>
                   {/* TODO Possibly create a performance review here? */}
                   <div className="w-full h-[580px] overflow-y-auto gap-4 flex flex-col rounded-2xl relative scrollbar-hide [&::-webkit-scrollbar]:hidden">
-                    {performanceReviews.map((review) => (
-                      <PerfReviewBox key={review.reviewId} review={review} showPerson={true} />
+                    {gatherings.map((gathering) => (
+                      <EmpGatheringBox key={gathering.$id} gathering={gathering} />
                     ))}
-                    {performanceReviews.length === 0 && (
+                    {gatherings.length === 0 && (
                       <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-3">
-                        <p className="text-zinc-500 text-center">No Performance Reviews Yet</p>
+                        <p className="text-zinc-500 text-center">No Meetings Yet</p>
                       </div>
                     )}
                     {/* Empty Spacer Overlay (for fade out effect) */}
