@@ -124,7 +124,7 @@ const AdminDashboard: React.FC = () => {
               <Row className="g-3">
                 {/* Employee Ratings Chart */}
                 <Col xs={12} md={7}>
-                  <div className="text-zinc-500 font-semibold text-center mb-2">Employee Ratings</div>
+                  <div className="text-zinc-500 font-semibold text-center mb-2">Employee Ratings: Top 5</div>
                     <div className="bg-warmstone-50 pt-2 rounded-2xl shadow">
                     <BarChartCard empUserRatingMetrics={empUserRatingMetrics} />
                     </div>
@@ -189,7 +189,7 @@ const AdminDashboard: React.FC = () => {
                   
                   {/* Top Rated employee list */}
                   <Col xs={12} md={12}>
-                    <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">Top Rated Employees</div>
+                    <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">Top 3 Employees</div>
                       <div className="bg-warmstone-50 p-2 rounded-2xl flex flex-col shadow">
                       {topRatedEmployees.map((employee: any) => {
                         const employeeData = employee.employees?.$values[0];

@@ -35,6 +35,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
   };
 
   return (
+    <div style={{marginLeft: -40}}>
     <BarChart
       xAxis={[
         {
@@ -47,7 +48,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
         ...s,
         color: i === 0 ? "#CEDBC0" : "#88A764", // Light green and darker green
       }))}
-      width={380}
+      width={440}
       height={260}
       sx={{
         "& .MuiBarElement-root": {
@@ -55,6 +56,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
         },
       }}
     />
+    </div>
   );
 };
 

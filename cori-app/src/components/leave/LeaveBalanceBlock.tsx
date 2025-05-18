@@ -15,6 +15,7 @@ interface LeaveBalanceBlockProps {
   totalDays: number;
   description: string;
   width?: string | number;
+  shadow?: boolean;
 }
 
 function LeaveBalanceBlock({
@@ -22,7 +23,8 @@ function LeaveBalanceBlock({
   remainingDays,
   totalDays,
   description,
-  width
+  width,
+  shadow
 }: LeaveBalanceBlockProps) {
   const getLeaveIcon = () => {
     switch (leaveType) {
@@ -46,7 +48,7 @@ function LeaveBalanceBlock({
   return (
     <Tooltip placement="right" title={description}>
       <div 
-        className="bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32"
+        className={`bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 ${shadow ? "shadow" : ""}`}
         style={{ width: width || 136 }}
       >
         <div className="flex items-center gap-1 mb-2">

@@ -203,6 +203,7 @@ const EmployeeHome: React.FC = () => {
                               totalDays={balance.defaultDays}
                               description={balance.description}
                               width={148}
+                              shadow
                             />
                           ))}
                         </div>
