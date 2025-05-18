@@ -54,6 +54,7 @@ import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnreadRounded";
 import LanguageIcon from "@mui/icons-material/LanguageRounded";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeopleRounded";
 import ChatIcon from "@mui/icons-material/ChatRounded";
+import TextSnippetIcon from "@mui/icons-material/TextSnippetRounded";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -112,4 +113,5 @@ export const Icons = {
   Language: LanguageIcon,
   EmojiPeople: EmojiPeopleIcon,
   Chat: ChatIcon,
+  TextSnippet: TextSnippetIcon,
 };
