@@ -190,7 +190,8 @@ export const pageAPI = {
    * getAdminDashboardData - Fetches data for the admin dashboard
    * @returns Promise containing the API response
    */
-  getAdminDashboardData: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-dashboard"),
+  getAdminDashboardData: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Page/admin-dashboard/${adminId}`),
 };
 
 // EQUIPMENT API

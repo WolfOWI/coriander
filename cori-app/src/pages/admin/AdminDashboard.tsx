@@ -31,20 +31,18 @@ const AdminDashboard: React.FC = () => {
   const [showEditPRModal, setShowEditPRModal] = useState(false);
 
   // Fetch dashboard data from the API
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await pageAPI.getAdminDashboardData();
-        console.log("Dashboard Data:", response.data); // Debugging
-        setDashboardData(response.data);
-      } catch (err) {
-        console.error("Error fetching admin dashboard data:", err);
-        setError("Failed to load dashboard data.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchDashboardData = async () => {
+    try {
+      const response = await pageAPI.getAdminDashboardData(2); //set adminId = 2 *Change later
+      setDashboardData(response.data);
+    } catch (err) {
+      setError("Failed to load dashboard data.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchDashboardData();
   }, []);
 
@@ -73,7 +71,9 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto m-4">
       {/* Heading */}
-      <h1 className="text-3xl font-bold mb-2 text-zinc-900">Welcome, (Admin Name)</h1>
+      <h1 className="text-3xl font-bold mb-2 text-zinc-900">
+        Welcome, {dashboardData?.adminUser?.fullName || "(Admin Name)"}
+      </h1>
       <h4 className="text-zinc-900 mb-3">Stay updated on key HR activities and pending tasks.</h4>
       <div className="line-horisontal mb-4"></div>
 
@@ -191,7 +191,9 @@ const AdminDashboard: React.FC = () => {
         showModal={showCreatePRModal}
         setShowModal={setShowCreatePRModal}
         onCreateSuccess={() => {
-        console.log("Performance Review created successfully!");
+          fetchDashboardData(); // Refresh dashboard data
+          setShowCreatePRModal(false);
+          console.log("Performance Review created successfully!");
         }} 
       />     
 
@@ -199,7 +201,9 @@ const AdminDashboard: React.FC = () => {
         showModal={showEditPRModal}
         setShowModal={setShowEditPRModal}
         onEditSuccess={() => {
-        console.log("Performance Review updated successfully!");
+          fetchDashboardData(); // Refresh dashboard data
+          setShowEditPRModal(false);
+          console.log("Performance Review updated successfully!");
         }} 
       />               
       

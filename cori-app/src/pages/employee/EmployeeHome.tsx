@@ -2,17 +2,15 @@ import { Container, Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import GaugeComponent from "react-gauge-component";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
-import { empUserAPI, pageAPI, employeeAPI } from "../../services/api.service";
+import { pageAPI } from "../../services/api.service";
 import { EmpUser } from "../../interfaces/people/empUser";
 import { formatRandAmount } from "../../utils/formatUtils";
-import { DatePicker } from "antd";
 import dayjs from "dayjs";
-import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
-import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 import { Icons } from "../../constants/icons";
+import { calculateNextPayDay } from "../../utils/dateUtils";
 
-import { useParams } from "react-router-dom"; // ✅ Needed for employeeId
-import { Spin } from "antd"; // ✅ Used in loading state
+import { useParams } from "react-router-dom"; 
+import { Spin } from "antd";
 
 
 const EmployeeHome: React.FC = () => {
@@ -22,6 +20,7 @@ const EmployeeHome: React.FC = () => {
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [leaveBalances, setLeaveBalances] = useState<any>(null); // 
   const [empUserRatingMetrics, setEmpUserRatingMetrics] = useState<any>(null); // Replace with actual type if availableReplace with actual type if available
+  const [nextPayDay, setNextPayDay] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
   
@@ -68,6 +67,14 @@ const EmployeeHome: React.FC = () => {
   
     fetchQuote();
   }, []);
+
+  useEffect(() => {
+    if (empUser) {
+      // Use lastPaidDate if available, otherwise use employDate
+      const baseDate = empUser.lastPaidDate || empUser.employDate;
+      setNextPayDay(calculateNextPayDay(empUser.payCycle, baseDate));
+    }
+  }, [empUser]);
   
 
   if (loading)
@@ -181,33 +188,19 @@ const EmployeeHome: React.FC = () => {
                         <div className="flex w-full mt-2 gap-2 h-fit">
                           <div className="flex flex-col w-1/2 items-center">
                             <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
-                            <div className="flex justify-center items-center gap-2 p-3 bg-warmstone-200 rounded-2xl h-full">
-                              <DatePicker
-                                // value={dayjs(empUser.lastPaidDate)}
-                                format="DD MMM YYYY"
-                                suffixIcon={<CoriCircleBtn style="black" icon={<Icons.Edit />} />}
-                                allowClear={false}
-                                variant="borderless"
-                                className="hover:cursor-pointer"
-                                // onChange={(date) => updateLastPaidDate(date?.format("YYYY-MM-DD") || "")}
-                                // Only allow dates after the employee's employment date and before today
-                                // minDate={dayjs(empUser.employDate)}
-                                maxDate={dayjs()}
-                              />
+                            <div className="flex justify-center items-center gap-2 p-3 bg-warmstone-200 rounded-2xl h-full w-full">
+                              <p className="text-zinc-900">
+                                {empUser.lastPaidDate ? dayjs(empUser.lastPaidDate).format("DD/MM/YYYY") : "N/A"}
+                              </p>
                             </div>
                           </div>
                           <div className="flex flex-col w-1/2 items-center">
                             <p className="text-zinc-500 text-sm mb-1">Next Pay Day</p>
                             <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                                <p className="text-zinc-900">Date here: 00/00/0000</p>
-                                {/* <TimeTodayBadge /> */}
+                                <p className="text-zinc-900">
+                                  {nextPayDay ? dayjs(nextPayDay).format("DD/MM/YYYY") : "N/A"}
+                                </p>
                               </div>
-                            {/* {nextPayDay && (
-                              <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                                <p className="text-zinc-900">{nextPayDay}</p>
-                                <TimeTodayBadge date={nextPayDay} />
-                              </div>
-                            )} */}
                           </div>
                           <div className="flex flex-col w-1/2 items-center">
                             <p className="text-transparent text-sm mb-1">..</p>
@@ -217,12 +210,6 @@ const EmployeeHome: React.FC = () => {
                                 <p className="text-corigreen-600 font-medium text-sm">Export Payroll</p>
                               </div>
                             </div>
-                            {/* {nextPayDay && (
-                              <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                                <p className="text-zinc-900">{nextPayDay}</p>
-                                <TimeTodayBadge date={nextPayDay} />
-                              </div>
-                            )} */}
                           </div>
                         </div>
                       </div>
