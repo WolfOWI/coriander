@@ -37,7 +37,7 @@ const TopRatedEmpCard: React.FC<TopRatedEmployee> = ({
         </div>
         <div className="w-fit">
           <div className="w-fit">
-            <EmployTypeBadge status={isSuspended ? "suspended" : employType} />
+            <EmployTypeBadge status={isSuspended ? "suspended" : employType as unknown as EmployType} />
           </div>
          </div>
         <span className="text-zinc-900">⭐ {averageRating.toFixed(1)}</span>

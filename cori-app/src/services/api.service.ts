@@ -490,6 +490,12 @@ export const gatheringAPI = {
    */
   getAllCompletedGatheringsByAdminId: (adminId: number): Promise<AxiosResponse> =>
     apiClient.get(`/Gathering/completed-by-adminId/${adminId}`),
+
+  /**
+   * Fetches all upcoming and completes Gatherings
+   */
+  getUpcomingAndCompletedGatheringsByAdminIdAndMonth: (adminId: number, month: number) =>
+    apiClient.get(`/Gathering/by-adminId/${adminId}/month/${month}`)
 };
 // ------------------------------------------------------------
 

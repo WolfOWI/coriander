@@ -10,9 +10,13 @@ import DoughnutChartCard from "../../components/charts/DoughnutChart";
 import LeaveCardAdminDash from "../../components/leave/LeaveCardAdminDash";
 import TopRatedEmpCard from "../../components/cards/adminCards/TopRatedEmpAdm";
 import AdminCalendar from "../../components/calender";
+import AdminGatheringBox from "../../components/gathering/AdminGatheringBox";
 
 //Functionality
-import { empUserAPI, pageAPI } from "../../services/api.service";
+import { gatheringAPI, pageAPI } from "../../services/api.service";
+
+//Interface
+import { Gathering } from "../../interfaces/gathering/gathering";
 
 //Modals
 import CreatePRModal from "../../components/modals/CreatePRModal";
@@ -29,11 +33,13 @@ const AdminDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showCreatePRModal, setShowCreatePRModal] = useState(false);
   const [showEditPRModal, setShowEditPRModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [gatherings, setGatherings] = useState<any>({ all: [] });
 
   // Fetch dashboard data from the API
   const fetchDashboardData = async () => {
     try {
-      const response = await pageAPI.getAdminDashboardData(2); //set adminId = 2 *Change later
+      const response = await pageAPI.getAdminDashboardData(1); //set adminId = 2 *Change later
       setDashboardData(response.data);
       console.log("Dashboard Data:", response.data);
     } catch (err) {
@@ -46,6 +52,33 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  const fetchGatherings = async (adminId: number, month: number) => {
+    try {
+      const response = await gatheringAPI.getUpcomingAndCompletedGatheringsByAdminIdAndMonth(adminId, month);
+      // Use the $values array directly
+      setGatherings({
+        all: response.data.$values || [],
+      });
+    } catch (err) {
+      setGatherings({ all: [] });
+    }
+  };
+
+  useEffect(() => {
+    fetchGatherings(1, selectedDate.getMonth() + 1); // adminId=2, month is 1-indexed
+  }, [selectedDate]);
+
+  //Display gatherings for selected Day
+  const gatheringsForSelectedDay = (gatherings.all || []).filter((g: { startDate: string | number | Date; }) => {
+    if (!g || !g.startDate) return false;
+    const d = new Date(g.startDate);
+    return (
+      d.getFullYear() === selectedDate.getFullYear() &&
+      d.getMonth() === selectedDate.getMonth() &&
+      d.getDate() === selectedDate.getDate()
+    );
+  });
 
   if (loading) return (
       <div className="w-full h-full flex flex-col justify-center items-center">
@@ -182,8 +215,17 @@ const AdminDashboard: React.FC = () => {
 
             {/* Right Card -> Performance Review calender and meetCards */}
             <Col lg="4" md="4">
-              <AdminCalendar />
-              {/* <PerfReviewBox /> */}
+              <AdminCalendar value={selectedDate} onChange={setSelectedDate} />
+             <div>
+              <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">
+                <h4>Gatherings for {selectedDate.toLocaleDateString()}</h4>
+              </div>
+              <div className='grid gap-3'>
+                {gatheringsForSelectedDay.map((gathering: Gathering) => (
+                  <AdminGatheringBox key={gathering.id} gathering={gathering} />
+                ))}
+              </div>
+            </div>
             </Col>
           </Row>
         </Container>

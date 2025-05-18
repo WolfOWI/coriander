@@ -68,11 +68,15 @@ function EmpGatheringBox({ gathering }: GatheringBoxProps) {
 
               {/* Date and Time */}
               <div className="w-full flex items-center gap-3 text-zinc-800 text-[12px]">
-                <p>{formatTimestampToDate(gathering.startDate!.toString())}</p>
-                <p>•</p>
                 <p>
-                  {formatTimestampToTime(gathering.startDate!.toString())} -
-                  {formatTimestampToTime(gathering.endDate!.toString())}
+                  {gathering.startDate
+                    ? formatTimestampToDate(gathering.startDate.toString())
+                    : "No date"}
+                </p>
+                <p>
+                  {gathering.startDate && gathering.endDate
+                    ? `${formatTimestampToTime(gathering.startDate.toString())} - ${formatTimestampToTime(gathering.endDate.toString())}`
+                    : "No time"}
                 </p>
               </div>
             </div>

@@ -2,7 +2,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import GaugeComponent from "react-gauge-component";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
-import { pageAPI } from "../../services/api.service";
+import { gatheringAPI, pageAPI } from "../../services/api.service";
 import { EmpUser } from "../../interfaces/people/empUser";
 import { formatRandAmount } from "../../utils/formatUtils";
 import dayjs from "dayjs";
@@ -13,6 +13,7 @@ import { Gender, PayCycle } from "../../types/common";
 
 import { useParams } from "react-router-dom"; 
 import { Spin } from "antd";
+import EmpGatheringBox from "../../components/gathering/EmpGatheringBox";
 
 
 const EmployeeHome: React.FC = () => {
@@ -23,6 +24,7 @@ const EmployeeHome: React.FC = () => {
   const [leaveBalances, setLeaveBalances] = useState<any>(null); // 
   const [empUserRatingMetrics, setEmpUserRatingMetrics] = useState<any>(null); // Replace with actual type if availableReplace with actual type if available
   const [nextPayDay, setNextPayDay] = useState<string | null>(null);
+  const [gatherings, setGatherings] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(true);
   
@@ -48,6 +50,18 @@ const EmployeeHome: React.FC = () => {
   useEffect(() => {
     fetchEmployeeData();
   }, [employeeId]);
+
+  useEffect(() => {
+  const fetchGatherings = async () => {
+    try {
+      const response = await gatheringAPI.getAllGatheringsByEmpId(Number(employeeId));
+      setGatherings(response.data.$values || []);
+    } catch (err) {
+      setGatherings([]);
+    }
+  };
+  fetchGatherings();
+}, [employeeId]);
 
   //For the Quote of the day
   const [quote, setQuote] = useState<string>(""); 
@@ -260,14 +274,10 @@ const EmployeeHome: React.FC = () => {
           <Col md={4}>
             <Col xs={12} md={12}>
                 <div className="text-zinc-500 font-semibold text-center mb-2">Performance Reviews</div>
-                  <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow mb-3">
-                    Chart here
-                  </div>
-                  <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow mb-3">
-                    Chart here
-                  </div>
-                  <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow">
-                    Chart here
+                  <div className="grid gap-3">
+                    {gatherings.map((gathering) => (
+                      <EmpGatheringBox key={gathering.id} gathering={gathering} />
+                    ))}
                   </div>
             </Col>
           </Col>
