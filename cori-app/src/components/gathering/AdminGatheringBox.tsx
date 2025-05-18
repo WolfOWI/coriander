@@ -139,6 +139,9 @@ function AdminGatheringBox({ gathering }: GatheringBoxProps) {
           <div className="w-full h-full flex items-center justify-center bg-warmstone-100 rounded-xl">
             <p className="text-zinc-500 text-[12px]">{gathering.meetLink}</p>
           </div>
+          <CoriBtn primary style="black">
+            Join
+          </CoriBtn>
           <Dropdown
             menu={{
               items: [
