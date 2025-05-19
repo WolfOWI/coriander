@@ -277,7 +277,7 @@ const EmployeeHome: React.FC = () => {
                 <div className="text-zinc-500 font-semibold text-center mb-2">Performance Reviews</div>
                   <div className="grid gap-3">
                     {gatherings.map((gathering) => (
-                      <EmpGatheringBox key={gathering.id} gathering={gathering} />
+                      <EmpGatheringBox key={gathering.$id} gathering={gathering} />
                     ))}
                   </div>
             </Col>
