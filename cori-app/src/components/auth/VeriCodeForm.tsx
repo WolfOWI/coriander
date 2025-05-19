@@ -1,9 +1,23 @@
-import { Form, Input, ConfigProvider } from "antd";
+import { Form, Input, ConfigProvider, message } from "antd";
 import React, { useEffect, useState, useRef } from "react";
 import CoriBtn from "../buttons/CoriBtn";
 import { Link } from "react-router-dom";
 
-function VeriCodeForm({ showLoginScreen }: { showLoginScreen: () => void }) {
+// API calls:
+import { employeeSignup2FA } from "../../services/authService"; // Add this
+
+function VeriCodeForm({
+  showLoginScreen,
+  userData,
+}: {
+  showLoginScreen: () => void;
+  userData: {
+    fullName: string;
+    email: string;
+    password: string;
+    profileImage: File | null;
+  };
+}) {
   const [form] = Form.useForm();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -57,6 +71,36 @@ function VeriCodeForm({ showLoginScreen }: { showLoginScreen: () => void }) {
   };
   // ----------------------------------------------------------------
 
+  // Handle form submission
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+
+      console.log("🧾 VeriCodeForm → handleSubmit → form values:", values);
+      console.log("📦 VeriCodeForm → handleSubmit → userData:", userData);
+
+      const response = await employeeSignup2FA({
+        email: userData.email,
+        fullName: userData.fullName,
+        password: userData.password,
+        code: values.vericode,
+        profileImage: userData.profileImage || undefined,
+      });
+
+      console.log("✅ VeriCodeForm → handleSubmit → response:", response);
+
+      if (response.errorCode === 200) {
+        message.success("Account created successfully!");
+        showLoginScreen();
+      } else {
+        message.error(response.message);
+      }
+    } catch (err) {
+      console.error("❌ VeriCodeForm → handleSubmit → Signup failed:", err);
+      message.error("Something went wrong");
+    }
+  };
+
   return (
     <ConfigProvider
       theme={{
@@ -67,12 +111,19 @@ function VeriCodeForm({ showLoginScreen }: { showLoginScreen: () => void }) {
         },
       }}
     >
-      <div className="flex flex-col items-center w-4/12">
+      <div className="flex flex-col items-center w-[300px]">
         <div className="flex flex-col items-center mb-4">
           <p>We've sent a code to</p>
-          <h1 className="text-corigreen-500 font-semibold text-2xl">example@gmail.com</h1>
+          <h1 className="text-corigreen-500 font-semibold text-2xl">
+            {userData.email}
+          </h1>
         </div>
-        <Form form={form} layout="vertical" variant="filled" className="flex flex-col w-full">
+        <Form
+          form={form}
+          layout="vertical"
+          variant="filled"
+          className="flex flex-col w-full"
+        >
           <Form.Item
             name="vericode"
             label="Verification Code"
@@ -84,9 +135,15 @@ function VeriCodeForm({ showLoginScreen }: { showLoginScreen: () => void }) {
           >
             <Input.OTP size="large" length={6} style={{ width: "100%" }} />
           </Form.Item>
-          <CoriBtn type="submit" style="black" className="mt-2">
+          <CoriBtn
+            type="submit"
+            style="black"
+            className="mt-2"
+            onClick={handleSubmit}
+          >
             Submit
           </CoriBtn>
+
           {/* Disable button for 60 seconds */}
           <CoriBtn
             secondary
@@ -94,7 +151,9 @@ function VeriCodeForm({ showLoginScreen }: { showLoginScreen: () => void }) {
             disabled={isResendDisabled}
             onClick={handleResendCode}
           >
-            {isResendDisabled ? `Resend Code (${resendDisabledTime}s)` : "Resend Code"}
+            {isResendDisabled
+              ? `Resend Code (${resendDisabledTime}s)`
+              : "Resend Code"}
           </CoriBtn>
           {/* TODO: Delete this button later */}
           {isResendDisabled && (
@@ -111,7 +170,9 @@ function VeriCodeForm({ showLoginScreen }: { showLoginScreen: () => void }) {
               >
                 Skip Wait
               </CoriBtn>
-              <p className="mt-2 text-zinc-500">Delete this skip button later</p>
+              <p className="mt-2 text-zinc-500">
+                Delete this skip button later
+              </p>
             </>
           )}
         </Form>

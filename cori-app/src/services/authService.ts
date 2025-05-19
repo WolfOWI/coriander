@@ -12,7 +12,7 @@ export interface CurrentUserDTO {
   userId: number;
   fullName: string;
   email: string;
-  role: string;
+  role: number;
   isLinked: boolean;
   employeeId?: number;
   adminId?: number;
@@ -20,17 +20,27 @@ export interface CurrentUserDTO {
   isVerified: boolean;
 }
 
+interface RegisterVerifiedDTO {
+  FullName: string;
+  Email: string;
+  Password: string;
+  code: string;
+  role: number;
+  profileImage?: File;
+}
+
 // Sign Up Functions ----------------------------------------------------------------------------
 
 // Email Sign ups
 // requestEmailVerification
 export async function requestEmailVerification(input: {
-  email: string;
   fullName: string;
+  email: string;
 }): Promise<AuthResult> {
   try {
-    const res = await api.post("/Auth/request-verification", input, {
-      withCredentials: true,
+    const res = await api.post("/Auth/request-verification", {
+      fullName: input.fullName,
+      email: input.email,
     });
 
     return {
@@ -39,42 +49,59 @@ export async function requestEmailVerification(input: {
     };
   } catch (err: any) {
     const code = err?.response?.status || 500;
-    const message = err?.response?.data || "Verification request failed";
+    const message =
+      err?.response?.data || "Verification request failed (Bad Request)";
     return { errorCode: code, message };
   }
 }
 
-// employeeSignup2FA
 export async function employeeSignup2FA(form: {
-  email: string;
   fullName: string;
+  email: string;
   password: string;
   code: string;
   profileImage?: File;
 }): Promise<AuthResult> {
-  try {
-    const formData = new FormData();
-    formData.append("Email", form.email);
-    formData.append("FullName", form.fullName);
-    formData.append("Password", form.password);
-    formData.append("Code", form.code);
-    formData.append("Role", "1"); // 1 = Employee
-    if (form.profileImage) {
-      formData.append("ProfileImage", form.profileImage);
-    }
+  const fd = new FormData();
 
-    const res = await api.post("/Auth/register-verified", formData, {
-      withCredentials: true,
-    });
+  // ✅ IMPORTANT: Match the PascalCase DTO fields
+  fd.append("FullName", form.fullName);
+  fd.append("Email", form.email);
+  fd.append("Password", form.password);
+  fd.append("Code", form.code);
+  fd.append("Role", "1"); // Employee = 1 (as per your enum)
+
+  if (form.profileImage) {
+    fd.append("ProfileImage", form.profileImage);
+  }
+
+  // Debug the actual form data being sent
+  console.log("📦 employeeSignup2FA → FormData Preview:");
+  fd.forEach((value, key) => {
+    console.log(`→ ${key}:`, value);
+  });
+
+  try {
+    const res = await fetch(
+      "http://localhost:5121/api/Auth/register-verified",
+      {
+        method: "POST",
+        body: fd,
+      }
+    );
+
+    const data = await res.json();
 
     return {
       errorCode: res.status,
-      message: res.data || "Employee account created",
+      message: data.message || "Employee account created",
     };
   } catch (err: any) {
-    const code = err?.response?.status || 500;
-    const message = err?.response?.data || "Employee signup failed";
-    return { errorCode: code, message };
+    console.error("❌ employeeSignup2FA → Fetch error:", err);
+    return {
+      errorCode: 500,
+      message: "Something went wrong during employee registration",
+    };
   }
 }
 
