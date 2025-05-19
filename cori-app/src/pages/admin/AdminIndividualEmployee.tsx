@@ -17,9 +17,10 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import EquipmentListItem from "../../components/equipment/EquipmentListItem";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
-import PerfReviewBox from "../../components/performanceReview/PerfReviewBox";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
+import ProfilePicUploadBtn from "../../components/uploading/ProfilePicUploadBtn";
+import EmpGatheringBox from "../../components/gathering/EmpGatheringBox";
 
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
@@ -28,7 +29,6 @@ import AssignEmpToOneOrManyEquipsModal from "../../components/modals/AssignEmpTo
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
-import UploadProfilePictureModal from "../../components/modals/UploadProfilePictureModal";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
@@ -47,12 +47,12 @@ import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 import { getFullImageUrl } from "../../utils/imageUtils";
 
 // Types / Interfaces
-import { EmployType, EquipmentCondition, Gender, PayCycle, ReviewStatus } from "../../types/common";
+import { Gender, PayCycle } from "../../types/common";
 import { EmpUser } from "../../interfaces/people/empUser";
 import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
-import { PerformanceReview } from "../../interfaces/performance_reviews/performanceReview";
 import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetrics";
 import { Equipment } from "../../interfaces/equipment/equipment";
+import { Gathering } from "../../interfaces/gathering/gathering";
 
 // Admin Employee Details Page Response Interface
 interface AdminEmpDetailsResponse {
@@ -64,8 +64,8 @@ interface AdminEmpDetailsResponse {
     $values: LeaveBalance[];
   };
   empUserRatingMetrics: EmpUserRatingMetrics;
-  performanceReviews: {
-    $values: PerformanceReview[];
+  gatherings: {
+    $values: Gathering[];
   };
 }
 
@@ -83,7 +83,7 @@ const AdminIndividualEmployee: React.FC = () => {
   const [empUserRatingMetrics, setEmpUserRatingMetrics] = useState<EmpUserRatingMetrics | null>(
     null
   );
-  const [performanceReviews, setPerformanceReviews] = useState<PerformanceReview[]>([]);
+  const [gatherings, setGatherings] = useState<Gathering[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextPayDay, setNextPayDay] = useState<string | null>(null);
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
@@ -96,7 +96,6 @@ const AdminIndividualEmployee: React.FC = () => {
   const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
   const [showUnlinkEquipmentModal, setShowUnlinkEquipmentModal] = useState(false);
   const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
-  const [showUploadPictureModal, setShowUploadPictureModal] = useState(false);
 
   // Message System
   const [messageApi, ContextHolder] = message.useMessage();
@@ -113,7 +112,7 @@ const AdminIndividualEmployee: React.FC = () => {
         // TODO Set leave balances in a specific order
         setLeaveBalances(data.leaveBalances.$values);
         setEmpUserRatingMetrics(data.empUserRatingMetrics);
-        setPerformanceReviews(data.performanceReviews.$values);
+        setGatherings(data.gatherings.$values);
       } else {
         // If no ID provided, redirect to employee management page
         navigate("/admin/employees");
@@ -222,15 +221,6 @@ const AdminIndividualEmployee: React.FC = () => {
 
   // Pay employee (set last paid as today)
   const onPayNow = async () => {
-    // // Check if the next pay day is in the future
-    // if (dayjs(formattedNextPayDay).isAfter(dayjs())) {
-    //   messageApi.error({
-    //     content: "You can't set the last paid date to a date in the future",
-    //     duration: 8,
-    //   });
-    //   return;
-    // }
-
     // Update the last paid date
     try {
       // There must be an employee ID
@@ -249,10 +239,14 @@ const AdminIndividualEmployee: React.FC = () => {
     }
   };
 
-  // Handle profile picture edit click
-  const handleProfilePictureEdit = () => {
-    if (empUser?.googleId === null) {
-      setShowUploadPictureModal(true);
+  const handleProfilePicUploadSuccess = async (url: string) => {
+    // console.log("Profile picture URL:", url);
+    if (employeeId) {
+      const response = await empUserAPI.updateEmpUserById(employeeId, { profilePicture: url });
+
+      // wait before refreshing data
+      await response.data;
+      fetchEmployee();
     }
   };
 
@@ -265,7 +259,9 @@ const AdminIndividualEmployee: React.FC = () => {
   if (!empUser)
     return (
       <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
-        <h2 className="text-zinc-900 font-bold text-3xl text-center">Employee Not Found</h2>
+        <h2 className="text-zinc-900 font-bold text-3xl text-center">
+          Employee Details Couldn't Be Loaded
+        </h2>
       </div>
     );
 
@@ -314,12 +310,11 @@ const AdminIndividualEmployee: React.FC = () => {
                       className="bg-warmstone-600 h-24 w-24 rounded-full object-cover border-2 border-zinc-700"
                     />
                   )}
-                  {/* If user is not a google user */}
+                  {/* If not google user */}
                   {empUser.googleId === null && (
-                    <CoriCircleBtn
-                      icon={<Icons.Edit />}
+                    <ProfilePicUploadBtn
+                      onUploadSuccess={handleProfilePicUploadSuccess}
                       className="absolute bottom-0 right-0"
-                      onClick={handleProfilePictureEdit}
                     />
                   )}
                 </div>
@@ -545,6 +540,7 @@ const AdminIndividualEmployee: React.FC = () => {
                       remainingDays={balance.remainingDays}
                       totalDays={balance.defaultDays}
                       description={balance.description}
+                      width={136}
                     />
                   ))}
                 </div>
@@ -594,15 +590,15 @@ const AdminIndividualEmployee: React.FC = () => {
                   </div>
                 </div>
                 <div className="w-full flex flex-col items-center gap-2">
-                  <h2 className="text-zinc-500 font-semibold">Performance Reviews</h2>
+                  <h2 className="text-zinc-500 font-semibold">Meetings</h2>
                   {/* TODO Possibly create a performance review here? */}
                   <div className="w-full h-[580px] overflow-y-auto gap-4 flex flex-col rounded-2xl relative scrollbar-hide [&::-webkit-scrollbar]:hidden">
-                    {performanceReviews.map((review) => (
-                      <PerfReviewBox key={review.reviewId} review={review} showPerson={true} />
+                    {gatherings.map((gathering) => (
+                      <EmpGatheringBox key={gathering.$id} gathering={gathering} />
                     ))}
-                    {performanceReviews.length === 0 && (
+                    {gatherings.length === 0 && (
                       <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-3">
-                        <p className="text-zinc-500 text-center">No Performance Reviews Yet</p>
+                        <p className="text-zinc-500 text-center">No Meetings Yet</p>
                       </div>
                     )}
                     {/* Empty Spacer Overlay (for fade out effect) */}
@@ -675,14 +671,6 @@ const AdminIndividualEmployee: React.FC = () => {
           setShowModal={setShowTerminateEmployeeModal}
           employeeFullName={empUser?.fullName || "this employee"}
           employeeId={employeeId || ""}
-        />
-
-        {/* Profile Picture Modal */}
-        <UploadProfilePictureModal
-          showModal={showUploadPictureModal}
-          setShowModal={setShowUploadPictureModal}
-          empUser={empUser}
-          onUploadSuccess={fetchEmployee}
         />
       </div>
     </div>

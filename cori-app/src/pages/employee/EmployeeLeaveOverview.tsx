@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LeaveStatus } from "../../types/common";
+import { pageAPI } from "../../services/api.service";
 
 // Icons
 import { ClockCircleOutlined } from "@ant-design/icons";
@@ -24,6 +25,27 @@ const getLeaveIcon = (type: string) => {
 };
 
 const EmployeeLeaveOverview: React.FC = () => {
+
+  // Page data fetching
+  const [pageData, setPageData] = useState<any>(null);
+  const fetchPageData = async () => {
+    try {
+      const response = await pageAPI.getEmployeeLeaveData("8");
+      setPageData(response.data);
+    } catch (error) {
+      console.error("Error fetching page data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchPageData();
+  }, []);
+  useEffect(() => {
+    if (pageData) {
+      console.log("Page Data:", pageData);
+    }
+  }
+  , [pageData]);
+
   type TabOption = "All" | "Approved" | "Pending" | "Rejected";
   const [activeTab, setActiveTab] = useState<TabOption>("All");
 

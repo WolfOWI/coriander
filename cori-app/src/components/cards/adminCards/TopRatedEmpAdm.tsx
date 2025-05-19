@@ -3,13 +3,16 @@ import React from "react";
 import CoriBadge from "../../../components/badges/CoriBadge";
 import { Icons } from "../../../constants/icons";
 import { getFullImageUrl } from "../../../utils/imageUtils";
+import EmployTypeBadge from "../../../components/badges/EmployTypeBadge";
+import { EmployType } from "../../../types/common";
 
 interface TopRatedEmployee {
   profilePicture: string; // Optional, if you want to use a different image
   fullName: string;
   jobTitle: string;
   averageRating: number;
-  employType: string; // Example: "Full Time", "Part Time", etc.
+  employType: string;
+  isSuspended: boolean;
 }
 
 const TopRatedEmpCard: React.FC<TopRatedEmployee> = ({
@@ -18,6 +21,7 @@ const TopRatedEmpCard: React.FC<TopRatedEmployee> = ({
   averageRating,
   employType,
   profilePicture,
+  isSuspended
 }) => {
   return (
     <div className="p-1">
@@ -31,7 +35,11 @@ const TopRatedEmpCard: React.FC<TopRatedEmployee> = ({
           <span className="text-zinc-900 text-md">{fullName}</span>
           <span className="text-zinc-500 text-xs">{jobTitle}</span>
         </div>
-        <CoriBadge size="small" text="Part Time"></CoriBadge>
+        <div className="w-fit">
+          <div className="w-fit">
+            <EmployTypeBadge status={isSuspended ? "suspended" : employType as unknown as EmployType} />
+          </div>
+         </div>
         <span className="text-zinc-900">⭐ {averageRating.toFixed(1)}</span>
       </div>
     </div>

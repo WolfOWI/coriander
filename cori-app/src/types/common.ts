@@ -56,17 +56,30 @@ export enum ReviewStatus {
   Completed = 2,
 }
 
-/**
- * User Role enum matching the backend values
- */
+// User Role enum matching the backend values
 export enum UserRole {
   Unassigned = 0,
   Employee = 1,
   Admin = 2,
 }
 
+// Leave Status enum matching the backend values
 export enum LeaveStatus {
   Pending = 0,
   Approved = 1,
   Rejected = 2,
+}
+
+// Gathering Type enum matching the backend values
+export enum GatheringType {
+  PerformanceReview = 1,
+  Meeting = 2,
+}
+
+// Meet Status enum matching the backend values
+export enum MeetStatus {
+  Requested = 1,
+  Upcoming = 2,
+  Rejected = 3,
+  Completed = 4,
 }

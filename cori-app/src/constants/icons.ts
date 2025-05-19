@@ -1,53 +1,60 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import WorkIcon from "@mui/icons-material/Work";
-import EmailIcon from "@mui/icons-material/Email";
-import FemaleIcon from "@mui/icons-material/Female";
-import CakeIcon from "@mui/icons-material/Cake";
-import PhoneIcon from "@mui/icons-material/PhoneAndroid";
-import AssistantPhotoIcon from "@mui/icons-material/AssistantPhoto";
-import PayIcon from "@mui/icons-material/Payments";
-import UndoIcon from "@mui/icons-material/Undo";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
+import ArrowBackIcon from "@mui/icons-material/ArrowBackRounded";
+import WorkIcon from "@mui/icons-material/WorkRounded";
+import EmailIcon from "@mui/icons-material/EmailRounded";
+import FemaleIcon from "@mui/icons-material/FemaleRounded";
+import CakeIcon from "@mui/icons-material/CakeRounded";
+import PhoneIcon from "@mui/icons-material/PhoneAndroidRounded";
+import AssistantPhotoIcon from "@mui/icons-material/AssistantPhotoRounded";
+import PayIcon from "@mui/icons-material/PaymentsRounded";
+import UndoIcon from "@mui/icons-material/UndoRounded";
+import AddIcon from "@mui/icons-material/AddRounded";
+import EditIcon from "@mui/icons-material/EditRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
-import MaleIcon from "@mui/icons-material/Male";
-import TransgenderIcon from "@mui/icons-material/Transgender";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import WatchLaterIcon from "@mui/icons-material/WatchLater";
-import CorporateFareIcon from "@mui/icons-material/CorporateFare";
-import ScheduleIcon from "@mui/icons-material/Schedule";
-import BadgeIcon from "@mui/icons-material/Badge";
+import MaleIcon from "@mui/icons-material/MaleRounded";
+import TransgenderIcon from "@mui/icons-material/TransgenderRounded";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAltRounded";
+import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAltRounded";
+import CheckCircleIcon from "@mui/icons-material/CheckCircleRounded";
+import WatchLaterIcon from "@mui/icons-material/WatchLaterRounded";
+import CorporateFareIcon from "@mui/icons-material/CorporateFareRounded";
+import ScheduleIcon from "@mui/icons-material/ScheduleRounded";
+import BadgeIcon from "@mui/icons-material/BadgeRounded";
 import GoogleIcon from "@mui/icons-material/Google";
-import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
-import ConstructionIcon from "@mui/icons-material/Construction";
-import ErrorIcon from "@mui/icons-material/Error";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import CheckIcon from "@mui/icons-material/Check";
-import TabletIcon from "@mui/icons-material/TabletAndroid";
-import LaptopIcon from "@mui/icons-material/Laptop";
-import MonitorIcon from "@mui/icons-material/Monitor";
-import HeadsetIcon from "@mui/icons-material/Headset";
-import KeyboardIcon from "@mui/icons-material/Keyboard";
-import DeviceUnknownIcon from "@mui/icons-material/DeviceUnknown";
+import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalkRounded";
+import ConstructionIcon from "@mui/icons-material/ConstructionRounded";
+import ErrorIcon from "@mui/icons-material/ErrorRounded";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUncheckedRounded";
+import CheckIcon from "@mui/icons-material/CheckRounded";
+import TabletIcon from "@mui/icons-material/TabletAndroidRounded";
+import LaptopIcon from "@mui/icons-material/LaptopRounded";
+import MonitorIcon from "@mui/icons-material/MonitorRounded";
+import HeadsetIcon from "@mui/icons-material/HeadsetRounded";
+import KeyboardIcon from "@mui/icons-material/KeyboardRounded";
+import DeviceUnknownIcon from "@mui/icons-material/DeviceUnknownRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import DeleteIcon from "@mui/icons-material/Delete";
-import PersonPinIcon from "@mui/icons-material/PersonPin";
-import PersonIcon from "@mui/icons-material/Person";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import PersonOffIcon from "@mui/icons-material/PersonOff";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import DeleteIcon from "@mui/icons-material/DeleteRounded";
+import PersonPinIcon from "@mui/icons-material/PersonPinRounded";
+import PersonIcon from "@mui/icons-material/PersonRounded";
+import PersonAddIcon from "@mui/icons-material/PersonAddRounded";
+import PersonOffIcon from "@mui/icons-material/PersonOffRounded";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesomeRounded";
 import WarningIcon from "@mui/icons-material/WarningRounded";
-import LinkOffIcon from "@mui/icons-material/LinkOff";
-import UploadIcon from "@mui/icons-material/Upload";
-import LogoutIcon from "@mui/icons-material/Logout";
-import BeachAccessIcon from "@mui/icons-material/BeachAccess";
-import SickIcon from "@mui/icons-material/Sick";
-import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
-import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
+import LinkOffIcon from "@mui/icons-material/LinkOffRounded";
+import UploadIcon from "@mui/icons-material/UploadRounded";
+import LogoutIcon from "@mui/icons-material/LogoutRounded";
+import BeachAccessIcon from "@mui/icons-material/BeachAccessRounded";
+import SickIcon from "@mui/icons-material/SickRounded";
+import ChildFriendlyIcon from "@mui/icons-material/ChildFriendlyRounded";
+import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroomRounded";
+import MenuBookIcon from "@mui/icons-material/MenuBookRounded";
+import HeartBrokenIcon from "@mui/icons-material/HeartBrokenRounded";
+import DownloadIcon from "@mui/icons-material/DownloadRounded";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoomRounded";
+import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnreadRounded";
+import LanguageIcon from "@mui/icons-material/LanguageRounded";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeopleRounded";
+import ChatIcon from "@mui/icons-material/ChatRounded";
+import TextSnippetIcon from "@mui/icons-material/TextSnippetRounded";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -100,4 +107,11 @@ export const Icons = {
   FamilyRestroom: FamilyRestroomIcon,
   MenuBook: MenuBookIcon,
   HeartBroken: HeartBrokenIcon,
+  Download: DownloadIcon,
+  MeetingRoom: MeetingRoomIcon,
+  MarkChatUnread: MarkChatUnreadIcon,
+  Language: LanguageIcon,
+  EmojiPeople: EmojiPeopleIcon,
+  Chat: ChatIcon,
+  TextSnippet: TextSnippetIcon,
 };

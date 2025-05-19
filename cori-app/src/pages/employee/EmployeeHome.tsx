@@ -2,26 +2,29 @@ import { Container, Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import GaugeComponent from "react-gauge-component";
 import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
-import { empUserAPI, pageAPI, employeeAPI } from "../../services/api.service";
+import { gatheringAPI, pageAPI } from "../../services/api.service";
 import { EmpUser } from "../../interfaces/people/empUser";
 import { formatRandAmount } from "../../utils/formatUtils";
-import { DatePicker } from "antd";
 import dayjs from "dayjs";
-import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
-import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 import { Icons } from "../../constants/icons";
+import { calculateNextPayDay } from "../../utils/dateUtils";
+import { generatePayrollPDF } from "../../utils/pdfUtils";
+import { Gender, PayCycle } from "../../types/common";
 
-import { useParams } from "react-router-dom"; // ✅ Needed for employeeId
-import { Spin } from "antd"; // ✅ Used in loading state
+import { useParams } from "react-router-dom"; 
+import { Spin } from "antd";
+import EmpGatheringBox from "../../components/gathering/EmpGatheringBox";
 
 
 const EmployeeHome: React.FC = () => {
-  const { employeeId = "11" } = useParams();
+  const { employeeId = "8" } = useParams();
 
 
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [leaveBalances, setLeaveBalances] = useState<any>(null); // 
   const [empUserRatingMetrics, setEmpUserRatingMetrics] = useState<any>(null); // Replace with actual type if availableReplace with actual type if available
+  const [nextPayDay, setNextPayDay] = useState<string | null>(null);
+  const [gatherings, setGatherings] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(true);
   
@@ -48,6 +51,18 @@ const EmployeeHome: React.FC = () => {
     fetchEmployeeData();
   }, [employeeId]);
 
+  useEffect(() => {
+  const fetchGatherings = async () => {
+    try {
+      const response = await gatheringAPI.getAllGatheringsByEmpId(Number(employeeId));
+      setGatherings(response.data.$values || []);
+    } catch (err) {
+      setGatherings([]);
+    }
+  };
+  fetchGatherings();
+}, [employeeId]);
+
   //For the Quote of the day
   const [quote, setQuote] = useState<string>(""); 
   const [quoteAuthor, setQuoteAuthor] = useState<string>("");
@@ -55,19 +70,52 @@ const EmployeeHome: React.FC = () => {
   useEffect(() => {
     const fetchQuote = async () => {
       try {
-        const response = await fetch("https://api.quotable.io/random");
+        const cachedQuote = localStorage.getItem("dailyQuote");
+        const cachedDate = localStorage.getItem("dailyQuoteDate");
+        const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'
+
+        if (cachedQuote && cachedDate === today) {
+          const { quote, author } = JSON.parse(cachedQuote);
+          setQuote(quote);
+          setQuoteAuthor(author);
+          return;
+        }
+
+        const response = await fetch("https://api.api-ninjas.com/v1/quotes", {
+          headers: {
+            "X-Api-Key": "/cP8Aq3lAI2uPIG9ePOHQg==8nCa4YBBLaFwGjYQ", // 🔐 Replace with your real key
+          },
+        });
+
         const data = await response.json();
-        setQuote(data.content);
-        setQuoteAuthor(data.author);
+        const randomQuote = data[0];
+
+        if (randomQuote) {
+          setQuote(randomQuote.quote);
+          setQuoteAuthor(randomQuote.author);
+          localStorage.setItem(
+            "dailyQuote",
+            JSON.stringify({ quote: randomQuote.quote, author: randomQuote.author })
+          );
+          localStorage.setItem("dailyQuoteDate", today);
+        }
       } catch (error) {
         console.error("Failed to fetch quote:", error);
-        setQuote("Stay positive and keep moving forward."); // fallback quote
+        setQuote("Stay positive and keep moving forward.");
         setQuoteAuthor("Unknown");
       }
     };
-  
+
     fetchQuote();
   }, []);
+
+  useEffect(() => {
+    if (empUser) {
+      // Use lastPaidDate if available, otherwise use employDate
+      const baseDate = empUser.lastPaidDate || empUser.employDate;
+      setNextPayDay(calculateNextPayDay(empUser.payCycle, baseDate));
+    }
+  }, [empUser]);
   
 
   if (loading)
@@ -100,12 +148,12 @@ const EmployeeHome: React.FC = () => {
               <Col xs={12} md={5}>
                   <div className="text-zinc-500 font-semibold text-center mb-2">Your Ratings</div>
                     <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow">
-                      <div className="w-full flex flex-col gap-2 items-center">
+                      <div className="w-full py-4 flex flex-col gap-2 items-center">
                       <GaugeComponent
                         minValue={0}
                         maxValue={500}
                         value={empUserRatingMetrics ? empUserRatingMetrics.averageRating * 100 : 0}
-                        type="radial"
+                        type="semicircle"
                         labels={{
                           valueLabel: {
                             formatTextValue: (value) => `${(Number(value) / 100).toFixed(2)}`,
@@ -146,7 +194,7 @@ const EmployeeHome: React.FC = () => {
               <Col xs={12} md={7}>
                   <div className="text-zinc-500 font-semibold text-center mb-2">Your Remaining Leave</div>
                     <div className="bg-red flex flex-col items-center">
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-3">
                         {leaveBalances?.map((balance: any) => (
                             <LeaveBalanceBlock
                               key={balance.leaveBalanceId}
@@ -154,6 +202,8 @@ const EmployeeHome: React.FC = () => {
                               remainingDays={balance.remainingDays}
                               totalDays={balance.defaultDays}
                               description={balance.description}
+                              width={148}
+                              shadow
                             />
                           ))}
                         </div>
@@ -170,59 +220,41 @@ const EmployeeHome: React.FC = () => {
                         <p className="text-zinc-500 text-sm mb-1">Salary</p>
                         <div className="flex flex-col items-center p-3 bg-warmstone-200 w-full rounded-2xl">
                           <p className="text-zinc-900 text-xl">{formatRandAmount(empUser.salaryAmount)}</p>
-                          <p className="text-zinc-500 text-sm"> monthly
-                            {/* {empUser.payCycle === PayCycle.Monthly
+                          <p className="text-zinc-500 text-sm">
+                            {empUser.payCycle === PayCycle.Monthly
                               ? "monthly"
                               : empUser.payCycle === PayCycle.BiWeekly
                               ? "bi-weekly"
-                              : "weekly"} */}
+                              : "weekly"}
                           </p>
                         </div>
                         <div className="flex w-full mt-2 gap-2 h-fit">
                           <div className="flex flex-col w-1/2 items-center">
                             <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
-                            <div className="flex justify-center items-center gap-2 p-3 bg-warmstone-200 rounded-2xl h-full">
-                              <DatePicker
-                                // value={dayjs(empUser.lastPaidDate)}
-                                format="DD MMM YYYY"
-                                suffixIcon={<CoriCircleBtn style="black" icon={<Icons.Edit />} />}
-                                allowClear={false}
-                                variant="borderless"
-                                className="hover:cursor-pointer"
-                                // onChange={(date) => updateLastPaidDate(date?.format("YYYY-MM-DD") || "")}
-                                // Only allow dates after the employee's employment date and before today
-                                // minDate={dayjs(empUser.employDate)}
-                                maxDate={dayjs()}
-                              />
+                            <div className="flex justify-center items-center gap-2 p-3 bg-warmstone-200 rounded-2xl h-full w-full">
+                              <p className="text-zinc-900">
+                                {empUser.lastPaidDate ? dayjs(empUser.lastPaidDate).format("DD/MM/YYYY") : "N/A"}
+                              </p>
                             </div>
                           </div>
                           <div className="flex flex-col w-1/2 items-center">
                             <p className="text-zinc-500 text-sm mb-1">Next Pay Day</p>
                             <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                                <p className="text-zinc-900">Date here: 00/00/0000</p>
-                                {/* <TimeTodayBadge /> */}
+                                <p className="text-zinc-900">
+                                  {nextPayDay ? dayjs(nextPayDay).format("DD/MM/YYYY") : "N/A"}
+                                </p>
                               </div>
-                            {/* {nextPayDay && (
-                              <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                                <p className="text-zinc-900">{nextPayDay}</p>
-                                <TimeTodayBadge date={nextPayDay} />
-                              </div>
-                            )} */}
                           </div>
                           <div className="flex flex-col w-1/2 items-center">
                             <p className="text-transparent text-sm mb-1">..</p>
-                            <div className="flex justify-center items-center gap-2 p-4  hover:bg-corigreen-200 border-2 border-corigreen-500 rounded-2xl w-full">
-                              <div className="flex items-center">
-                                <Icons.Upload className="text-corigreen-600" />
-                                <p className="text-corigreen-600 font-medium text-sm">Export Payroll</p>
-                              </div>
+                            <div
+                              className="flex justify-center items-center gap-2 p-4 hover:bg-corigreen-200 border-2 border-corigreen-500 rounded-2xl w-full cursor-pointer"
+                              onClick={() => empUser && generatePayrollPDF(empUser)}
+                              style={{ minHeight: 48 }}
+                            >
+                              <Icons.Upload className="text-corigreen-600" />
+                              <p className="text-corigreen-600 font-medium text-sm">Export Payroll</p>
                             </div>
-                            {/* {nextPayDay && (
-                              <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                                <p className="text-zinc-900">{nextPayDay}</p>
-                                <TimeTodayBadge date={nextPayDay} />
-                              </div>
-                            )} */}
                           </div>
                         </div>
                       </div>
@@ -232,9 +264,10 @@ const EmployeeHome: React.FC = () => {
             </Row>
             <Row className="g-3 pt-4 mb-4">
               <Col xs={12} md={12}>
-                    <div className="bg-corigreen-500 p-4 rounded-2xl shadow justify-center flex items-center text-white text-center"> 
-                      {quote} - "{quoteAuthor}"
-                    </div>
+              <div className='bg-corigreen-500 p-4 rounded-2xl shadow justify-center text-white text-center'>
+                <p>"{quote}"</p>
+                <p className="italic"> - {quoteAuthor}</p>
+              </div>
               </Col>
             </Row>
           </Col>
@@ -242,14 +275,10 @@ const EmployeeHome: React.FC = () => {
           <Col md={4}>
             <Col xs={12} md={12}>
                 <div className="text-zinc-500 font-semibold text-center mb-2">Performance Reviews</div>
-                  <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow mb-3">
-                    Chart here
-                  </div>
-                  <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow mb-3">
-                    Chart here
-                  </div>
-                  <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow">
-                    Chart here
+                  <div className="grid gap-3">
+                    {gatherings.map((gathering) => (
+                      <EmpGatheringBox key={gathering.id} gathering={gathering} />
+                    ))}
                   </div>
             </Col>
           </Col>

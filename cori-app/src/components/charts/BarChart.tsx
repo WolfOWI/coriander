@@ -16,7 +16,10 @@ import { BarChart } from "@mui/x-charts/BarChart";
     }
 
   // Transform the empUserRatingMetrics data into chartData
-  const labels = empUserRatingMetrics.map((emp) => emp.fullName);
+  const labels = empUserRatingMetrics.map((emp) => {
+    const [firstName, ...rest] = emp.fullName.split(" ");
+    return [firstName, rest.join(" ")].join("\n");
+  });
   const chartData = {
     labels,
     series: [
@@ -32,6 +35,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
   };
 
   return (
+    <div style={{marginLeft: -40}}>
     <BarChart
       xAxis={[
         {
@@ -44,7 +48,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
         ...s,
         color: i === 0 ? "#CEDBC0" : "#88A764", // Light green and darker green
       }))}
-      width={380}
+      width={440}
       height={260}
       sx={{
         "& .MuiBarElement-root": {
@@ -52,6 +56,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
         },
       }}
     />
+    </div>
   );
 };
 

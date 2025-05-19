@@ -190,7 +190,16 @@ export const pageAPI = {
    * getAdminDashboardData - Fetches data for the admin dashboard
    * @returns Promise containing the API response
    */
-  getAdminDashboardData: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-dashboard"),
+  getAdminDashboardData: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Page/admin-dashboard/${adminId}`),
+
+  /**
+   * getEmployeeLeaveData - Fetches data for the employeeLeaveOverview
+   * @returns Promise containing the API response
+   */
+  getEmployeeLeaveData: (id: string): Promise<AxiosResponse> =>
+    apiClient.get(`/Page/employee-leave-overview/${id}`),
+  
 };
 
 // EQUIPMENT API
@@ -263,7 +272,8 @@ export const equipmentAPI = {
 
 // ------------------------------------------------------------
 
-// Add a lightweight health check endpoint
+// HEALTH CHECK API
+// ------------------------------------------------------------
 export const healthCheckAPI = {
   /**
    * Simple health check that makes a GET request to the health endpoint
@@ -289,91 +299,206 @@ export const healthCheckAPI = {
       });
   },
 };
-
-// IMAGE API
 // ------------------------------------------------------------
-export const imageAPI = {
-  /**
-   * Uploads a general image file to the server
-   * @param file - The file to upload
-   * @returns Promise containing the API response with the image URL
-   */
-  upload: async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
 
-    const { data } = await apiClient.post("/Image/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    if (!data.imageUrl) {
-      throw new Error("No image URL returned from server");
-    }
-
-    // Remove any leading slash and 'uploads' if present
-    const fileName = data.imageUrl.replace(/^\//, "").replace(/^uploads\//, "");
-    // Return just the relative path
-    return `/uploads/${fileName}`;
-  },
-
-  /**
-   * Updates a user's profile picture by uploading a new file and updating the user's profilePicture field
-   * @param userId - The ID of the user
-   * @param file - The new profile picture file
-   * @returns Promise containing the API response with the image URL
-   */
-  updateProfilePicture: async (userId: number, file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const { data } = await apiClient.post(`/Image/profile-picture/${userId}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    if (!data.imageUrl) {
-      throw new Error("No image URL returned from server");
-    }
-
-    return data.imageUrl;
-  },
-
-  /**
-   * Removes a user's profile picture by deleting the file and setting the user's profilePicture field to null
-   * @param userId - The ID of the user
-   * @returns Promise containing the API response
-   */
-  removeProfilePicture: async (userId: number): Promise<void> => {
-    await apiClient.delete(`/Image/profile-picture/${userId}`);
-  },
-};
+// EMPLOYEE LEAVE REQUESTS API
 // ------------------------------------------------------------
-/* EmpLeaveRequests API */
 export const empLeaveRequestsAPI = {
   /**
    * Fetches all pending leave requests
    * @returns Promise containing the API response
    */
   getPendingLeaveRequests: (): Promise<AxiosResponse> =>
-    apiClient.get('/EmpLeaveRequest/GetAllPending'),
+    apiClient.get("/EmpLeaveRequest/GetAllPending"),
 
-    /**
+  /**
    * Fetches all approved leave requests
    * @returns Promise containing the API response
    */
-    getApprovedLeaveRequests: (): Promise<AxiosResponse> =>
-      apiClient.get('/EmpLeaveRequest/GetAllApproved'),
+  getApprovedLeaveRequests: (): Promise<AxiosResponse> =>
+    apiClient.get("/EmpLeaveRequest/GetAllApproved"),
 
-      /**
+  /**
    * Fetches all rejected leave requests
    * @returns Promise containing the API response
    */
   getRejectedLeaveRequests: (): Promise<AxiosResponse> =>
-    apiClient.get('/EmpLeaveRequest/GetAllRejected'),
-}
+    apiClient.get("/EmpLeaveRequest/GetAllRejected"),
+};
+
+// PERFORMANCE REVIEW API
+// ------------------------------------------------------------
+export const performanceReviewsAPI = {
+  /**
+   * Fetches all performance reviews for a specific employee
+   * @param empId - The employee's ID
+   * @returns Promise containing the API response
+   */
+
+  /**
+   * Creates a new performance review for an employee
+   * @param empId - The employee's ID
+   * @param data - The performance review data
+   * @returns Promise containing the API response
+   */
+  CreatePerformanceReview: (data: object): Promise<AxiosResponse> =>
+    apiClient.post(`/PerformanceReview/CreatePerformanceReview`, data),
+
+  /**
+   * Gets all upcoming performance reviews
+   */
+  GetAllUpcomingPrm: (): Promise<AxiosResponse> =>
+    apiClient.get("/PerformanceReview/GetAllUpcomingPrm"),
+
+  /**
+   * Gets all upcoming performance reviews for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllUpcomingPrmByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/PerformanceReview/GetAllUpcomingPrmByAdminId/${adminId}`),
+
+  /**
+   * Updates an existing performance review by its ID
+   * @param id - The performance review's ID
+   * @param data - The updated performance review data
+   * @returns Promise containing the API response
+   */
+  UpdatePerformanceReview: (id: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/PerformanceReview/UpdatePerformanceReview/${id}`, data),
+};
+// ------------------------------------------------------------
+
+// MEETING API
+// ------------------------------------------------------------
+export const meetingAPI = {
+  /**
+   * Fetches all meeting requests (meetings with either rejected or requested status) for a specific employee
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAllRequestsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Meeting/GetAllRequestsByEmpId/${employeeId}`),
+
+  /**
+   * Fetches all upcoming meetings for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllUpcomingByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Meeting/GetAllUpcomingByAdminId/${adminId}`),
+
+  /**
+   * Creates a new meeting request (done by an employee)
+   * @param data - The meeting request data
+   * @returns Promise containing the API response
+   */
+  createMeetingRequest: (data: object): Promise<AxiosResponse> =>
+    apiClient.post(`/Meeting/CreateRequest`, data),
+
+  /**
+   * Confirms and schedules a meeting request (done by an admin) and "creates" (updates) a meeting
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  confirmAndScheduleMeeting: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/ConfirmAndSchedule/${meetingId}`),
+
+  /**
+   * An admin updates a meeting's details by its ID
+   * @param meetingId - The meeting's ID
+   * @param data - The updated meeting request data
+   * @returns Promise containing the API response
+   */
+  updateMeeting: (meetingId: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/Update/${meetingId}`, data),
+
+  /**
+   * An employee update a meeting request by its ID
+   * @param meetingId - The meeting's ID
+   * @param data - The updated meeting request data
+   * @returns Promise containing the API response
+   */
+  updateMeetingRequest: (meetingId: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/UpdateRequest/${meetingId}`, data),
+
+  /**
+   * An admin rejects a meeting request by its ID
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  rejectMeetingRequest: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/Reject/${meetingId}`),
+
+  /**
+   * An admin marks a meeting request as completed
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  markAsCompletedMeeting: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/MarkAsCompleted/${meetingId}`),
+
+  /**
+   * An admin deletes a meeting request by its ID
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  deleteMeetingRequest: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/Meeting/Delete/${meetingId}`),
+};
+// ------------------------------------------------------------
+
+// GATHERING API
+// ------------------------------------------------------------
+export const gatheringAPI = {
+  /**
+   * Fetches all gatherings (performance reviews + general meetings) for a specific employee
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAllGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/all-by-empId/${employeeId}`),
+
+  /**
+   * Fetches all upcoming gatherings (performance reviews + general meetings) for a specific employee
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAllUpcomingGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/upcoming-by-empId/${employeeId}`),
+
+  /**
+   * Fetches all completed gatherings (performance reviews + general meetings) for a specific employee
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getAllCompletedGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/completed-by-empId/${employeeId}`),
+
+  /**
+   * Fetches all upcoming gatherings (performance reviews + general meetings) for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllUpcomingGatheringsByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/upcoming-by-adminId/${adminId}`),
+
+  /**
+   * Fetches all completed gatherings (performance reviews + general meetings) for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllCompletedGatheringsByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/completed-by-adminId/${adminId}`),
+
+  /**
+   * Fetches all upcoming and completes Gatherings
+   */
+  getUpcomingAndCompletedGatheringsByAdminIdAndMonth: (adminId: number, month: number) =>
+    apiClient.get(`/Gathering/by-adminId/${adminId}/month/${month}`)
+};
+// ------------------------------------------------------------
+
 // ############################################################
 // Export the configured axios instance
 export default apiClient;
