@@ -406,6 +406,14 @@ export const meetingAPI = {
     apiClient.get(`/Meeting/GetAllUpcomingByAdminId/${adminId}`),
 
   /**
+   * Fetches all pending meeting requests for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllPendingRequestsByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Meeting/GetAllPendingRequestsByAdminId/${adminId}`),
+
+  /**
    * Creates a new meeting request (done by an employee)
    * @param data - The meeting request data
    * @returns Promise containing the API response

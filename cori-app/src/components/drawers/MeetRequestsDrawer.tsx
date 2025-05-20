@@ -1,0 +1,51 @@
+import React, { useState, useEffect } from "react";
+import { Drawer } from "antd";
+import MeetRequestCard from "../cards/meetingCards/MeetRequestCard";
+import { MeetingRequestCard } from "../../interfaces/meetings/meetingRequestCard";
+import { meetingAPI } from "../../services/api.service";
+
+interface MeetRequestsDrawerProps {
+  drawerOpen: boolean;
+  setDrawerOpen: (open: boolean) => void;
+  adminId: number;
+}
+
+function MeetRequestsDrawer({ drawerOpen, setDrawerOpen, adminId }: MeetRequestsDrawerProps) {
+  const [meetRequests, setMeetRequests] = useState<MeetingRequestCard[]>([]);
+
+  useEffect(() => {
+    const fetchMeetRequests = async () => {
+      try {
+        const response = await meetingAPI.getAllPendingRequestsByAdminId(adminId);
+        setMeetRequests(response.data.$values);
+        console.log(response.data.$values);
+      } catch (error) {
+        console.error("Error fetching meet requests:", error);
+      }
+    };
+    fetchMeetRequests();
+  }, []);
+  return (
+    <Drawer
+      title={`${meetRequests.length} Meeting Request${meetRequests.length === 1 ? "" : "s"}`}
+      placement="right"
+      onClose={() => setDrawerOpen(false)}
+      open={drawerOpen}
+      width={400}
+    >
+      {meetRequests.length > 0 ? (
+        <div>
+          {meetRequests.map((meetRequest) => (
+            <MeetRequestCard key={meetRequest.meetingId} meetRequest={meetRequest} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex justify-center h-full">
+          <p className="text-zinc-500 mt-4">No pending meeting requests</p>
+        </div>
+      )}
+    </Drawer>
+  );
+}
+
+export default MeetRequestsDrawer;

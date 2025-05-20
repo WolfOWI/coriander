@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { Icons } from "../../constants/icons";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
+import { Drawer } from "antd";
+import MeetRequestsDrawer from "../../components/drawers/MeetRequestsDrawer";
 
 const AdminMeetings: React.FC = () => {
   type TabOption = "All" | "General Meetings" | "Performance Reviews" | "Completed";
   const [activeTab, setActiveTab] = useState<TabOption>("All");
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const tabOptions: TabOption[] = ["All", "General Meetings", "Performance Reviews", "Completed"];
 
   return (
@@ -21,7 +24,7 @@ const AdminMeetings: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <CoriBtn>New Review Meet</CoriBtn>
-          <CoriBtn secondary>
+          <CoriBtn secondary onClick={() => setDrawerOpen(true)}>
             View Requests
             <Icons.MarkChatUnread />
           </CoriBtn>
@@ -49,6 +52,10 @@ const AdminMeetings: React.FC = () => {
       <div className="bg-warmstone-50 p-4 rounded-2xl">
         {/* Content will be added later based on activeTab */}
       </div>
+
+      {/* Meeting Requests Drawer */}
+      {/* TODO: Change adminId to the logged in admin's ID */}
+      <MeetRequestsDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} adminId={1} />
     </div>
   );
 };
