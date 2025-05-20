@@ -55,7 +55,14 @@ const AdminMeetings: React.FC = () => {
 
       {/* Meeting Requests Drawer */}
       {/* TODO: Change adminId to the logged in admin's ID */}
-      <MeetRequestsDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} adminId={1} />
+      <MeetRequestsDrawer
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+        adminId={1}
+        onApprove={() => {
+          console.log("Approve");
+        }}
+      />
     </div>
   );
 };

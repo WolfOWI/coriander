@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Drawer } from "antd";
+import { Drawer, message } from "antd";
 import MeetRequestCard from "../cards/meetingCards/MeetRequestCard";
 import { MeetingRequestCard } from "../../interfaces/meetings/meetingRequestCard";
 import { meetingAPI } from "../../services/api.service";
@@ -8,43 +8,70 @@ interface MeetRequestsDrawerProps {
   drawerOpen: boolean;
   setDrawerOpen: (open: boolean) => void;
   adminId: number;
+  onApprove: () => void;
 }
 
-function MeetRequestsDrawer({ drawerOpen, setDrawerOpen, adminId }: MeetRequestsDrawerProps) {
+function MeetRequestsDrawer({
+  drawerOpen,
+  setDrawerOpen,
+  adminId,
+  onApprove,
+}: MeetRequestsDrawerProps) {
   const [meetRequests, setMeetRequests] = useState<MeetingRequestCard[]>([]);
+  const [messageApi, messageContextHolder] = message.useMessage();
+
+  const fetchMeetRequests = async () => {
+    try {
+      const response = await meetingAPI.getAllPendingRequestsByAdminId(adminId);
+      setMeetRequests(response.data.$values);
+      console.log(response.data.$values);
+    } catch (error) {
+      console.error("Error fetching meet requests:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchMeetRequests = async () => {
-      try {
-        const response = await meetingAPI.getAllPendingRequestsByAdminId(adminId);
-        setMeetRequests(response.data.$values);
-        console.log(response.data.$values);
-      } catch (error) {
-        console.error("Error fetching meet requests:", error);
-      }
-    };
     fetchMeetRequests();
   }, []);
+
+  const handleReject = async (meetingId: number) => {
+    try {
+      await meetingAPI.rejectMeetingRequest(meetingId);
+      messageApi.success("Meeting request rejected successfully");
+    } catch (error) {
+      messageApi.error("Failed to reject meeting request");
+      console.error("Error rejecting meeting request:", error);
+    }
+    fetchMeetRequests(); // Refresh the meeting requests
+  };
   return (
-    <Drawer
-      title={`${meetRequests.length} Meeting Request${meetRequests.length === 1 ? "" : "s"}`}
-      placement="right"
-      onClose={() => setDrawerOpen(false)}
-      open={drawerOpen}
-      width={400}
-    >
-      {meetRequests.length > 0 ? (
-        <div>
-          {meetRequests.map((meetRequest) => (
-            <MeetRequestCard key={meetRequest.meetingId} meetRequest={meetRequest} />
-          ))}
-        </div>
-      ) : (
-        <div className="flex justify-center h-full">
-          <p className="text-zinc-500 mt-4">No pending meeting requests</p>
-        </div>
-      )}
-    </Drawer>
+    <>
+      {messageContextHolder}
+      <Drawer
+        title={`${meetRequests.length} Meeting Request${meetRequests.length === 1 ? "" : "s"}`}
+        placement="right"
+        onClose={() => setDrawerOpen(false)}
+        open={drawerOpen}
+        width={400}
+      >
+        {meetRequests.length > 0 ? (
+          <div>
+            {meetRequests.map((meetRequest) => (
+              <MeetRequestCard
+                key={meetRequest.meetingId}
+                meetRequest={meetRequest}
+                onApprove={onApprove}
+                onReject={() => handleReject(meetRequest.meetingId)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex justify-center h-full">
+            <p className="text-zinc-500 mt-4">No pending meeting requests</p>
+          </div>
+        )}
+      </Drawer>
+    </>
   );
 }
 
