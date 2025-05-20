@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import { Gathering } from "../../interfaces/gathering/gathering";
 import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
 import RequestMeetingModal from "../../components/modals/RequestMeetingModal";
+import EditMeetingRequestModal from "../../components/modals/EditMeetingRequestModal";
 
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
@@ -25,45 +26,39 @@ const EmployeeMeetings: React.FC = () => {
   const [filteredData, setFilteredData] = useState<Gathering[]>([]);
   const [loading, setLoading] = useState(false);
   const employeeId = 8; // TODO: Get from user login later
+  const [selectedGathering, setSelectedGathering] = useState<Gathering | null>(null);
+
+  // Modals
   const [showRequestMeetingModal, setShowRequestMeetingModal] = useState(false);
+  const [showEditMeetingRequestModal, setShowEditMeetingRequestModal] = useState(false);
+
+  // Function to fetch and update data
+  const fetchAndUpdateData = async () => {
+    setLoading(true);
+    try {
+      const response = await gatheringAPI.getAllGatheringsByEmpId(employeeId);
+      const gatherings = response.data.$values;
+
+      // Sort the gatherings: null dates first, then most recent to oldest
+      const sortedGatherings = [...gatherings].sort((a, b) => {
+        if (!a.startDate && !b.startDate) return 0;
+        if (!a.startDate) return -1;
+        if (!b.startDate) return 1;
+        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+      });
+
+      setAllData(sortedGatherings);
+      setFilteredData(sortedGatherings);
+    } catch (error) {
+      console.error("Error fetching gatherings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Initial data fetch
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await gatheringAPI.getAllGatheringsByEmpId(employeeId);
-        console.log("Raw API response:", response.data.$values);
-
-        // Process the data for our table - directly use the Gathering interface
-        const gatherings = response.data.$values;
-
-        // Sort the gatherings: null dates first, then most recent to oldest
-        const sortedGatherings = [...gatherings].sort((a, b) => {
-          // If both have no start date, maintain original order
-          if (!a.startDate && !b.startDate) return 0;
-
-          // If only a has no start date, a comes first
-          if (!a.startDate) return -1;
-
-          // If only b has no start date, b comes first
-          if (!b.startDate) return 1;
-
-          // Both have start dates, sort newest first
-          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
-        });
-
-        console.log("Sorted gatherings:", sortedGatherings);
-        setAllData(sortedGatherings);
-        setFilteredData(sortedGatherings); // Initially show all data sorted
-      } catch (error) {
-        console.error("Error fetching gatherings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchAndUpdateData();
   }, [employeeId]);
 
   // Filter data when tab changes
@@ -106,6 +101,12 @@ const EmployeeMeetings: React.FC = () => {
     console.log(`Filtered data for tab "${activeTab}":`, filtered);
     setFilteredData(filtered);
   }, [activeTab, allData]);
+
+  // Handle the selection of a meeting
+  const handleEditMeetingRequest = (gathering: Gathering) => {
+    setSelectedGathering(gathering);
+    setShowEditMeetingRequestModal(true);
+  };
 
   // Table columns
   const columns = useMemo<ColumnsType<Gathering>>(
@@ -300,7 +301,7 @@ const EmployeeMeetings: React.FC = () => {
                   key: "1",
                   label: "Edit Request",
                   icon: <Icons.Edit />,
-                  onClick: () => console.log(`Edit request for meeting ${record.id}`),
+                  onClick: () => handleEditMeetingRequest(record),
                 },
                 {
                   key: "2",
@@ -432,16 +433,26 @@ const EmployeeMeetings: React.FC = () => {
       />
 
       <RequestMeetingModal
-      showModal={showRequestMeetingModal}
-      setShowModal={setShowRequestMeetingModal}
-      employeeId={employeeId}
-      onSubmitSuccess={() => {
-        setShowRequestMeetingModal(false);
-      }}
-    />
-    </div>
+        showModal={showRequestMeetingModal}
+        setShowModal={setShowRequestMeetingModal}
+        employeeId={employeeId}
+        onSubmitSuccess={() => {
+          setShowRequestMeetingModal(false);
+          fetchAndUpdateData(); 
+        }}
+      />
 
-    
+      <EditMeetingRequestModal
+        showModal={showEditMeetingRequestModal}
+        setShowModal={setShowEditMeetingRequestModal}
+        gathering={selectedGathering}
+        onSubmitSuccess={() => {
+          setShowEditMeetingRequestModal(false);
+          setSelectedGathering(null);
+          fetchAndUpdateData();
+        }}
+      />
+    </div>
   );
 };
 
