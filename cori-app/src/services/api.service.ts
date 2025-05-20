@@ -176,7 +176,8 @@ export const adminAPI = {
    * @param id - The admin's ID
    * @returns Promise containing the API response
    */
-  getAdminById: (adminId: number): Promise<AxiosResponse> => apiClient.get(`/Admin/adminUser/${adminId}`),
+  getAdminById: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Admin/adminUser/${adminId}`),
 };
 
 // PAGE SPECIFIC GET DATA API
@@ -216,7 +217,6 @@ export const pageAPI = {
    */
   getEmployeeLeaveData: (id: string): Promise<AxiosResponse> =>
     apiClient.get(`/Page/employee-leave-overview/${id}`),
-  
 };
 
 // EQUIPMENT API
@@ -424,10 +424,11 @@ export const meetingAPI = {
   /**
    * Confirms and schedules a meeting request (done by an admin) and "creates" (updates) a meeting
    * @param meetingId - The meeting's ID
+   * @param data - The meeting schedule data
    * @returns Promise containing the API response
    */
-  confirmAndScheduleMeeting: (meetingId: number): Promise<AxiosResponse> =>
-    apiClient.put(`/Meeting/ConfirmAndSchedule/${meetingId}`),
+  confirmAndScheduleMeeting: (meetingId: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/ConfirmAndSchedule/${meetingId}`, data),
 
   /**
    * An admin updates a meeting's details by its ID
@@ -520,7 +521,7 @@ export const gatheringAPI = {
    * Fetches all upcoming and completes Gatherings
    */
   getUpcomingAndCompletedGatheringsByAdminIdAndMonth: (adminId: number, month: number) =>
-    apiClient.get(`/Gathering/by-adminId/${adminId}/month/${month}`)
+    apiClient.get(`/Gathering/by-adminId/${adminId}/month/${month}`),
 };
 // ------------------------------------------------------------
 

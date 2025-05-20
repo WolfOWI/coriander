@@ -1,15 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Icons } from "../../constants/icons";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
 import { Drawer } from "antd";
 import MeetRequestsDrawer from "../../components/drawers/MeetRequestsDrawer";
+import { meetingAPI } from "../../services/api.service";
+import { MeetingRequestCard } from "../../interfaces/meetings/meetingRequestCard";
 
 const AdminMeetings: React.FC = () => {
   type TabOption = "All" | "General Meetings" | "Performance Reviews" | "Completed";
   const [activeTab, setActiveTab] = useState<TabOption>("All");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [meetRequests, setMeetRequests] = useState<MeetingRequestCard[]>([]);
   const tabOptions: TabOption[] = ["All", "General Meetings", "Performance Reviews", "Completed"];
+
+  // TODO: Get the actual admin ID from auth context
+  const adminId = 1;
+
+  const fetchMeetRequests = async () => {
+    try {
+      const response = await meetingAPI.getAllPendingRequestsByAdminId(adminId);
+      setMeetRequests(response.data.$values);
+    } catch (error) {
+      console.error("Error fetching meet requests:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeetRequests();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto m-4">
@@ -20,7 +39,7 @@ const AdminMeetings: React.FC = () => {
             <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
             <h1 className="text-3xl font-bold text-zinc-900">Meetings</h1>
           </div>
-          <MeetRequestsBadge requests={6} />
+          <MeetRequestsBadge requests={meetRequests.length} />
         </div>
         <div className="flex items-center gap-2">
           <CoriBtn>New Review Meet</CoriBtn>
@@ -54,14 +73,11 @@ const AdminMeetings: React.FC = () => {
       </div>
 
       {/* Meeting Requests Drawer */}
-      {/* TODO: Change adminId to the logged in admin's ID */}
       <MeetRequestsDrawer
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
-        adminId={1}
-        onApprove={() => {
-          console.log("Approve");
-        }}
+        adminId={adminId}
+        onApprove={fetchMeetRequests}
       />
     </div>
   );

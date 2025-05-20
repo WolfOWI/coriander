@@ -3,6 +3,7 @@ import { Drawer, message } from "antd";
 import MeetRequestCard from "../cards/meetingCards/MeetRequestCard";
 import { MeetingRequestCard } from "../../interfaces/meetings/meetingRequestCard";
 import { meetingAPI } from "../../services/api.service";
+import AcceptScheduleMeetingModal from "../modals/AcceptScheduleMeetingModal";
 
 interface MeetRequestsDrawerProps {
   drawerOpen: boolean;
@@ -19,7 +20,10 @@ function MeetRequestsDrawer({
 }: MeetRequestsDrawerProps) {
   const [meetRequests, setMeetRequests] = useState<MeetingRequestCard[]>([]);
   const [messageApi, messageContextHolder] = message.useMessage();
-
+  const [showScheduleMeetingModal, setShowScheduleMeetingModal] = useState(false);
+  const [selectedMeetingRequest, setSelectedMeetingRequest] = useState<MeetingRequestCard | null>(
+    null
+  );
   const fetchMeetRequests = async () => {
     try {
       const response = await meetingAPI.getAllPendingRequestsByAdminId(adminId);
@@ -44,6 +48,12 @@ function MeetRequestsDrawer({
     }
     fetchMeetRequests(); // Refresh the meeting requests
   };
+
+  const handleApprove = async (meetingRequest: MeetingRequestCard) => {
+    setSelectedMeetingRequest(meetingRequest);
+    setShowScheduleMeetingModal(true);
+  };
+
   return (
     <>
       {messageContextHolder}
@@ -60,7 +70,7 @@ function MeetRequestsDrawer({
               <MeetRequestCard
                 key={meetRequest.meetingId}
                 meetRequest={meetRequest}
-                onApprove={onApprove}
+                onApprove={() => handleApprove(meetRequest)}
                 onReject={() => handleReject(meetRequest.meetingId)}
               />
             ))}
@@ -71,6 +81,13 @@ function MeetRequestsDrawer({
           </div>
         )}
       </Drawer>
+
+      <AcceptScheduleMeetingModal
+        showModal={showScheduleMeetingModal}
+        setShowModal={setShowScheduleMeetingModal}
+        onSubmitSuccess={fetchMeetRequests}
+        meetingRequest={selectedMeetingRequest}
+      />
     </>
   );
 }
