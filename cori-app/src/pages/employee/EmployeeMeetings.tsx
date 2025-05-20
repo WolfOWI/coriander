@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Table, Dropdown, Tooltip, Button } from "antd";
+import { Table, Dropdown, Tooltip, Button, message } from "antd";
 import type { TableProps, MenuProps } from "antd";
 import { Icons } from "../../constants/icons";
 import CoriBtn from "../../components/buttons/CoriBtn";
-import { gatheringAPI } from "../../services/api.service";
+import { gatheringAPI, meetingAPI } from "../../services/api.service";
 import { GatheringType, MeetStatus, ReviewStatus } from "../../types/common";
 import GatheringStatusBadge from "../../components/badges/GatheringStatusBadge";
 import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUtils";
@@ -27,7 +27,7 @@ const EmployeeMeetings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const employeeId = 8; // TODO: Get from user login later
   const [selectedGathering, setSelectedGathering] = useState<Gathering | null>(null);
-
+  const [messageApi, contextHolder] = message.useMessage();
   // Modals
   const [showRequestMeetingModal, setShowRequestMeetingModal] = useState(false);
   const [showEditMeetingRequestModal, setShowEditMeetingRequestModal] = useState(false);
@@ -106,6 +106,18 @@ const EmployeeMeetings: React.FC = () => {
   const handleEditMeetingRequest = (gathering: Gathering) => {
     setSelectedGathering(gathering);
     setShowEditMeetingRequestModal(true);
+  };
+
+  // Handle the deletion of a meeting request
+  const handleDeleteMeetingRequest = async (meetingId: number) => {
+    try {
+      await meetingAPI.deleteMeetingRequest(meetingId);
+      messageApi.success("Meeting request deleted successfully");
+      fetchAndUpdateData();
+    } catch (error) {
+      messageApi.error("Error deleting meeting request");
+      console.error("Error deleting meeting request:", error);
+    }
   };
 
   // Table columns
@@ -308,7 +320,7 @@ const EmployeeMeetings: React.FC = () => {
                   label: "Retract Request",
                   icon: <Icons.Delete />,
                   danger: true,
-                  onClick: () => console.log(`Retract request for meeting ${record.id}`),
+                  onClick: () => { handleDeleteMeetingRequest(record.id); fetchAndUpdateData(); },
                 },
               ];
               // Standard Meeting - Rejected Status
@@ -319,7 +331,7 @@ const EmployeeMeetings: React.FC = () => {
                   label: "Delete Request",
                   icon: <Icons.Delete />,
                   danger: true,
-                  onClick: () => console.log(`Delete rejected meeting ${record.id}`),
+                  onClick: () => { handleDeleteMeetingRequest(record.id); fetchAndUpdateData(); },
                 },
               ];
               // Standard Meeting - Upcoming Status & Online
@@ -378,9 +390,11 @@ const EmployeeMeetings: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto m-4">
-      {/* Page Header */}
-      <div className="flex justify-between items-center mb-4">
+    <>
+      {contextHolder}
+      <div className="max-w-7xl mx-auto m-4">
+        {/* Page Header */}
+        <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
@@ -453,6 +467,7 @@ const EmployeeMeetings: React.FC = () => {
         }}
       />
     </div>
+    </>
   );
 };
 
