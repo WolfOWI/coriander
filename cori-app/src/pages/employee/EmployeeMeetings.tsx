@@ -41,10 +41,22 @@ const EmployeeMeetings: React.FC = () => {
 
       // Sort the gatherings: null dates first, then most recent to oldest
       const sortedGatherings = [...gatherings].sort((a, b) => {
-        if (!a.startDate && !b.startDate) return 0;
+        // If both have start dates, sort by start date (newest first)
+        if (a.startDate && b.startDate) {
+          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+        }
+        
+        // If neither have start dates, sort by requestedAt (newest first)
+        if (!a.startDate && !b.startDate) {
+          if (!a.requestedAt || !b.requestedAt) return 0;
+          return new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime();
+        }
+        
+        // If only one has a start date, the one without goes first
         if (!a.startDate) return -1;
         if (!b.startDate) return 1;
-        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+        
+        return 0;
       });
 
       setAllData(sortedGatherings);
@@ -131,12 +143,23 @@ const EmployeeMeetings: React.FC = () => {
         render: (_, record) => (
           <div className="flex items-center gap-3">
             {record.type === GatheringType.Meeting ? (
+              record.meetingStatus === MeetStatus.Requested || record.meetingStatus === MeetStatus.Rejected ? (
+                // Meeting Request
               <Tooltip title="Standard Meeting">
+                <div className="bg-zinc-200 rounded-full h-12 w-12 flex items-center justify-center">
+                  <Icons.LiveHelp className="text-zinc-400" />
+                </div>
+              </Tooltip>) :
+              (
+                // Standard Meeting
+                <Tooltip title="Standard Meeting">
                 <div className="bg-corigreen-100 rounded-full h-12 w-12 flex items-center justify-center">
                   <Icons.Chat className="text-corigreen-400" />
                 </div>
               </Tooltip>
+              )
             ) : (
+              // Performance Review
               <Tooltip title="Performance Review">
                 <div className="bg-sakura-100 rounded-full h-12 w-12 flex items-center justify-center">
                   <Icons.StarRounded className="text-sakura-400" />
@@ -364,6 +387,7 @@ const EmployeeMeetings: React.FC = () => {
                 label: "Download Doc",
                 icon: <Icons.Download />,
                 onClick: () => window.open(record.docUrl, "_blank"),
+                // TODO: Download uploaded file
               });
             }
           }
