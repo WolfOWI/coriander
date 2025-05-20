@@ -145,7 +145,7 @@ const EmployeeMeetings: React.FC = () => {
             {record.type === GatheringType.Meeting ? (
               record.meetingStatus === MeetStatus.Requested || record.meetingStatus === MeetStatus.Rejected ? (
                 // Meeting Request
-              <Tooltip title="Standard Meeting">
+              <Tooltip title="Meeting Request">
                 <div className="bg-zinc-200 rounded-full h-12 w-12 flex items-center justify-center">
                   <Icons.LiveHelp className="text-zinc-400" />
                 </div>
@@ -422,7 +422,7 @@ const EmployeeMeetings: React.FC = () => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
-            <h1 className="text-3xl font-bold text-zinc-900">Meetings</h1>
+            <h1 className="text-3xl font-bold text-zinc-900">My Meetings</h1>
           </div>
           <MeetRequestsBadge
             requests={
