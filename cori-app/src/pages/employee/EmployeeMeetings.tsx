@@ -10,6 +10,7 @@ import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUt
 import dayjs from "dayjs";
 import { Gathering } from "../../interfaces/gathering/gathering";
 import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
+import RequestMeetingModal from "../../components/modals/RequestMeetingModal";
 
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
@@ -20,11 +21,11 @@ const EmployeeMeetings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabOption>("All");
   const tabOptions: TabOption[] = ["All", "Upcoming", "Completed", "Requests"];
 
-  // State for data
   const [allData, setAllData] = useState<Gathering[]>([]);
   const [filteredData, setFilteredData] = useState<Gathering[]>([]);
   const [loading, setLoading] = useState(false);
   const employeeId = 8; // TODO: Get from user login later
+  const [showRequestMeetingModal, setShowRequestMeetingModal] = useState(false);
 
   // Initial data fetch
   useEffect(() => {
@@ -395,7 +396,7 @@ const EmployeeMeetings: React.FC = () => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <CoriBtn>
+          <CoriBtn onClick={() => setShowRequestMeetingModal(true)}>
             <Icons.Add />
             Request a Meeting
           </CoriBtn>
@@ -429,7 +430,18 @@ const EmployeeMeetings: React.FC = () => {
         className="mt-4"
         pagination={{ pageSize: 10 }}
       />
+
+      <RequestMeetingModal
+      showModal={showRequestMeetingModal}
+      setShowModal={setShowRequestMeetingModal}
+      employeeId={employeeId}
+      onSubmitSuccess={() => {
+        setShowRequestMeetingModal(false);
+      }}
+    />
     </div>
+
+    
   );
 };
 

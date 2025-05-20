@@ -162,6 +162,23 @@ export const employeeAPI = {
 };
 // ------------------------------------------------------------
 
+// ADMIN API
+// ------------------------------------------------------------
+export const adminAPI = {
+  /**
+   * Fetches all admins
+   * @returns Promise containing the API response
+   */
+  getAllAdmins: (): Promise<AxiosResponse> => apiClient.get("/Admin/admins"),
+
+  /**
+   * Fetches an admin by their ID
+   * @param id - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAdminById: (adminId: number): Promise<AxiosResponse> => apiClient.get(`/Admin/adminUser/${adminId}`),
+};
+
 // PAGE SPECIFIC GET DATA API
 // ------------------------------------------------------------
 export const pageAPI = {
