@@ -162,6 +162,24 @@ export const employeeAPI = {
 };
 // ------------------------------------------------------------
 
+// ADMIN API
+// ------------------------------------------------------------
+export const adminAPI = {
+  /**
+   * Fetches all admins
+   * @returns Promise containing the API response
+   */
+  getAllAdmins: (): Promise<AxiosResponse> => apiClient.get("/Admin/admins"),
+
+  /**
+   * Fetches an admin by their ID
+   * @param id - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAdminById: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Admin/adminUser/${adminId}`),
+};
+
 // PAGE SPECIFIC GET DATA API
 // ------------------------------------------------------------
 export const pageAPI = {
@@ -199,7 +217,6 @@ export const pageAPI = {
    */
   getEmployeeLeaveData: (id: string): Promise<AxiosResponse> =>
     apiClient.get(`/Page/employee-leave-overview/${id}`),
-  
 };
 
 // EQUIPMENT API
@@ -389,6 +406,14 @@ export const meetingAPI = {
     apiClient.get(`/Meeting/GetAllUpcomingByAdminId/${adminId}`),
 
   /**
+   * Fetches all pending meeting requests for a specific admin
+   * @param adminId - The admin's ID
+   * @returns Promise containing the API response
+   */
+  getAllPendingRequestsByAdminId: (adminId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Meeting/GetAllPendingRequestsByAdminId/${adminId}`),
+
+  /**
    * Creates a new meeting request (done by an employee)
    * @param data - The meeting request data
    * @returns Promise containing the API response
@@ -399,10 +424,11 @@ export const meetingAPI = {
   /**
    * Confirms and schedules a meeting request (done by an admin) and "creates" (updates) a meeting
    * @param meetingId - The meeting's ID
+   * @param data - The meeting schedule data
    * @returns Promise containing the API response
    */
-  confirmAndScheduleMeeting: (meetingId: number): Promise<AxiosResponse> =>
-    apiClient.put(`/Meeting/ConfirmAndSchedule/${meetingId}`),
+  confirmAndScheduleMeeting: (meetingId: number, data: object): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/ConfirmAndSchedule/${meetingId}`, data),
 
   /**
    * An admin updates a meeting's details by its ID
@@ -495,7 +521,7 @@ export const gatheringAPI = {
    * Fetches all upcoming and completes Gatherings
    */
   getUpcomingAndCompletedGatheringsByAdminIdAndMonth: (adminId: number, month: number) =>
-    apiClient.get(`/Gathering/by-adminId/${adminId}/month/${month}`)
+    apiClient.get(`/Gathering/by-adminId/${adminId}/month/${month}`),
 };
 // ------------------------------------------------------------
 

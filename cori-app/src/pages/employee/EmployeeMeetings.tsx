@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Table, Dropdown, Tooltip, Button } from "antd";
+import { Table, Dropdown, Tooltip, Button, message } from "antd";
 import type { TableProps, MenuProps } from "antd";
 import { Icons } from "../../constants/icons";
 import CoriBtn from "../../components/buttons/CoriBtn";
-import { gatheringAPI } from "../../services/api.service";
+import { gatheringAPI, meetingAPI } from "../../services/api.service";
 import { GatheringType, MeetStatus, ReviewStatus } from "../../types/common";
 import GatheringStatusBadge from "../../components/badges/GatheringStatusBadge";
 import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUtils";
 import dayjs from "dayjs";
 import { Gathering } from "../../interfaces/gathering/gathering";
 import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
+import RequestMeetingModal from "../../components/modals/RequestMeetingModal";
+import EditMeetingRequestModal from "../../components/modals/EditMeetingRequestModal";
 
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
@@ -20,49 +22,55 @@ const EmployeeMeetings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabOption>("All");
   const tabOptions: TabOption[] = ["All", "Upcoming", "Completed", "Requests"];
 
-  // State for data
   const [allData, setAllData] = useState<Gathering[]>([]);
   const [filteredData, setFilteredData] = useState<Gathering[]>([]);
   const [loading, setLoading] = useState(false);
   const employeeId = 8; // TODO: Get from user login later
+  const [selectedGathering, setSelectedGathering] = useState<Gathering | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
+  // Modals
+  const [showRequestMeetingModal, setShowRequestMeetingModal] = useState(false);
+  const [showEditMeetingRequestModal, setShowEditMeetingRequestModal] = useState(false);
+
+  // Function to fetch and update data
+  const fetchAndUpdateData = async () => {
+    setLoading(true);
+    try {
+      const response = await gatheringAPI.getAllGatheringsByEmpId(employeeId);
+      const gatherings = response.data.$values;
+
+      // Sort the gatherings: null dates first, then most recent to oldest
+      const sortedGatherings = [...gatherings].sort((a, b) => {
+        // If both have start dates, sort by start date (newest first)
+        if (a.startDate && b.startDate) {
+          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+        }
+        
+        // If neither have start dates, sort by requestedAt (newest first)
+        if (!a.startDate && !b.startDate) {
+          if (!a.requestedAt || !b.requestedAt) return 0;
+          return new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime();
+        }
+        
+        // If only one has a start date, the one without goes first
+        if (!a.startDate) return -1;
+        if (!b.startDate) return 1;
+        
+        return 0;
+      });
+
+      setAllData(sortedGatherings);
+      setFilteredData(sortedGatherings);
+    } catch (error) {
+      console.error("Error fetching gatherings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Initial data fetch
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await gatheringAPI.getAllGatheringsByEmpId(employeeId);
-        console.log("Raw API response:", response.data.$values);
-
-        // Process the data for our table - directly use the Gathering interface
-        const gatherings = response.data.$values;
-
-        // Sort the gatherings: null dates first, then most recent to oldest
-        const sortedGatherings = [...gatherings].sort((a, b) => {
-          // If both have no start date, maintain original order
-          if (!a.startDate && !b.startDate) return 0;
-
-          // If only a has no start date, a comes first
-          if (!a.startDate) return -1;
-
-          // If only b has no start date, b comes first
-          if (!b.startDate) return 1;
-
-          // Both have start dates, sort newest first
-          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
-        });
-
-        console.log("Sorted gatherings:", sortedGatherings);
-        setAllData(sortedGatherings);
-        setFilteredData(sortedGatherings); // Initially show all data sorted
-      } catch (error) {
-        console.error("Error fetching gatherings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchAndUpdateData();
   }, [employeeId]);
 
   // Filter data when tab changes
@@ -106,6 +114,24 @@ const EmployeeMeetings: React.FC = () => {
     setFilteredData(filtered);
   }, [activeTab, allData]);
 
+  // Handle the selection of a meeting
+  const handleEditMeetingRequest = (gathering: Gathering) => {
+    setSelectedGathering(gathering);
+    setShowEditMeetingRequestModal(true);
+  };
+
+  // Handle the deletion of a meeting request
+  const handleDeleteMeetingRequest = async (meetingId: number) => {
+    try {
+      await meetingAPI.deleteMeetingRequest(meetingId);
+      messageApi.success("Meeting request deleted successfully");
+      fetchAndUpdateData();
+    } catch (error) {
+      messageApi.error("Error deleting meeting request");
+      console.error("Error deleting meeting request:", error);
+    }
+  };
+
   // Table columns
   const columns = useMemo<ColumnsType<Gathering>>(
     () => [
@@ -117,12 +143,23 @@ const EmployeeMeetings: React.FC = () => {
         render: (_, record) => (
           <div className="flex items-center gap-3">
             {record.type === GatheringType.Meeting ? (
-              <Tooltip title="Standard Meeting">
+              record.meetingStatus === MeetStatus.Requested || record.meetingStatus === MeetStatus.Rejected ? (
+                // Meeting Request
+              <Tooltip title="Meeting Request">
+                <div className="bg-zinc-200 rounded-full h-12 w-12 flex items-center justify-center">
+                  <Icons.LiveHelp className="text-zinc-400" />
+                </div>
+              </Tooltip>) :
+              (
+                // Standard Meeting
+                <Tooltip title="Standard Meeting">
                 <div className="bg-corigreen-100 rounded-full h-12 w-12 flex items-center justify-center">
                   <Icons.Chat className="text-corigreen-400" />
                 </div>
               </Tooltip>
+              )
             ) : (
+              // Performance Review
               <Tooltip title="Performance Review">
                 <div className="bg-sakura-100 rounded-full h-12 w-12 flex items-center justify-center">
                   <Icons.StarRounded className="text-sakura-400" />
@@ -299,14 +336,14 @@ const EmployeeMeetings: React.FC = () => {
                   key: "1",
                   label: "Edit Request",
                   icon: <Icons.Edit />,
-                  onClick: () => console.log(`Edit request for meeting ${record.id}`),
+                  onClick: () => handleEditMeetingRequest(record),
                 },
                 {
                   key: "2",
                   label: "Retract Request",
                   icon: <Icons.Delete />,
                   danger: true,
-                  onClick: () => console.log(`Retract request for meeting ${record.id}`),
+                  onClick: () => { handleDeleteMeetingRequest(record.id); fetchAndUpdateData(); },
                 },
               ];
               // Standard Meeting - Rejected Status
@@ -317,7 +354,7 @@ const EmployeeMeetings: React.FC = () => {
                   label: "Delete Request",
                   icon: <Icons.Delete />,
                   danger: true,
-                  onClick: () => console.log(`Delete rejected meeting ${record.id}`),
+                  onClick: () => { handleDeleteMeetingRequest(record.id); fetchAndUpdateData(); },
                 },
               ];
               // Standard Meeting - Upcoming Status & Online
@@ -350,6 +387,7 @@ const EmployeeMeetings: React.FC = () => {
                 label: "Download Doc",
                 icon: <Icons.Download />,
                 onClick: () => window.open(record.docUrl, "_blank"),
+                // TODO: Download uploaded file
               });
             }
           }
@@ -376,13 +414,15 @@ const EmployeeMeetings: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto m-4">
-      {/* Page Header */}
-      <div className="flex justify-between items-center mb-4">
+    <>
+      {contextHolder}
+      <div className="max-w-7xl mx-auto m-4">
+        {/* Page Header */}
+        <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
-            <h1 className="text-3xl font-bold text-zinc-900">Meetings</h1>
+            <h1 className="text-3xl font-bold text-zinc-900">My Meetings</h1>
           </div>
           <MeetRequestsBadge
             requests={
@@ -395,7 +435,7 @@ const EmployeeMeetings: React.FC = () => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <CoriBtn>
+          <CoriBtn onClick={() => setShowRequestMeetingModal(true)}>
             <Icons.Add />
             Request a Meeting
           </CoriBtn>
@@ -429,7 +469,29 @@ const EmployeeMeetings: React.FC = () => {
         className="mt-4"
         pagination={{ pageSize: 10 }}
       />
+
+      <RequestMeetingModal
+        showModal={showRequestMeetingModal}
+        setShowModal={setShowRequestMeetingModal}
+        employeeId={employeeId}
+        onSubmitSuccess={() => {
+          setShowRequestMeetingModal(false);
+          fetchAndUpdateData(); 
+        }}
+      />
+
+      <EditMeetingRequestModal
+        showModal={showEditMeetingRequestModal}
+        setShowModal={setShowEditMeetingRequestModal}
+        gathering={selectedGathering}
+        onSubmitSuccess={() => {
+          setShowEditMeetingRequestModal(false);
+          setSelectedGathering(null);
+          fetchAndUpdateData();
+        }}
+      />
     </div>
+    </>
   );
 };
 
