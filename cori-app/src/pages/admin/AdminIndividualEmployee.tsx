@@ -1,15 +1,12 @@
 // Wolf Botha
 import React, { useEffect, useState } from "react";
-import { empUserAPI, pageAPI, employeeAPI } from "../../services/api.service";
 import { useNavigate, useParams } from "react-router-dom";
 
-// Import 3rd party components
+// Import 3rd party components / plugins
 import GaugeComponent from "react-gauge-component";
 import { Avatar, DatePicker, Dropdown, Tooltip, message, Button, Spin } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
-
-// Extend dayjs with plugins
 dayjs.extend(relativeTime);
 
 // Import React Components
@@ -29,6 +26,7 @@ import AssignEmpToOneOrManyEquipsModal from "../../components/modals/AssignEmpTo
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
+import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
@@ -36,15 +34,15 @@ import { Icons } from "../../constants/icons";
 // Import Assets
 import GoogleIcon from "../../assets/icons/googleIcon.png";
 
-// Import Utils
+// Import Utils / Functions
 import {
   calculateNextPayDay,
   formatEmploymentDuration,
   calculatePreviousPayDay,
 } from "../../utils/dateUtils";
-import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 import { getFullImageUrl } from "../../utils/imageUtils";
+import { pageAPI, employeeAPI, empUserAPI } from "../../services/api.service";
 
 // Types / Interfaces
 import { Gender, PayCycle } from "../../types/common";

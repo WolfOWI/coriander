@@ -1,23 +1,36 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Import 3rd party components / plugins
 import type { GetProp, TableProps } from "antd";
 import { Table, Avatar, Dropdown, Tooltip, Input } from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
+import dayjs from "dayjs";
+
+// Import Services
 import { employeeAPI, pageAPI } from "../../services/api.service";
-import { useNavigate } from "react-router-dom";
-import { Gender, PayCycle } from "../../types/common";
+
+// Import Components
 import CoriBtn from "../../components/buttons/CoriBtn";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
+
+// Import Constants
 import { Icons } from "../../constants/icons";
+
+// Import Utils
 import { formatRandAmount } from "../../utils/formatUtils";
-import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
-import dayjs from "dayjs";
 import { getFullImageUrl } from "../../utils/imageUtils";
+import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
+
+// Import Types / Interfaces
 import { EmployeeListItem } from "../../interfaces/people/employeeListItem";
+import { Gender, PayCycle } from "../../types/common";
+
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
 
-// Record list type
+// Record list interface
 interface DataType {
   employeeId: number;
   fullName: string;
@@ -36,7 +49,7 @@ interface DataType {
   totalLeaveDays?: number;
 }
 
-// Table parameters type
+// Table parameters interface
 interface TableParams {
   pagination?: TablePaginationConfig;
   sortField?: string;
