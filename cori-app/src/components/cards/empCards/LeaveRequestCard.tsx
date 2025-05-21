@@ -44,8 +44,12 @@ interface LeaveRequestCardProps {
   req: LeaveRequest;
 }
 
-function LeaveRequestCard({ req: LeaveRequest }: LeaveRequestCardProps) {
-  const req = LeaveRequest;
+function LeaveRequestCard({ req }: LeaveRequestCardProps) {
+  // calculate actual duration (inclusive of both start and end)
+  const start = dayjs(req.startDate);
+  const end = dayjs(req.endDate);
+  const duration = end.diff(start, "day") + 1;
+
   return (
     <div
       key={req.$id}
@@ -57,8 +61,7 @@ function LeaveRequestCard({ req: LeaveRequest }: LeaveRequestCardProps) {
           {getLeaveIcon(req.leaveTypeName)}
           <div>
             <p className="font-semibold text-zinc-900">{req.leaveTypeName} Leave</p>
-            <p className="text-sm text-zinc-600">{20} days</p>
-            {/* TODO: fix this (duration of dates) */}
+            <p className="text-sm text-zinc-600">{duration} days</p>
           </div>
         </div>
         <CoriBadge
