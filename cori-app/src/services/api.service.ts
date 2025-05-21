@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { get } from "mongoose";
 
 // Create a new 'axios instance' (with some customised settings)
 // This instance will be used for all API calls
@@ -342,60 +341,6 @@ export const empLeaveRequestsAPI = {
    */
   getRejectedLeaveRequests: (): Promise<AxiosResponse> =>
     apiClient.get("/EmpLeaveRequest/GetAllRejected"),
-};
-
-// EMPLOYEE LEAVE OVERVIEW API
-// ------------------------------------------------------------
-export const empLeaveOverviewAPI = {
-  /**
-   * Fetches all leave overviews for a specific employee
-   * @param employeeId - The employee's ID
-   * @returns Promise containing the API response
-   */
-  getAllLeaveOverviewByEmpId: (employeeId: number): Promise<AxiosResponse> =>
-    apiClient.get(`/EmpLeaveOverview/GetAllLeaveOverviewByEmpId/${employeeId}`),
-
-  /**
-   * Fetches all pending leave overviews for a specific employee
-   * @param employeeId 
-   * @returns Promise containing the API response
-   */
-  getPendingLeaveOverviewByEmpId: (employeeId: number): Promise<AxiosResponse> =>
-    apiClient.get(`/EmpLeaveOverview/GetPendingLeaveOverviewByEmpId/${employeeId}`),
-
-  /**
-   * Fetches all approved leave overviews for a specific employee
-   * @param employeeId - The employee's ID
-   * @returns Promise containing the API response
-   */
-  getApprovedLeaveOverviewByEmpId: (employeeId: number): Promise<AxiosResponse> =>
-    apiClient.get(`/EmpLeaveOverview/GetApprovedLeaveOverviewByEmpId/${employeeId}`),
-
-  /**
-   * Fetches all rejected leave overviews for a specific employee
-   * @param employeeId - The employee's ID
-   * @returns Promise containing the API response
-   */
-  getRejectedLeaveOverviewByEmpId: (employeeId: number): Promise<AxiosResponse> =>
-    apiClient.get(`/EmpLeaveOverview/GetRejectedLeaveOverviewByEmpId/${employeeId}`),
-
-  // Leave Summary (e.g. totalTaken, totalAllowed)
-  getLeaveSummaryByEmpId: (employeeId: number) =>
-    apiClient.get<{
-      totalTaken: number;
-      totalAllowed: number;
-    }>(`/EmpLeaveOverview/GetLeaveSummaryByEmpId/${employeeId}`),
-
-  // Leave Balances (remainingDays, defaultDays, leaveTypeName, maybe leaveTypeId)
-  getLeaveBalancesByEmpId: (employeeId: number) =>
-    apiClient.get<
-      Array<{
-        leaveTypeId: number;
-        leaveTypeName: string;
-        remainingDays: number;
-        defaultDays: number;
-      }>
-    >(`/EmpLeaveOverview/GetLeaveBalancesByEmpId/${employeeId}`),
 };
 
 // PERFORMANCE REVIEW API
