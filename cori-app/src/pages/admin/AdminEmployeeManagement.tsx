@@ -8,16 +8,11 @@ import { Gender, PayCycle } from "../../types/common";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 import { Icons } from "../../constants/icons";
-import { formatRandAmount, formatPhone } from "../../utils/formatUtils";
-import {
-  isDateInPast,
-  formatTimestampToDate,
-  calculateNextPayDay,
-  formatEmploymentDuration,
-} from "../../utils/dateUtils";
+import { formatRandAmount } from "../../utils/formatUtils";
+import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
 import dayjs from "dayjs";
 import { getFullImageUrl } from "../../utils/imageUtils";
-
+import { EmployeeListItem } from "../../interfaces/people/employeeListItem";
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
@@ -68,8 +63,8 @@ const AdminEmployeeManagement: React.FC = () => {
       // Get ALL the employee data from the server
       const response = await pageAPI.getAdminEmpManagement();
 
-      // Clean up the data to match DataType interface
-      const processedData = response.data.$values.map((item: any) => ({
+      // Clean up the data to match DataType
+      const processedData = response.data.$values.map((item: EmployeeListItem) => ({
         employeeId: item.empUser.employeeId,
         fullName: item.empUser.fullName,
         gender: item.empUser.gender,
@@ -85,7 +80,7 @@ const AdminEmployeeManagement: React.FC = () => {
         numberOfRatings: item.empUserRatingMetrics?.numberOfRatings,
         totalRemainingDays: item.totalLeaveBalanceSum?.totalRemainingDays,
         totalLeaveDays: item.totalLeaveBalanceSum?.totalLeaveDays,
-      }));
+      })) as DataType[];
 
       setAllData(processedData);
     } catch (error) {
@@ -138,7 +133,6 @@ const AdminEmployeeManagement: React.FC = () => {
     if (tableParams.sortField && tableParams.sortOrder) {
       data.sort((a, b) => {
         // Get the values we want to compare
-        // The ?? '' means "use empty string if the value is null or undefined"
         const aValue = a[tableParams.sortField as keyof DataType] ?? "";
         const bValue = b[tableParams.sortField as keyof DataType] ?? "";
 
