@@ -12,13 +12,17 @@ import {
 import CoriBtn from "../../components/buttons/CoriBtn";
 import { GoogleOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate, Link } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
 import VeriCodeForm from "../../components/auth/VeriCodeForm";
 import { useState } from "react";
 
 // API calls:
-import { requestEmailVerification } from "../../services/authService";
+import {
+  requestEmailVerification,
+  fullGoogleSignIn,
+  employeeGoogleSignUp,
+} from "../../services/authService";
 
 const EmployeeSignUp: React.FC = () => {
   const [form] = Form.useForm();
@@ -29,9 +33,16 @@ const EmployeeSignUp: React.FC = () => {
     profileImage: null as File | null,
   });
   const [showOTPForm, setShowOTPForm] = useState(false); // Set false initially
+  const [messageApi, contextHolder] = message.useMessage();
+  const messageKey = "signup";
 
   const handleSignUp = async () => {
     try {
+      messageApi.open({
+        key: messageKey,
+        type: "loading",
+        content: "Signing you up...",
+      });
       const values = await form.validateFields();
       const profileFile = values.profilepic?.[0]?.originFileObj;
 
@@ -49,15 +60,52 @@ const EmployeeSignUp: React.FC = () => {
         });
         setShowOTPForm(true);
       } else {
-        message.error(verificationRes.message);
+        messageApi.open({
+          key: messageKey,
+          type: "error",
+          content: `${verificationRes.message}`,
+        });
       }
     } catch (err) {
       console.error("Validation or request failed:", err);
+      messageApi.open({
+        key: messageKey,
+        type: "error",
+        content: `Validation failded, please check if you can sign in, ${err}`,
+      });
+    }
+  };
+
+  const handleGoogleLogin = async (idToken: string) => {
+    try {
+      messageApi.open({
+        key: messageKey,
+        type: "loading",
+        content: "Signing you up with Google...",
+      });
+
+      const result = await employeeGoogleSignUp(idToken);
+
+      messageApi.open({
+        key: messageKey,
+        type: result.errorCode === 200 ? "success" : "error",
+        content: result.message,
+      });
+    } catch (error: any) {
+      console.error("Google signup/login failed:", error);
+      messageApi.open({
+        key: messageKey,
+        type: "error",
+        content: `Google signup/login failed: ${
+          error?.message || "Unexpected error"
+        }`,
+      });
     }
   };
 
   return (
     <GoogleOAuthProvider clientId={process.env.VITE_GOOGLE_CLIENT_ID || ""}>
+      {contextHolder}
       <div className="relative">
         {/* TODO: Remove this later */}
         <div className="absolute top-0 right-0 flex flex-col gap-2">
@@ -88,7 +136,7 @@ const EmployeeSignUp: React.FC = () => {
           </div>
           <div className="w-1/2 flex items-center justify-center mb-16">
             {!showOTPForm && (
-              <div className="flex flex-col items-center w-5/12">
+              <div className="flex flex-col items-center w-[300px]">
                 <h1 className="text-3xl font-bold mb-4 text-corigreen-500 ">
                   Employee{" "}
                   <span className="text-zinc-900 font-light">Signup</span>
@@ -179,15 +227,16 @@ const EmployeeSignUp: React.FC = () => {
                     Sign Up
                   </CoriBtn>
                 </Form>
-                <CoriBtn
-                  secondary
-                  type="submit"
-                  style="black"
-                  className="w-full mt-3"
-                >
-                  <GoogleOutlined />
-                  Sign up with Google
-                </CoriBtn>
+                <GoogleLogin
+                  width="300"
+                  shape="circle"
+                  logo_alignment="center"
+                  theme="outline"
+                  onSuccess={async (resp) => {
+                    const idToken = resp.credential;
+                    await handleGoogleLogin(idToken || "");
+                  }}
+                />
                 <p className="mt-4 text-zinc-500">
                   Already have an account?{" "}
                   <Link
@@ -203,6 +252,7 @@ const EmployeeSignUp: React.FC = () => {
               <VeriCodeForm
                 showLoginScreen={() => setShowOTPForm(false)}
                 userData={userData}
+                userType={1}
               />
             )}
           </div>

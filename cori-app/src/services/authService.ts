@@ -64,18 +64,16 @@ export async function employeeSignup2FA(form: {
 }): Promise<AuthResult> {
   const fd = new FormData();
 
-  // ✅ IMPORTANT: Match the PascalCase DTO fields
   fd.append("FullName", form.fullName);
   fd.append("Email", form.email);
   fd.append("Password", form.password);
   fd.append("Code", form.code);
-  fd.append("Role", "1"); // Employee = 1 (as per your enum)
+  fd.append("Role", "1"); // Employee role
 
   if (form.profileImage) {
     fd.append("ProfileImage", form.profileImage);
   }
 
-  // Debug the actual form data being sent
   console.log("📦 employeeSignup2FA → FormData Preview:");
   fd.forEach((value, key) => {
     console.log(`→ ${key}:`, value);
@@ -92,9 +90,24 @@ export async function employeeSignup2FA(form: {
 
     const data = await res.json();
 
+    if (res.status === 200 || res.status === 201) {
+      console.log("✅ Signup successful, logging in...");
+
+      // 🔐 Attempt to login after successful signup
+      const loginResult = await fullEmailLogin(form.email, form.password);
+
+      window.location.href = "/employee/home";
+
+      // Combine messages if needed
+      return {
+        errorCode: loginResult.errorCode,
+        message: loginResult.message,
+      };
+    }
+
     return {
       errorCode: res.status,
-      message: data.message || "Employee account created",
+      message: data.message || "Employee account created, but login skipped",
     };
   } catch (err: any) {
     console.error("❌ employeeSignup2FA → Fetch error:", err);
@@ -107,35 +120,64 @@ export async function employeeSignup2FA(form: {
 
 // adminSignup2FA
 export async function adminSignup2FA(form: {
-  email: string;
   fullName: string;
+  email: string;
   password: string;
   code: string;
   profileImage?: File;
 }): Promise<AuthResult> {
-  try {
-    const formData = new FormData();
-    formData.append("Email", form.email);
-    formData.append("FullName", form.fullName);
-    formData.append("Password", form.password);
-    formData.append("Code", form.code);
-    formData.append("Role", "2"); // 2 = Admin
-    if (form.profileImage) {
-      formData.append("ProfileImage", form.profileImage);
-    }
+  const fd = new FormData();
 
-    const res = await api.post("/Auth/register-admin-verified", formData, {
-      withCredentials: true,
-    });
+  fd.append("FullName", form.fullName);
+  fd.append("Email", form.email);
+  fd.append("Password", form.password);
+  fd.append("Code", form.code);
+  fd.append("Role", "2"); // Admin role
+
+  if (form.profileImage) {
+    fd.append("ProfileImage", form.profileImage);
+  }
+
+  console.log("📦 adminSignup2FA → FormData Preview:");
+  fd.forEach((value, key) => {
+    console.log(`→ ${key}:`, value);
+  });
+
+  try {
+    const res = await fetch(
+      "http://localhost:5121/api/Auth/register-admin-verified",
+      {
+        method: "POST",
+        body: fd,
+      }
+    );
+
+    const data = await res.json();
+
+    if (res.status === 200 || res.status === 201) {
+      console.log("✅ Admin signup successful, logging in...");
+
+      // 🔐 Attempt to login after successful signup
+      const loginResult = await fullEmailLogin(form.email, form.password);
+
+      window.location.href = "/admin/dashboard";
+
+      return {
+        errorCode: loginResult.errorCode,
+        message: loginResult.message,
+      };
+    }
 
     return {
       errorCode: res.status,
-      message: res.data || "Admin account created",
+      message: data.message || "Admin account created, but login skipped",
     };
   } catch (err: any) {
-    const code = err?.response?.status || 500;
-    const message = err?.response?.data || "Admin signup failed";
-    return { errorCode: code, message };
+    console.error("❌ adminSignup2FA → Fetch error:", err);
+    return {
+      errorCode: 500,
+      message: "Something went wrong during admin registration",
+    };
   }
 }
 
@@ -151,17 +193,40 @@ export async function adminSignup2FA(form: {
 export const employeeGoogleSignUp = async (
   idToken: string
 ): Promise<AuthResult> => {
+  const role = 1;
+
   try {
-    const res = await api.post("/Auth/google-register", { idToken });
+    const response = await loginWithGoogle(idToken, role);
+
+    if (response.errorCode !== 200) {
+      return {
+        errorCode: response.errorCode,
+        message: response.message,
+      };
+    }
+
+    const user = await getCurrentUser();
+
+    if (!user || !user.isLinked || !user.employeeId) {
+      window.location.href = "/#notlinked";
+      return {
+        errorCode: 200,
+        message:
+          "Account created, but employee profile is not yet linked. Please wait for activation.",
+      };
+    }
+
+    window.location.href = "/employee/home";
+
     return {
-      errorCode: res.status,
-      message: res.data || "Google registration successful",
+      errorCode: 200,
+      message: "Employee account created and logged in successfully.",
     };
-  } catch (err: any) {
-    const status = err?.response?.status || 500;
+  } catch (error: any) {
+    console.error("❌ Employee Google signup failed:", error);
     return {
-      errorCode: status,
-      message: "Google registration failed",
+      errorCode: 500,
+      message: "Something went wrong during employee Google signup.",
     };
   }
 };
@@ -170,17 +235,38 @@ export const employeeGoogleSignUp = async (
 export const adminGoogleSignUp = async (
   idToken: string
 ): Promise<AuthResult> => {
+  const role = 2;
+
   try {
-    const res = await api.post("/Auth/google-register-admin", { idToken });
+    const response = await loginWithGoogle(idToken, role);
+
+    if (response.errorCode !== 200) {
+      return {
+        errorCode: response.errorCode,
+        message: response.message,
+      };
+    }
+
+    const user = await getCurrentUser();
+
+    if (!user || !user.adminId || !user.isLinked) {
+      return {
+        errorCode: 403,
+        message: "Admin role not linked properly. Please contact support.",
+      };
+    }
+
+    window.location.href = "/admin/dashboard";
+
     return {
-      errorCode: res.status,
-      message: res.data || "Google registration successful",
+      errorCode: 200,
+      message: "Admin account created and logged in successfully.",
     };
-  } catch (err: any) {
-    const status = err?.response?.status || 500;
+  } catch (error: any) {
+    console.error("Admin Google signup failed:", error);
     return {
-      errorCode: status,
-      message: "Google registration failed",
+      errorCode: 500,
+      message: "Something went wrong during admin Google signup.",
     };
   }
 };
@@ -221,13 +307,17 @@ export const loginWithEmail = async (
  * Logs in a user using their Google ID token.
  *
  * @param {string} idToken - The Google ID token.
+ * @param {number} role - The user's role (Sign In: 0. Sign Up: 1 for employee, 2 for admin).
  * @returns {Promise<AuthResult>} The result of the login attempt.
  */
-export const loginWithGoogle = async (idToken: string): Promise<AuthResult> => {
+export const loginWithGoogle = async (
+  idToken: string,
+  role: number
+): Promise<AuthResult> => {
   try {
     const res = await api.post(
       "/Auth/google-login",
-      { idToken },
+      { idToken, role },
       { withCredentials: true }
     );
     return {
@@ -295,7 +385,7 @@ export const fullGoogleSignIn = async (
   idToken: string
 ): Promise<AuthResult> => {
   // Step 1: Perform the Google login
-  const loginResult = await loginWithGoogle(idToken);
+  const loginResult = await loginWithGoogle(idToken, 0); // 0 for Sign In
 
   // If login fails, return the error result
   if (loginResult.errorCode !== 200) {
@@ -323,6 +413,7 @@ export const fullGoogleSignIn = async (
       errorCode: 403,
       message: "User role not recognized",
     };
+    window.location.href = "/employee/home";
   }
 
   // Step 5: Return success if the user is linked and redirected

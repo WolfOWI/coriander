@@ -4,11 +4,12 @@ import CoriBtn from "../buttons/CoriBtn";
 import { Link } from "react-router-dom";
 
 // API calls:
-import { employeeSignup2FA } from "../../services/authService"; // Add this
+import { adminSignup2FA, employeeSignup2FA } from "../../services/authService"; // Add this
 
 function VeriCodeForm({
   showLoginScreen,
   userData,
+  userType,
 }: {
   showLoginScreen: () => void;
   userData: {
@@ -17,6 +18,7 @@ function VeriCodeForm({
     password: string;
     profileImage: File | null;
   };
+  userType: number; // 1 for employee, 2 for admin
 }) {
   const [form] = Form.useForm();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -25,6 +27,9 @@ function VeriCodeForm({
   // ----------------------------------------------------------------
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [resendDisabledTime, setResendDisabledTime] = useState(60);
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const messageKey = "signup";
 
   // Disable resend button for specified seconds
   const disableResendButtonForSeconds = (seconds: number) => {
@@ -74,18 +79,32 @@ function VeriCodeForm({
   // Handle form submission
   const handleSubmit = async () => {
     try {
+      messageApi.open({
+        key: messageKey,
+        type: "loading",
+        content: "Loading...",
+      });
       const values = await form.validateFields();
 
       console.log("🧾 VeriCodeForm → handleSubmit → form values:", values);
       console.log("📦 VeriCodeForm → handleSubmit → userData:", userData);
 
-      const response = await employeeSignup2FA({
-        email: userData.email,
-        fullName: userData.fullName,
-        password: userData.password,
-        code: values.vericode,
-        profileImage: userData.profileImage || undefined,
-      });
+      const response =
+        userType === 2
+          ? await adminSignup2FA({
+              email: userData.email,
+              fullName: userData.fullName,
+              password: userData.password,
+              code: values.vericode,
+              profileImage: userData.profileImage || undefined,
+            })
+          : await employeeSignup2FA({
+              email: userData.email,
+              fullName: userData.fullName,
+              password: userData.password,
+              code: values.vericode,
+              profileImage: userData.profileImage || undefined,
+            });
 
       console.log("✅ VeriCodeForm → handleSubmit → response:", response);
 
@@ -94,10 +113,20 @@ function VeriCodeForm({
         showLoginScreen();
       } else {
         message.error(response.message);
+        messageApi.open({
+          key: messageKey,
+          type: "error",
+          content: `${response.message}`,
+        });
       }
     } catch (err) {
       console.error("❌ VeriCodeForm → handleSubmit → Signup failed:", err);
       message.error("Something went wrong");
+      messageApi.open({
+        key: messageKey,
+        type: "error",
+        content: `Something went wrong, ${err}`,
+      });
     }
   };
 
@@ -111,6 +140,7 @@ function VeriCodeForm({
         },
       }}
     >
+      {contextHolder}
       <div className="flex flex-col items-center w-[300px]">
         <div className="flex flex-col items-center mb-4">
           <p>We've sent a code to</p>
