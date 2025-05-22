@@ -29,20 +29,30 @@ import { Icons } from "../../constants/icons";
 // Interfaces
 import { Gathering } from "../../interfaces/gathering/gathering";
 import { GatheringType, MeetStatus, ReviewStatus } from "../../types/common";
+import DeleteMeetingModal from "../modals/DeleteMeetingModal";
 
 interface GatheringBoxProps {
   gathering: Gathering;
   onEditSuccess?: () => void;
   onDeleteSuccess?: () => void;
+  withAdminNamesTitle?: boolean;
+  loggedInAdminId?: string;
 }
 
 // !!!!!!!!!!!!!!!!!!
 // ! The Admin Gathering Box ONLY takes Upcoming & Completed Meetings / Performance Reviews
 // !!!!!!!!!!!!!!!!!!
 
-function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: GatheringBoxProps) {
+function AdminGatheringBox({
+  gathering,
+  onEditSuccess,
+  onDeleteSuccess,
+  withAdminNamesTitle = false,
+  loggedInAdminId = "",
+}: GatheringBoxProps) {
   const [showEditPRModal, setShowEditPRModal] = useState(false);
   const [showEditMeetingModal, setShowEditMeetingModal] = useState(false);
+  const [showDeleteMeetingModal, setShowDeleteMeetingModal] = useState(false);
   const isPerformanceReview = gathering.type === GatheringType.PerformanceReview;
   const isMeeting = gathering.type === GatheringType.Meeting;
 
@@ -136,9 +146,16 @@ function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: Gather
               </Tooltip>
             )}
             <div className="flex flex-col gap-1">
-              <h2 className="text-zinc-800 font-bold w-full">
-                {isPerformanceReview ? "Review " : "Meet with "} {gathering.employeeName}
-              </h2>
+              {withAdminNamesTitle ? (
+                <h2 className="text-zinc-800 font-bold w-full">
+                  {isPerformanceReview ? "Review by " : "Meet with "}{" "}
+                  {loggedInAdminId === gathering.adminId.toString() ? "You" : gathering.adminName}
+                </h2>
+              ) : (
+                <h2 className="text-zinc-800 font-bold w-full">
+                  {isPerformanceReview ? "Review " : "Meet with "} {gathering.employeeName}
+                </h2>
+              )}
 
               {/* Date and Time */}
               <div className="w-full flex items-center gap-3 text-zinc-800 text-[12px]">
@@ -210,95 +227,111 @@ function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: Gather
       {gathering.isOnline ? (
         // If meet is online
         <div className="w-full flex items-center justify-between gap-3">
-          <div className="w-full h-full flex items-center justify-center bg-warmstone-100 rounded-xl">
+          <div className="w-full h-10 flex items-center justify-center bg-warmstone-100 rounded-xl">
             <p className="text-zinc-500 text-[12px]">{gathering.meetLink}</p>
           </div>
-          <CoriBtn primary style="black">
-            Join
-          </CoriBtn>
-          <Dropdown
-            menu={{
-              items: [
-                {
-                  key: "1",
-                  label: isCompleted ? "Mark as Upcoming" : "Mark as Completed",
-                  icon: isCompleted ? <Icons.Schedule /> : <Icons.CheckCircle />,
-                  onClick: () => {
-                    console.log("Mark as Completed");
-                  },
-                },
-                {
-                  key: "2",
-                  label: isPerformanceReview ? "Edit Review" : "Edit Meeting",
-                  icon: <EditIcon />,
-                  onClick: handleEditClick,
-                },
-                {
-                  key: "3",
-                  label: "Remove",
-                  icon: <DeleteIcon />,
-                  danger: true,
-                  onClick: () => {
-                    console.log("Remove");
-                  },
-                },
-              ],
-            }}
-            placement="bottomRight"
-            trigger={["click"]}
-            dropdownRender={(menu) => (
-              <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
-            )}
-          >
-            <Button className="p-0 border-none bg-transparent">
-              <MoreVertRoundedIcon className="text-zinc-500" />
-            </Button>
-          </Dropdown>
+          {loggedInAdminId === gathering.adminId.toString() && (
+            <>
+              <CoriBtn primary style="black">
+                Join
+              </CoriBtn>
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "1",
+                      label: isCompleted ? "Mark as Upcoming" : "Mark as Completed",
+                      icon: isCompleted ? <Icons.Schedule /> : <Icons.CheckCircle />,
+                      onClick: () => {
+                        console.log("Mark as Completed");
+                      },
+                    },
+                    {
+                      key: "2",
+                      label: isPerformanceReview ? "Edit Review" : "Edit Meeting",
+                      icon: <EditIcon />,
+                      onClick: handleEditClick,
+                    },
+                    {
+                      key: "3",
+                      label: "Remove",
+                      icon: <DeleteIcon />,
+                      danger: true,
+                      onClick: () => {
+                        if (isPerformanceReview) {
+                          console.log("Remove Performance Review");
+                        } else if (isMeeting) {
+                          setShowDeleteMeetingModal(true);
+                        }
+                      },
+                    },
+                  ],
+                }}
+                placement="bottomRight"
+                trigger={["click"]}
+                dropdownRender={(menu) => (
+                  <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
+                )}
+              >
+                <Button className="p-0 border-none bg-transparent">
+                  <MoreVertRoundedIcon className="text-zinc-500" />
+                </Button>
+              </Dropdown>
+            </>
+          )}
         </div>
       ) : (
         // If meet is in person
         <div className="w-full flex items-center justify-between gap-3">
-          <div className="w-full h-full flex items-center justify-center bg-warmstone-100 rounded-xl">
+          <div className="w-full h-10 flex items-center justify-center bg-warmstone-100 rounded-xl">
             <p className="text-zinc-500 text-[12px]">{gathering.meetLocation}</p>
           </div>
-          <Dropdown
-            menu={{
-              items: [
-                {
-                  key: "1",
-                  label: isCompleted ? "Mark as Upcoming" : "Mark as Completed",
-                  icon: isCompleted ? <Icons.Schedule /> : <Icons.CheckCircle />,
-                  onClick: () => {
-                    console.log("Mark as Completed");
-                  },
-                },
-                {
-                  key: "2",
-                  label: isPerformanceReview ? "Edit Performance Review" : "Edit Meeting",
-                  icon: <EditIcon />,
-                  onClick: handleEditClick,
-                },
-                {
-                  key: "3",
-                  label: "Remove",
-                  icon: <DeleteIcon />,
-                  danger: true,
-                  onClick: () => {
-                    onDeleteSuccess;
-                  },
-                },
-              ],
-            }}
-            placement="bottomRight"
-            trigger={["click"]}
-            dropdownRender={(menu) => (
-              <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
-            )}
-          >
-            <Button className="p-0 border-none bg-transparent">
-              <MoreVertRoundedIcon className="text-zinc-500" />
-            </Button>
-          </Dropdown>
+          {loggedInAdminId === gathering.adminId.toString() && (
+            <>
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "1",
+                      label: isCompleted ? "Mark as Upcoming" : "Mark as Completed",
+                      icon: isCompleted ? <Icons.Schedule /> : <Icons.CheckCircle />,
+                      onClick: () => {
+                        console.log("Mark as Completed");
+                      },
+                    },
+                    {
+                      key: "2",
+                      label: isPerformanceReview ? "Edit Performance Review" : "Edit Meeting",
+                      icon: <EditIcon />,
+                      onClick: handleEditClick,
+                    },
+                    {
+                      key: "3",
+                      label: "Remove",
+                      icon: <DeleteIcon />,
+                      danger: true,
+                      onClick: () => {
+                        if (isPerformanceReview) {
+                          console.log("Remove Performance Review");
+                        } else if (isMeeting) {
+                          setShowDeleteMeetingModal(true);
+                        }
+                      },
+                    },
+                  ],
+                }}
+                placement="bottomRight"
+                trigger={["click"]}
+                dropdownRender={(menu) => (
+                  <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
+                )}
+              >
+                <Button className="p-0 border-none bg-transparent">
+                  <MoreVertRoundedIcon className="text-zinc-500" />
+                </Button>
+              </Dropdown>
+            </>
+          )}
         </div>
       )}
 
@@ -318,6 +351,16 @@ function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: Gather
           showModal={showEditMeetingModal}
           setShowModal={setShowEditMeetingModal}
           onEditSuccess={handleEditSuccess}
+          meeting={convertToMeetingDTO()}
+        />
+      )}
+
+      {/* Add the DeleteMeetingModal */}
+      {isMeeting && (
+        <DeleteMeetingModal
+          showModal={showDeleteMeetingModal}
+          setShowModal={setShowDeleteMeetingModal}
+          onDeleteSuccess={onDeleteSuccess}
           meeting={convertToMeetingDTO()}
         />
       )}

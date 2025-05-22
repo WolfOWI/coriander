@@ -51,6 +51,7 @@ import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
 import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetrics";
 import { Equipment } from "../../interfaces/equipment/equipment";
 import { Gathering } from "../../interfaces/gathering/gathering";
+import AdminGatheringBox from "../../components/gathering/AdminGatheringBox";
 
 // Admin Employee Details Page Response Interface
 interface AdminEmpDetailsResponse {
@@ -70,6 +71,9 @@ interface AdminEmpDetailsResponse {
 const AdminIndividualEmployee: React.FC = () => {
   // Get the employee ID from the URL params
   const { employeeId } = useParams();
+
+  // TODO Replace with the current admin logged in ID
+  const loggedInAdminId = "1";
 
   // Navigation
   const navigate = useNavigate();
@@ -601,7 +605,14 @@ const AdminIndividualEmployee: React.FC = () => {
                   {/* TODO Possibly create a performance review here? */}
                   <div className="w-full h-[580px] overflow-y-auto gap-4 flex flex-col rounded-2xl relative scrollbar-hide [&::-webkit-scrollbar]:hidden">
                     {gatherings.map((gathering) => (
-                      <EmpGatheringBox key={gathering.$id} gathering={gathering} />
+                      <AdminGatheringBox
+                        key={gathering.$id}
+                        gathering={gathering}
+                        withAdminNamesTitle
+                        loggedInAdminId={loggedInAdminId}
+                        onEditSuccess={fetchEmployee}
+                        onDeleteSuccess={fetchEmployee}
+                      />
                     ))}
                     {gatherings.length === 0 && (
                       <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-3">
