@@ -35,7 +35,6 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       // First wait 4 seconds to show success state
       await new Promise((resolve) => setTimeout(resolve, 4000));
-      console.log("⏰ Success state shown for 4 seconds");
 
       // Then set sleeping to false to trigger modal close
       setServerSleeping(false);
@@ -54,7 +53,6 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Register the check function with the API service
   useEffect(() => {
-    console.log("📝 Registering server status check with API service");
     setServerStatusCheck(checkServerStatus);
   }, [checkServerStatus]);
 

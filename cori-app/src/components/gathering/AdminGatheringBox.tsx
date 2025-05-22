@@ -16,6 +16,11 @@ import TextSnippetRoundedIcon from "@mui/icons-material/TextSnippetRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+
+// Functionality
+import { meetingAPI } from "../../services/api.service";
+
+// Utils
 import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUtils";
 
 // Constants
@@ -72,7 +77,6 @@ function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: Gather
 
   // Convert Gathering to PerformanceReviewDTO
   const convertToPerformanceReviewDTO = (): PerformanceReviewDTO => {
-    console.log("Original gathering for conversion:", gathering);
     const result = {
       reviewId: gathering.id,
       adminId: gathering.adminId,
@@ -89,13 +93,11 @@ function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: Gather
       docUrl: gathering.docUrl || "",
       status: gathering.reviewStatus || 0,
     };
-    console.log("Converted DTO:", result);
     return result;
   };
 
   // Convert Gathering to MeetingDTO
   const convertToMeetingDTO = (): MeetingDTO => {
-    console.log("Original gathering for conversion:", gathering);
     const result = {
       meetingId: gathering.id,
       adminId: gathering.adminId,
@@ -110,7 +112,6 @@ function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: Gather
       purpose: gathering.purpose || "",
       status: gathering.meetingStatus || MeetStatus.Upcoming,
     };
-    console.log("Converted Meeting DTO:", result);
     return result;
   };
 
@@ -220,12 +221,20 @@ function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: Gather
               items: [
                 {
                   key: "1",
+                  label: isCompleted ? "Mark as Upcoming" : "Mark as Completed",
+                  icon: isCompleted ? <Icons.Schedule /> : <Icons.CheckCircle />,
+                  onClick: () => {
+                    console.log("Mark as Completed");
+                  },
+                },
+                {
+                  key: "2",
                   label: isPerformanceReview ? "Edit Review" : "Edit Meeting",
                   icon: <EditIcon />,
                   onClick: handleEditClick,
                 },
                 {
-                  key: "2",
+                  key: "3",
                   label: "Remove",
                   icon: <DeleteIcon />,
                   danger: true,

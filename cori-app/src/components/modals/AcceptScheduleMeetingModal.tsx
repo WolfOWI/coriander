@@ -48,10 +48,6 @@ function AcceptScheduleMeetingModal({
   const [loading, setLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
 
-  useEffect(() => {
-    console.log("AcceptScheduleMeetingModal");
-  }, []);
-
   // Handle the submission of the meeting schedule
   const handleSubmit = async () => {
     try {

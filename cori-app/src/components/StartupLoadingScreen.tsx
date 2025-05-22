@@ -3,8 +3,8 @@ import { Spin } from "antd";
 import { healthCheckAPI } from "../services/api.service";
 import Lottie from "lottie-react";
 import plane from "../assets/lottie/plane.json";
-import successPop from "../assets/lottie/successPop.json";
-
+import confetti from "../assets/lottie/confetti.json";
+import logo from "../assets/logos/cori_logo_green.png";
 interface StartupLoadingScreenProps {
   onServerAwake: () => void;
 }
@@ -24,7 +24,6 @@ const StartupLoadingScreen: React.FC<StartupLoadingScreenProps> = ({ onServerAwa
     setCheckCount((prev) => prev + 1);
     try {
       await healthCheckAPI.checkHealth();
-      console.log("✅ Startup: Server is awake");
       setIsServerAwake(true);
       setIsChecking(false);
 
@@ -38,7 +37,6 @@ const StartupLoadingScreen: React.FC<StartupLoadingScreenProps> = ({ onServerAwa
         onServerAwake();
       }, 3000);
     } catch (error) {
-      console.log("💤 Startup: Server is sleeping");
       setIsServerAwake(false);
       setTimeout(() => {
         setIsChecking(false);
@@ -91,14 +89,22 @@ const StartupLoadingScreen: React.FC<StartupLoadingScreenProps> = ({ onServerAwa
             )}
           </div>
         ) : (
-          <div>
-            <div className="flex items-center justify-center h-40">
-              <Lottie animationData={successPop} loop={false} style={{ width: 160, height: 160 }} />
-            </div>
-            <h1 className="text-4xl font-bold">Done!</h1>
-            <h3 className="text-2xl font-semi-bold mt-2">The system is ready.</h3>
-            <div className="h-20 flex items-center justify-center">
-              <p className="text-zinc-500 text-center px-10">Thank you for your patience.</p>
+          <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center relative h-40">
+              <h1 className="text-4xl font-bold">Welcome to</h1>
+              <Lottie
+                animationData={confetti}
+                loop={false}
+                style={{
+                  width: 500,
+                  height: 500,
+                  position: "absolute",
+                  top: "-20%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                }}
+              />
+              <img src={logo} alt="Coriander Logo" className="w-80 mt-4" />
             </div>
           </div>
         )}

@@ -38,7 +38,6 @@ let isCheckingHealth = false;
 
 // Function to set the server status check function
 export const setServerStatusCheck = (checkFn: () => Promise<void>) => {
-  console.log("🔧 Setting up server status check function");
   serverStatusCheck = checkFn;
 };
 
@@ -59,19 +58,14 @@ apiClient.interceptors.request.use(
     // Check server status before making the request, but don't block the request
     // and prevent recursive health checks
     if (serverStatusCheck && !isCheckingHealth) {
-      console.log("🔄 Initiating server status check");
       isCheckingHealth = true;
       serverStatusCheck()
         .catch((error) => {
           // Ignore errors from health check
-          console.log("⚠️ Server status check error:", error.message);
         })
         .finally(() => {
-          console.log("🏁 Server status check completed");
           isCheckingHealth = false;
         });
-    } else if (isCheckingHealth) {
-      console.log("⏳ Skipping health check - one already in progress");
     }
 
     // Return the modified config
@@ -79,7 +73,6 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     // Reject the promise with the error
-    console.log("❌ Request interceptor error:", error.message);
     return Promise.reject(error);
   }
 );
@@ -297,7 +290,6 @@ export const healthCheckAPI = {
    * @returns Promise containing the API response
    */
   checkHealth: (): Promise<AxiosResponse> => {
-    console.log("🏥 Starting health check request");
     return apiClient
       .get("/health", {
         timeout: 5000, // 5 second timeout for health checks
@@ -307,11 +299,9 @@ export const healthCheckAPI = {
         },
       })
       .then((response) => {
-        console.log("✅ Health check successful");
         return response;
       })
       .catch((error) => {
-        console.log("❌ Health check failed:", error.message);
         throw error;
       });
   },
