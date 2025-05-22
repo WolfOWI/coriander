@@ -124,7 +124,7 @@ function EditPRModal({
         meetLink: performanceReview.meetLink || "",
         startDate: performanceReview.startDate,
         endDate: performanceReview.endDate,
-        rating: values.rating || 0,
+        rating: values.rating || null,
         comment: values.comment || "",
         docUrl: values.docUrl || "",
         status: newStatus,
