@@ -11,7 +11,7 @@ declare global {
 }
 
 interface DocUploadWidgetProps {
-  onUploadSuccess: (url: string) => void;
+  onUploadSuccess: (url: string | null) => void;
   uploadedFileUrl?: string;
   onViewFile?: (url: string) => void;
 }
@@ -35,6 +35,13 @@ const DocUploadWidget: React.FC<DocUploadWidgetProps> = ({
     } else {
       downloadFile(url);
     }
+  };
+
+  // Handle clearing the document
+  const handleClearDocument = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the parent onClick handler
+    onUploadSuccess(null);
+    messageApi.success("Document cleared successfully");
   };
 
   const openUploadWidget = () => {
@@ -71,12 +78,21 @@ const DocUploadWidget: React.FC<DocUploadWidgetProps> = ({
       {contextHolder}
       <div className="w-full">
         {uploadedFileUrl ? (
-          <div
-            className="flex items-center gap-2 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50"
-            onClick={() => handleFileAction(uploadedFileUrl)}
-          >
-            <Icons.TextSnippet />
-            <span className="text-sm text-blue-500 underline">Download PDF</span>
+          <div className="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
+            <div
+              className="flex items-center gap-2 cursor-pointer flex-grow"
+              onClick={() => handleFileAction(uploadedFileUrl)}
+            >
+              <Icons.TextSnippet />
+              <span className="text-sm text-blue-500 underline">Download PDF</span>
+            </div>
+            <div
+              className="flex items-center justify-center w-6 h-6 rounded-full bg-red-50 hover:bg-red-100 cursor-pointer"
+              onClick={handleClearDocument}
+              title="Clear document"
+            >
+              <Icons.Delete fontSize="small" className="text-red-500" />
+            </div>
           </div>
         ) : (
           <div

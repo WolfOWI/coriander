@@ -383,8 +383,15 @@ export const performanceReviewsAPI = {
    */
   UpdatePerformanceReview: (id: number, data: object): Promise<AxiosResponse> =>
     apiClient.put(`/PerformanceReview/UpdatePerformanceReview/${id}`, data),
+
+  /**
+   * Deletes a performance review by its ID
+   * @param id - The performance review's ID
+   * @returns Promise containing the API response
+   */
+  deletePerformanceReview: (id: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/PerformanceReview/DeletePerformanceReview/${id}`),
 };
-// ------------------------------------------------------------
 
 // MEETING API
 // ------------------------------------------------------------
@@ -470,6 +477,14 @@ export const meetingAPI = {
    * @returns Promise containing the API response
    */
   deleteMeetingRequest: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/Meeting/Delete/${meetingId}`),
+
+  /**
+   * An admin deletes a meeting by its ID
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  deleteMeeting: (meetingId: number): Promise<AxiosResponse> =>
     apiClient.delete(`/Meeting/Delete/${meetingId}`),
 };
 // ------------------------------------------------------------

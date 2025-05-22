@@ -94,8 +94,8 @@ function EditPRModal({
   }, [performanceReview]);
 
   // Handle document upload success
-  const handleDocUploadSuccess = (url: string) => {
-    setUploadedFileUrl(url);
+  const handleDocUploadSuccess = (url: string | null) => {
+    setUploadedFileUrl(url || "");
     form.setFieldsValue({ docUrl: url });
   };
 

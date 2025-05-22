@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import CoriBtn from "../buttons/CoriBtn";
 import EditPRModal from "../modals/EditPRModal";
 import { PerformanceReviewDTO } from "../modals/EditPRModal";
+import EditMeetingModal from "../modals/EditMeetingModal";
+import { MeetingDTO } from "../../interfaces/meetings/meetingDTO";
 
 // Import 3rd party components
 import { Button, Dropdown, Tooltip } from "antd";
@@ -26,14 +28,16 @@ import { GatheringType, MeetStatus, ReviewStatus } from "../../types/common";
 interface GatheringBoxProps {
   gathering: Gathering;
   onEditSuccess?: () => void;
+  onDeleteSuccess?: () => void;
 }
 
 // !!!!!!!!!!!!!!!!!!
 // ! The Admin Gathering Box ONLY takes Upcoming & Completed Meetings / Performance Reviews
 // !!!!!!!!!!!!!!!!!!
 
-function AdminGatheringBox({ gathering, onEditSuccess }: GatheringBoxProps) {
+function AdminGatheringBox({ gathering, onEditSuccess, onDeleteSuccess }: GatheringBoxProps) {
   const [showEditPRModal, setShowEditPRModal] = useState(false);
+  const [showEditMeetingModal, setShowEditMeetingModal] = useState(false);
   const isPerformanceReview = gathering.type === GatheringType.PerformanceReview;
   const isMeeting = gathering.type === GatheringType.Meeting;
 
@@ -48,13 +52,17 @@ function AdminGatheringBox({ gathering, onEditSuccess }: GatheringBoxProps) {
   const handleEditClick = () => {
     if (isPerformanceReview) {
       setShowEditPRModal(true);
-    } else {
-      console.log("Edit meeting");
+    } else if (isMeeting) {
+      setShowEditMeetingModal(true);
     }
   };
 
   const handleEditSuccess = () => {
-    console.log("Performance review edited successfully");
+    if (isPerformanceReview) {
+      console.log("Performance review edited successfully");
+    } else if (isMeeting) {
+      console.log("Meeting edited successfully");
+    }
 
     // Call the parent component's onEditSuccess callback if provided
     if (onEditSuccess) {
@@ -82,6 +90,27 @@ function AdminGatheringBox({ gathering, onEditSuccess }: GatheringBoxProps) {
       status: gathering.reviewStatus || 0,
     };
     console.log("Converted DTO:", result);
+    return result;
+  };
+
+  // Convert Gathering to MeetingDTO
+  const convertToMeetingDTO = (): MeetingDTO => {
+    console.log("Original gathering for conversion:", gathering);
+    const result = {
+      meetingId: gathering.id,
+      adminId: gathering.adminId,
+      adminName: gathering.adminName,
+      employeeId: gathering.employeeId,
+      employeeName: gathering.employeeName,
+      isOnline: gathering.isOnline || false,
+      meetLocation: gathering.meetLocation || "",
+      meetLink: gathering.meetLink || "",
+      startDate: gathering.startDate?.toString() || "",
+      endDate: gathering.endDate?.toString() || "",
+      purpose: gathering.purpose || "",
+      status: gathering.meetingStatus || MeetStatus.Upcoming,
+    };
+    console.log("Converted Meeting DTO:", result);
     return result;
   };
 
@@ -246,7 +275,7 @@ function AdminGatheringBox({ gathering, onEditSuccess }: GatheringBoxProps) {
                   icon: <DeleteIcon />,
                   danger: true,
                   onClick: () => {
-                    console.log("Remove");
+                    onDeleteSuccess;
                   },
                 },
               ],
@@ -271,6 +300,16 @@ function AdminGatheringBox({ gathering, onEditSuccess }: GatheringBoxProps) {
           setShowModal={setShowEditPRModal}
           onEditSuccess={handleEditSuccess}
           performanceReview={convertToPerformanceReviewDTO()}
+        />
+      )}
+
+      {/* Add the EditMeetingModal */}
+      {isMeeting && (
+        <EditMeetingModal
+          showModal={showEditMeetingModal}
+          setShowModal={setShowEditMeetingModal}
+          onEditSuccess={handleEditSuccess}
+          meeting={convertToMeetingDTO()}
         />
       )}
     </div>
