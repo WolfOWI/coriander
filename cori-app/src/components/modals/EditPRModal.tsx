@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { performanceReviewsAPI } from "../../services/api.service";
-import { Modal, Button, Form, message, Rate, Switch } from "antd";
+import { Modal, Button, Form, message, Rate, Switch, DatePicker, TimePicker } from "antd";
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
 import { Icons } from "../../constants/icons";
@@ -49,6 +49,13 @@ function EditPRModal({
       const commentValue = performanceReview.comment || "";
       const statusValue = performanceReview.status === 2;
 
+      // Convert dates to dayjs objects for form fields
+      const startDateTime = dayjs(performanceReview.startDate);
+      const endDateTime = dayjs(performanceReview.endDate);
+
+      // Time values need to be in an array for TimePicker.RangePicker
+      const timeRange = [startDateTime, endDateTime];
+
       setIsCompleted(statusValue);
 
       form.setFieldsValue({
@@ -58,6 +65,8 @@ function EditPRModal({
         comment: commentValue,
         docUrl: performanceReview.docUrl,
         status: statusValue,
+        meetingDate: startDateTime,
+        timeRange: timeRange,
       });
 
       setUploadedFileUrl(performanceReview.docUrl || "");
@@ -115,6 +124,22 @@ function EditPRModal({
 
       const newStatus = isCompleted ? 2 : 1;
 
+      // Process date and time
+      const meetingDate = values.meetingDate;
+      const [startTime, endTime] = values.timeRange || [
+        dayjs(performanceReview.startDate),
+        dayjs(performanceReview.endDate),
+      ];
+
+      // Combine date and time
+      const fullStartDate = meetingDate
+        ? meetingDate.hour(startTime.hour()).minute(startTime.minute()).second(0).toISOString()
+        : performanceReview.startDate;
+
+      const fullEndDate = meetingDate
+        ? meetingDate.hour(endTime.hour()).minute(endTime.minute()).second(0).toISOString()
+        : performanceReview.endDate;
+
       const updatedValues = {
         reviewId: performanceReview.reviewId,
         adminId: performanceReview.adminId,
@@ -122,8 +147,8 @@ function EditPRModal({
         isOnline: performanceReview.isOnline,
         meetLocation: performanceReview.meetLocation || "",
         meetLink: performanceReview.meetLink || "",
-        startDate: performanceReview.startDate,
-        endDate: performanceReview.endDate,
+        startDate: fullStartDate,
+        endDate: fullEndDate,
         rating: values.rating || null,
         comment: values.comment || "",
         docUrl: values.docUrl || "",
@@ -154,16 +179,6 @@ function EditPRModal({
   const handleCancel = () => {
     setShowModal(false);
     form.resetFields(); // Clear the form fields
-  };
-
-  // Format the date and time for display
-  const formatDateTime = () => {
-    if (!performanceReview || !performanceReview.startDate) return "";
-
-    const startDate = dayjs(performanceReview.startDate);
-    const endDate = dayjs(performanceReview.endDate);
-
-    return `${startDate.format("DD MMM YYYY • HH:mm")} - ${endDate.format("HH:mm")}`;
   };
 
   return (
@@ -205,11 +220,39 @@ function EditPRModal({
             <div className="text-zinc-800 text-lg font-semibold">
               {performanceReview.employeeName}
             </div>
-            <div className="text-zinc-500">{formatDateTime()}</div>
           </div>
         )}
 
         <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
+          <Form.Item
+            name="meetingDate"
+            label="Meeting Date"
+            rules={[{ required: true, message: "Please select a date for the meeting." }]}
+          >
+            <DatePicker
+              className="w-full h-12"
+              format="DD MMM YYYY" // Prettier format
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="timeRange"
+            label="Meeting Time"
+            rules={[{ required: true, message: "Please select a time for the meeting." }]}
+          >
+            <TimePicker.RangePicker
+              className="w-full h-12"
+              format="HH:mm"
+              minuteStep={5} // 5 minute increments
+              showNow={true}
+              disabledTime={() => ({
+                // Only allow times between 4am and 9pm
+                disabledHours: () => [0, 1, 2, 3, 21, 22, 23],
+              })}
+              hideDisabledOptions={true} // Hide the disabled options
+            />
+          </Form.Item>
+
           <Form.Item name="rating" label="Rating">
             <Rate allowClear className="text-corigreen-500 text-3xl flex gap-1" />
           </Form.Item>
