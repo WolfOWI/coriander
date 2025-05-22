@@ -334,9 +334,9 @@ const AdminIndividualEmployee: React.FC = () => {
                   >
                     <div className="flex gap-2 items-center justify-between overflow-clip">
                       {/* <WorkIcon /> */}
-                      <p className="text-zinc-900 truncate max-w-[40%]">{empUser.jobTitle}</p>
+                      <p className="text-zinc-900">{empUser.jobTitle}</p>
                       <p className="text-zinc-900">•</p>
-                      <p className="text-zinc-500 truncate max-w-[40%]">{empUser.department}</p>
+                      <p className="text-zinc-500">{empUser.department}</p>
                       <div className="w-fit">
                         {empUser.isSuspended ? (
                           <EmployTypeBadge status="suspended" />
@@ -467,7 +467,7 @@ const AdminIndividualEmployee: React.FC = () => {
             </div>
 
             {/* Equipment */}
-            <div className="w-full flex flex-col gap-2 items-center">
+            <div className="w-full flex flex-col gap-2 items-center relative">
               <div className="flex gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Equipment</h2>
                 <Dropdown
@@ -498,7 +498,10 @@ const AdminIndividualEmployee: React.FC = () => {
                   </Button>
                 </Dropdown>
               </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
+              <div
+                className={`bg-warmstone-50 px-4 pt-4 rounded-2xl w-full flex flex-col items-center gap-4 overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden
+                ${equipment.length > 3 ? "h-[224px] pb-20" : "h-fit pb-4"}`}
+              >
                 {equipment.map((item) => (
                   <EquipmentListItem
                     key={item.equipmentId}
@@ -523,6 +526,12 @@ const AdminIndividualEmployee: React.FC = () => {
                   <p className="text-zinc-500 py-4">No Equipment Assigned</p>
                 )}
               </div>
+
+              {equipment.length > 3 && (
+                <div className="py-8 w-full bg-gradient-to-b from-transparent to-warmstone-50 absolute rounded-b-2xl bottom-0 left-0 right-0 text-transparent">
+                  _
+                </div>
+              )}
             </div>
           </div>
           <div className="max-w-1/2 min-w-1/2 w-1/2">
