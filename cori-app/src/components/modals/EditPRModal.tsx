@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { performanceReviewsAPI } from "../../services/api.service";
-import {
-  Modal,
-  Button,
-  Form,
-  Select,
-  message,
-  Rate,
-  Upload,
-  Switch,
-} from "antd";
+import { Modal, Button, Form, Select, message, Rate, Upload, Switch } from "antd";
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
 import { Icons } from "../../constants/icons";
+import DocUploadWidget from "../uploading/DocUploadWidget";
 
 export interface PerformanceReviewDTO {
   reviewId: number;
@@ -31,7 +23,6 @@ export interface PerformanceReviewDTO {
   status: number;
 }
 
-
 interface EditPRModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
@@ -43,6 +34,7 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
   const [messageApi, contextHolder] = message.useMessage();
   const [reviews, setReviews] = useState<PerformanceReviewDTO[]>([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string>("");
 
   useEffect(() => {
     const fetchUpcoming = async () => {
@@ -65,7 +57,7 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
   // When employee is selected, auto-select review and set date/time fields
   const handleEmployeeChange = (employeeId: number) => {
     setSelectedEmployeeId(employeeId);
-    const employeeReviews = reviews.filter(r => r.employeeId === employeeId);
+    const employeeReviews = reviews.filter((r) => r.employeeId === employeeId);
     if (employeeReviews.length > 0) {
       const review = employeeReviews[0];
       form.setFieldsValue({
@@ -82,7 +74,7 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
 
   // When review is selected, update date/time fields if needed
   const handleReviewChange = (reviewId: number) => {
-    const review = reviews.find(r => r.reviewId === reviewId);
+    const review = reviews.find((r) => r.reviewId === reviewId);
     if (review) {
       // If you have date/time fields in the form, set them here
       // form.setFieldsValue({
@@ -90,6 +82,18 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
       //   endDate: dayjs(review.endDate),
       // });
     }
+  };
+
+  // Handle document upload success
+  const handleDocUploadSuccess = (url: string) => {
+    setUploadedFileUrl(url);
+    form.setFieldsValue({ docUrl: url });
+  };
+
+  // Handle document download
+  const handleViewDocument = (url: string) => {
+    // We don't need to provide an implementation here since
+    // DocUploadWidget has its own download logic now
   };
 
   // Handle the editing of the performance review
@@ -188,10 +192,11 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
           >
             <Select onChange={handleReviewChange}>
               {reviews
-                .filter(r => selectedEmployeeId == null || r.employeeId === selectedEmployeeId)
+                .filter((r) => selectedEmployeeId == null || r.employeeId === selectedEmployeeId)
                 .map((review) => (
                   <Select.Option key={review.reviewId} value={review.reviewId}>
-                    {review.startDate && dayjs(review.startDate).format("DD MMM YYYY • HH:mm")} - {dayjs(review.endDate).format("HH:mm")}
+                    {review.startDate && dayjs(review.startDate).format("DD MMM YYYY • HH:mm")} -{" "}
+                    {dayjs(review.endDate).format("HH:mm")}
                   </Select.Option>
                 ))}
             </Select>
@@ -206,13 +211,12 @@ function EditPRModal({ showModal, setShowModal, onEditSuccess }: EditPRModalProp
             </div>
           </Form.Item>
 
-          <Form.Item name="docUrl" valuePropName="fileList">
-            <Upload.Dragger name="docUrl" action="/">
-              <p className="ant-upload-drag-icon">
-                <Icons.Upload />
-              </p>
-              <p className="text-zinc-500 text-[12px] mb-2">Upload a supporting document</p>
-            </Upload.Dragger>
+          <Form.Item name="docUrl" label="Supporting Document (PDF only)">
+            <DocUploadWidget
+              onUploadSuccess={handleDocUploadSuccess}
+              uploadedFileUrl={uploadedFileUrl}
+              onViewFile={handleViewDocument}
+            />
           </Form.Item>
 
           <Form.Item name="status">
