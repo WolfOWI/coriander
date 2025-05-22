@@ -6,6 +6,8 @@ import EditPRModal from "../modals/EditPRModal";
 import { PerformanceReviewDTO } from "../modals/EditPRModal";
 import EditMeetingModal from "../modals/EditMeetingModal";
 import { MeetingDTO } from "../../interfaces/meetings/meetingDTO";
+import DeleteMeetingModal from "../modals/DeleteMeetingModal";
+import DeletePRModal from "../modals/DeletePRModal";
 
 // Import 3rd party components
 import { Button, Dropdown, Tooltip } from "antd";
@@ -29,7 +31,6 @@ import { Icons } from "../../constants/icons";
 // Interfaces
 import { Gathering } from "../../interfaces/gathering/gathering";
 import { GatheringType, MeetStatus, ReviewStatus } from "../../types/common";
-import DeleteMeetingModal from "../modals/DeleteMeetingModal";
 
 interface GatheringBoxProps {
   gathering: Gathering;
@@ -53,6 +54,7 @@ function AdminGatheringBox({
   const [showEditPRModal, setShowEditPRModal] = useState(false);
   const [showEditMeetingModal, setShowEditMeetingModal] = useState(false);
   const [showDeleteMeetingModal, setShowDeleteMeetingModal] = useState(false);
+  const [showDeletePRModal, setShowDeletePRModal] = useState(false);
   const isPerformanceReview = gathering.type === GatheringType.PerformanceReview;
   const isMeeting = gathering.type === GatheringType.Meeting;
 
@@ -259,7 +261,7 @@ function AdminGatheringBox({
                       danger: true,
                       onClick: () => {
                         if (isPerformanceReview) {
-                          console.log("Remove Performance Review");
+                          setShowDeletePRModal(true);
                         } else if (isMeeting) {
                           setShowDeleteMeetingModal(true);
                         }
@@ -312,7 +314,7 @@ function AdminGatheringBox({
                       danger: true,
                       onClick: () => {
                         if (isPerformanceReview) {
-                          console.log("Remove Performance Review");
+                          setShowDeletePRModal(true);
                         } else if (isMeeting) {
                           setShowDeleteMeetingModal(true);
                         }
@@ -362,6 +364,16 @@ function AdminGatheringBox({
           setShowModal={setShowDeleteMeetingModal}
           onDeleteSuccess={onDeleteSuccess}
           meeting={convertToMeetingDTO()}
+        />
+      )}
+
+      {/* Add the DeletePRModal */}
+      {isPerformanceReview && (
+        <DeletePRModal
+          showModal={showDeletePRModal}
+          setShowModal={setShowDeletePRModal}
+          onDeleteSuccess={onDeleteSuccess}
+          performanceReview={convertToPerformanceReviewDTO()}
         />
       )}
     </div>
