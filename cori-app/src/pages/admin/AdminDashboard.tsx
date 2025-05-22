@@ -14,7 +14,7 @@ import AdminGatheringBox from "../../components/gathering/AdminGatheringBox";
 
 //Functionality
 import { gatheringAPI, pageAPI } from "../../services/api.service";
-
+import { useNavigate } from "react-router-dom";
 //Interface
 import { Gathering } from "../../interfaces/gathering/gathering";
 
@@ -26,6 +26,7 @@ import EditPRModal from "../../components/modals/EditPRModal";
 import AdminAddIcon from "../../assets/icons/AdminAddIcon.png";
 import { Spin } from "antd";
 import dayjs from "dayjs";
+import { Icons } from "../../constants/icons";
 
 const AdminDashboard: React.FC = () => {
   // State variables
@@ -33,11 +34,11 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreatePRModal, setShowCreatePRModal] = useState(false);
-  const [showEditPRModal, setShowEditPRModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [gatherings, setGatherings] = useState<any>({ all: [] });
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
   const [loadingGatherings, setLoadingGatherings] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   // Fetch dashboard data from the API
   const fetchDashboardData = async () => {
@@ -219,12 +220,14 @@ const AdminDashboard: React.FC = () => {
                     </Col>
                     <Col md={6}>
                       <div
-                        className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer"
-                        onClick={() => setShowEditPRModal(true)}
+                        className="flex flex-col bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer"
+                        onClick={() => {
+                          navigate("/admin/meetings");
+                        }}
                       >
-                        <p className="text-sm font-bold mb-2">Rate Your Employee</p>
-                        <div className="flex justify-end h-full">
-                          <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
+                        <p className="text-sm font-bold mb-2">View All Meetings</p>
+                        <div className="flex bg-zinc-700 rounded-full p-2 w-fit align-self-end">
+                          <Icons.MeetingRoom className="w-6 h-6" />
                         </div>
                       </div>
                     </Col>
@@ -299,16 +302,6 @@ const AdminDashboard: React.FC = () => {
             fetchDashboardData(); // Refresh dashboard data
             setShowCreatePRModal(false);
             console.log("Performance Review created successfully!");
-          }}
-        />
-
-        <EditPRModal
-          showModal={showEditPRModal}
-          setShowModal={setShowEditPRModal}
-          onEditSuccess={() => {
-            fetchDashboardData(); // Refresh dashboard data
-            setShowEditPRModal(false);
-            console.log("Performance Review updated successfully!");
           }}
         />
       </div>
