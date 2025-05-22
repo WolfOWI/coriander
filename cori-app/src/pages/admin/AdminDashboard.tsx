@@ -59,13 +59,22 @@ const AdminDashboard: React.FC = () => {
   const fetchGatherings = async (adminId: number, month: number) => {
     try {
       setLoadingGatherings(true);
+      // Clear existing gatherings before fetching new ones
+      setGatherings({ all: [] });
+
       const response = await gatheringAPI.getUpcomingAndCompletedGatheringsByAdminIdAndMonth(
         adminId,
         month
       );
-      // Use the $values array directly
+
+      // Ensure we're working with a clean array and no duplicates
+      const gatheringsData = response.data.$values || [];
+      const uniqueGatherings = Array.from(
+        new Map(gatheringsData.map((g: any) => [g.id, g])).values()
+      );
+
       setGatherings({
-        all: response.data.$values || [],
+        all: uniqueGatherings,
       });
     } catch (err) {
       setGatherings({ all: [] });
@@ -77,20 +86,23 @@ const AdminDashboard: React.FC = () => {
   // If a different month is selected, fetch the gatherings for the new month
   useEffect(() => {
     const newMonth = selectedDate.getMonth() + 1;
+    // Only fetch if month actually changes
     if (newMonth !== currentMonth) {
       setCurrentMonth(newMonth);
       fetchGatherings(1, newMonth);
     }
-  }, [selectedDate, currentMonth]);
+  }, [selectedDate]);
 
-  // Fetch gatherings for the current month on page load
+  // Initial fetch only on component mount
   useEffect(() => {
-    fetchGatherings(1, currentMonth);
+    const initialMonth = selectedDate.getMonth() + 1;
+    setCurrentMonth(initialMonth);
+    fetchGatherings(1, initialMonth);
   }, []);
 
   //Display gatherings for selected Day
-  const gatheringsForSelectedDay = (gatherings.all || []).filter(
-    (g: { startDate: string | number | Date }) => {
+  const gatheringsForSelectedDay = React.useMemo(() => {
+    return (gatherings.all || []).filter((g: { startDate: string | number | Date }) => {
       if (!g || !g.startDate) return false;
       const d = new Date(g.startDate);
       return (
@@ -98,8 +110,8 @@ const AdminDashboard: React.FC = () => {
         d.getMonth() === selectedDate.getMonth() &&
         d.getDate() === selectedDate.getDate()
       );
-    }
-  );
+    });
+  }, [gatherings.all, selectedDate]);
 
   if (loading)
     return (
@@ -260,7 +272,15 @@ const AdminDashboard: React.FC = () => {
                     </div>
                   ) : gatheringsForSelectedDay.length > 0 ? (
                     gatheringsForSelectedDay.map((gathering: Gathering) => (
-                      <AdminGatheringBox key={gathering.id} gathering={gathering} />
+                      <AdminGatheringBox
+                        key={gathering.id}
+                        gathering={gathering}
+                        onEditSuccess={() => {
+                          // Refresh both dashboard data and gatherings
+                          fetchDashboardData();
+                          fetchGatherings(1, currentMonth); // TODO: Use proper adminId when available
+                        }}
+                      />
                     ))
                   ) : (
                     <div className="text-center py-4 text-zinc-500">No meetings on this day</div>
