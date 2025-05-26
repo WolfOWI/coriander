@@ -44,11 +44,11 @@ const EmployeeLeaveOverview: React.FC = () => {
   // Define a palette of Tailwind color classes for balance bars
   const barColors = [
     "bg-corigreen-500", // Annual Leave
-    "bg-red-500",       // Family Responsibility Leave
-    "bg-yellow-300",    // Sick Leave
-    "bg-sakura-500",    // Parental Leave
-    "bg-blue-400",      // Study Leave
-    "bg-orange-400",    // Compassionate Leave
+    "bg-red-500", // Family Responsibility Leave
+    "bg-yellow-300", // Sick Leave
+    "bg-sakura-500", // Parental Leave
+    "bg-blue-400", // Study Leave
+    "bg-orange-400", // Compassionate Leave
   ];
 
   // Fetch data from backend
@@ -88,6 +88,12 @@ const EmployeeLeaveOverview: React.FC = () => {
   useEffect(() => {
     fetchEmployeeData();
   }, [activeTab]);
+
+  // Read editable policy or fallback
+  const policy =
+    localStorage.getItem("leavePolicy") ||
+    `Employees must submit leave requests in advance for approval. Leave is subject to company policies and availability.
+Unauthorized absences may impact benefits. Check your balance before applying.`;
 
   return (
     <>
@@ -189,12 +195,13 @@ const EmployeeLeaveOverview: React.FC = () => {
             </div>
           </div>
 
+          {/* Editable policy text */}
           <div className="text-center text-sm text-zinc-400 p-4 hover:text-zinc-500">
-            <p className="max-w-4xl mx-auto">
-              Employees must submit leave requests in advance for approval. Leave is subject to
-              company policies and availability. <br />
-              Unauthorized absences may impact benefits. Check your balance before applying.
-            </p>
+            {policy.split("\n").map((line, i) => (
+              <p key={i} className="max-w-4xl mx-auto">
+                {line}
+              </p>
+            ))}
           </div>
         </div>
       </div>
