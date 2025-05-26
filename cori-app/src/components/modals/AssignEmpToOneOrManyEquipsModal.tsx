@@ -7,8 +7,7 @@ import { equipmentAPI } from "../../services/api.service";
 interface AssignEmpToEquipsModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  employeeId: number;
-  onAssignSuccess: () => void;
+  onSelectConfirm: (selectedIds: number[]) => void;
 }
 
 interface Equipment {
@@ -22,8 +21,7 @@ interface Equipment {
 function AssignEmpToOneOrManyEquipsModal({
   showModal,
   setShowModal,
-  employeeId,
-  onAssignSuccess,
+  onSelectConfirm,
 }: AssignEmpToEquipsModalProps) {
   const [form] = Form.useForm();
   const [unassingedEquips, setUnassingedEquips] = useState<Equipment[]>([]);
@@ -49,14 +47,6 @@ function AssignEmpToOneOrManyEquipsModal({
     }
   };
 
-  // useEffect(() => {
-  //   console.log(unassingedEquips);
-  // }, [unassingedEquips]);
-
-  // useEffect(() => {
-  //   console.log(selectedEquipments);
-  // }, [selectedEquipments]);
-
   // Handle Select Equipment
   const handleSelect = (id: number) => {
     setSelectedEquipments((prev) => {
@@ -72,16 +62,11 @@ function AssignEmpToOneOrManyEquipsModal({
   };
 
   // Handle Assign Equipment
-  const handleAssign = async () => {
-    // Assign 1 or multiple equipments (numbers array) to the employee
-    try {
-      await equipmentAPI.assignEquipItemOrItemsToEmp(employeeId, selectedEquipments);
-      messageApi.success("Equipments assigned successfully");
-      onAssignSuccess(); // Refresh the employee data
-    } catch (error) {
-      messageApi.error("Error assigning equipments");
-      console.error("Error assigning equipments:", error);
-    }
+  const handleAssign = () => {
+    const selectedItems = unassingedEquips.filter((item) =>
+      selectedEquipments.includes(item.equipmentId)
+    );
+    onSelectConfirm(selectedItems); // ✅ send full objects
     setShowModal(false);
   };
 
@@ -89,7 +74,11 @@ function AssignEmpToOneOrManyEquipsModal({
     <>
       {contextHolder}
       <Modal
-        title={<h2 className="text-zinc-900 font-bold text-3xl select-none">Assign Equipment</h2>}
+        title={
+          <h2 className="text-zinc-900 font-bold text-3xl select-none">
+            Assign Equipment
+          </h2>
+        }
         open={showModal}
         onCancel={() => setShowModal(false)}
         width={600}
@@ -114,11 +103,19 @@ function AssignEmpToOneOrManyEquipsModal({
             Cancel
           </Button>,
           <Button key="assign" type="primary" onClick={handleAssign}>
-            Assign {selectedEquipments.length > 0 ? `(${selectedEquipments.length})` : ""}
+            Assign{" "}
+            {selectedEquipments.length > 0
+              ? `(${selectedEquipments.length})`
+              : ""}
           </Button>,
         ]}
       >
-        <Form form={form} layout="vertical" variant="filled" className="flex flex-col w-full">
+        <Form
+          form={form}
+          layout="vertical"
+          variant="filled"
+          className="flex flex-col w-full"
+        >
           <Form.Item name="equipmentList" className="flex flex-col w-full">
             <div className="flex flex-col gap-2 w-full h-[400px] overflow-y-auto">
               {unassingedEquips.map((item) => (

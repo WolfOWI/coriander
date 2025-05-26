@@ -1,5 +1,14 @@
 import React, { useEffect } from "react";
-import { Modal, Button, Form, Input, Select, DatePicker, message, Alert } from "antd";
+import {
+  Modal,
+  Button,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  message,
+  Alert,
+} from "antd";
 import { equipmentAPI } from "../../services/api.service";
 import dayjs from "dayjs";
 
@@ -63,7 +72,9 @@ function CreateAssignedEquipModal({
         onCreate();
       }
     } catch (error) {
-      messageApi.error("Something went wrong and the equipment was not created.");
+      messageApi.error(
+        "Something went wrong and the equipment was not created."
+      );
       console.error("Error creating equipment:", error);
     }
 
@@ -122,7 +133,12 @@ function CreateAssignedEquipModal({
             </Button>,
           ]}
         >
-          <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
+          <Form
+            form={form}
+            layout="vertical"
+            variant="filled"
+            className="flex flex-col"
+          >
             {employee.isSuspended && (
               <Alert
                 description="This employee is suspended, please proceed with caution."
@@ -135,14 +151,24 @@ function CreateAssignedEquipModal({
             <Form.Item
               name="equipmentName"
               label="Equipment Name"
-              rules={[{ required: true, message: "Please enter a name for the equipment" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter a name for the equipment",
+                },
+              ]}
             >
               <Input type="text" />
             </Form.Item>
             <Form.Item
               name="equipmentCatId"
               label="Equipment Category"
-              rules={[{ required: true, message: "Please select an equipment category" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please select an equipment category",
+                },
+              ]}
             >
               <Select>
                 <Select.Option value={1}>Cellphone</Select.Option>
@@ -151,6 +177,7 @@ function CreateAssignedEquipModal({
                 <Select.Option value={4}>Monitor</Select.Option>
                 <Select.Option value={5}>Headset</Select.Option>
                 <Select.Option value={6}>Keyboard</Select.Option>
+                <Select.Option value={7}>Media</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item
@@ -169,7 +196,12 @@ function CreateAssignedEquipModal({
             <Form.Item
               name="assignedDate"
               label="Assigned Date"
-              rules={[{ required: true, message: "Please select when the equipment was assigned" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please select when the equipment was assigned",
+                },
+              ]}
             >
               <DatePicker
                 className="w-full h-12"
