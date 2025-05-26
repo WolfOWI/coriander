@@ -83,7 +83,7 @@ const EmployeeHome: React.FC = () => {
 
         const response = await fetch("https://api.api-ninjas.com/v1/quotes", {
           headers: {
-            "X-Api-Key": "/cP8Aq3lAI2uPIG9ePOHQg==8nCa4YBBLaFwGjYQ", // 🔐 Replace with your real key
+            "X-Api-Key": "/cP8Aq3lAI2uPIG9ePOHQg==8nCa4YBBLaFwGjYQ", 
           },
         });
 

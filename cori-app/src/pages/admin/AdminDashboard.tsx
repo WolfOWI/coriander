@@ -15,6 +15,7 @@ import AdminGatheringBox from "../../components/gathering/AdminGatheringBox";
 //Functionality
 import { gatheringAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
+
 //Interface
 import { Gathering } from "../../interfaces/gathering/gathering";
 
@@ -27,6 +28,7 @@ import AdminAddIcon from "../../assets/icons/AdminAddIcon.png";
 import { Spin } from "antd";
 import dayjs from "dayjs";
 import { Icons } from "../../constants/icons";
+import CoriBtn from "../../components/buttons/CoriBtn";
 
 const AdminDashboard: React.FC = () => {
   // State variables
@@ -179,10 +181,19 @@ const AdminDashboard: React.FC = () => {
                 {/* Leave Requests Card */}
                 <Col xs={12} md={5}>
                   <div className="w-full flex flex-col items-center">
-                    <div className="text-zinc-500 font-semibold text-center mb-2">
-                      Leave Requests
+                    <div className="flex justify-between items-center gap-3 mb-2">
+                      <div className="text-zinc-500 font-semibold">
+                        Leave Requests
+                      </div>
+                      <button
+                        className="bg-sakura-500 text-white text-xs font-semibold px-3 py-1 rounded-lg shadow hover:bg-sakura-400 transition"
+                        onClick={() => navigate("/admin/leave-requests")}
+                        type="button"
+                      >
+                        View All
+                      </button>
                     </div>
-                    <div className="w-full h-[350px] overflow-y-auto relative scrollbar-hide [&::-webkit-scrollbar]:hidden bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2">
+                    <div className="w-full h-[335px] overflow-y-auto relative scrollbar-hide [&::-webkit-scrollbar]:hidden bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2" style={{ position: "relative" }}>
                       {leaveRequests.map((request: any) => (
                         <LeaveCardAdminDash
                           key={request.leaveRequestId}
@@ -198,9 +209,9 @@ const AdminDashboard: React.FC = () => {
                         />
                       ))}
                     </div>
-                    {/* <div className="py-10 w-full bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0 text-transparent">
-                      _
-                  </div> */}
+                    <div className="py-10 bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0 text-transparent">
+                        _
+                    </div>
                   </div>
                 </Col>
 
@@ -220,13 +231,13 @@ const AdminDashboard: React.FC = () => {
                     </Col>
                     <Col md={6}>
                       <div
-                        className="flex flex-col bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer"
+                        className="flex flex-col bg-sakura-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer"
                         onClick={() => {
                           navigate("/admin/meetings");
                         }}
                       >
-                        <p className="text-sm font-bold mb-2">View All Meetings</p>
-                        <div className="flex bg-zinc-700 rounded-full p-2 w-fit align-self-end">
+                        <p className="text-zinc-900 text-sm font-bold mb-2">View All Meetings</p>
+                        <div className="flex bg-zinc-900 rounded-full p-2 w-fit align-self-end">
                           <Icons.MeetingRoom className="w-6 h-6" />
                         </div>
                       </div>
@@ -264,30 +275,43 @@ const AdminDashboard: React.FC = () => {
             {/* Right Card -> Performance Review calender and meetCards */}
             <Col lg="4" md="4">
               <AdminCalendar value={selectedDate} onChange={setSelectedDate} />
-              <div>
-                <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">
-                  <h4>Gatherings on {dayjs(selectedDate).format("D MMMM")}</h4>
-                </div>
-                <div className="grid gap-3">
-                  {loadingGatherings ? (
-                    <div className="w-full flex justify-center py-4">
-                      <Spin size="default" />
-                    </div>
-                  ) : gatheringsForSelectedDay.length > 0 ? (
-                    gatheringsForSelectedDay.map((gathering: Gathering) => (
-                      <AdminGatheringBox
-                        key={gathering.id}
-                        gathering={gathering}
-                        onEditSuccess={() => {
-                          // Refresh both dashboard data and gatherings
-                          fetchDashboardData();
-                          fetchGatherings(1, currentMonth); // TODO: Use proper adminId when available
-                        }}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center py-4 text-zinc-500">No meetings on this day</div>
-                  )}
+            <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">
+              <h4>Your Meetings on {dayjs(selectedDate).format("D MMMM")}</h4>
+            </div>
+              <div className="relative">
+                <div
+                  className="meetings w-full h-[390px] flex flex-col rounded-2xl overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden"
+                  style={{ position: "relative" }}
+                >
+                  <div className="grid gap-3 flex-1">
+                    {loadingGatherings ? (
+                      <div className="w-full flex justify-center py-4">
+                        <Spin size="default" />
+                      </div>
+                    ) : gatheringsForSelectedDay.length > 0 ? (
+                      gatheringsForSelectedDay.map((gathering: Gathering) => (
+                        <AdminGatheringBox
+                          key={gathering.id}
+                          gathering={gathering}
+                          onEditSuccess={() => {
+                            fetchDashboardData();
+                            fetchGatherings(1, currentMonth);
+                          }}
+                          onDeleteSuccess={() => {
+                            fetchDashboardData();
+                            fetchGatherings(1, currentMonth);
+                          }}
+                          loggedInAdminId={dashboardData?.adminUser?.adminId?.toString() || "1"}
+                        />
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-zinc-500">You have no meetings today!</div>
+                    )}
+                  </div>
+                  {/* Fade effect at the bottom */}
+                  <div className=" w-full bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0 text-transparent">
+                      _
+                  </div>
                 </div>
               </div>
             </Col>
@@ -300,6 +324,7 @@ const AdminDashboard: React.FC = () => {
           setShowModal={setShowCreatePRModal}
           onCreateSuccess={() => {
             fetchDashboardData(); // Refresh dashboard data
+            fetchGatherings(1, currentMonth); // Refresh meetings list
             setShowCreatePRModal(false);
             console.log("Performance Review created successfully!");
           }}
