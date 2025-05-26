@@ -34,19 +34,28 @@ import { BarChart } from "@mui/x-charts/BarChart";
     ],
   };
 
+  const chartSetting = {
+    yAxis: [
+      {
+        label: 'Ratings',
+        width: 60,
+      },
+    ],
+  };
+
   return (
-    <div style={{marginLeft: -40}}>
+    <div>
     <BarChart
       xAxis={[
         {
           scaleType: "band",
           data: chartData.labels,
-          tickLabelStyle: { fontSize: 12, fill: "#333" }, // Style x labels
+          tickLabelStyle: { fontSize: 10, fill: "#333" }, 
         },
       ]}
       series={chartData.series.map((s, i) => ({
         ...s,
-        color: i === 0 ? "#CEDBC0" : "#88A764", // Light green and darker green
+        color: i === 0 ? "#CEDBC0" : "#88A764", 
       }))}
       width={440}
       height={260}
@@ -55,7 +64,19 @@ import { BarChart } from "@mui/x-charts/BarChart";
           rx: 6, // Rounded bars
         },
       }}
+      {...chartSetting}
     />
+    {/* Custom Legend Row */}
+    <div className="flex justify-center items-center gap-3 pb-3">
+      <div className="flex items-center gap-1">
+        <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: "#CEDBC0" }}></span>
+        <span className="text-zinc-700 text-sm">Average Rating</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: "#88A764" }}></span>
+        <span className="text-zinc-700 text-sm">Most Recent Rating</span>
+      </div>
+    </div>
     </div>
   );
 };

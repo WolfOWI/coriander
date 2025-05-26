@@ -19,10 +19,14 @@
   color: #C393AE !important;
 }
 
-/* Optional: remove default blue highlight */
 .react-calendar__tile--active {
   background-color: transparent !important;
   border: 2px solid #88A764 !important;
   border-radius: 6px;
-  color: #88A764 !important;
+  color: #000000 !important;
+}
+
+.react-calendar__tile--now{
+  background-color: #88A764 !important;
+  border-radius: 6px;
 }
