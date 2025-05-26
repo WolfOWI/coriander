@@ -6,8 +6,8 @@ import { pageAPI } from "../../services/api.service";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import { Icons } from "../../constants/icons";
 
-// Graphs
-import { Progress } from "antd";
+// Graphs & Tooltip
+import { Progress, Tooltip } from "antd";
 
 // Badge
 import CoriBadge from "../../components/badges/CoriBadge";
@@ -31,18 +31,21 @@ const EmployeeLeaveOverview: React.FC = () => {
 
   const [requests, setRequests] = useState<any[]>([]);
   const [balances, setBalances] = useState<any[]>([]);
-  const [summary, setSummary] = useState<{ totalTaken: number; totalAllowed: number }>({ totalTaken: 0, totalAllowed: 0 });
+  const [summary, setSummary] = useState<{ totalTaken: number; totalAllowed: number }>({
+    totalTaken: 0,
+    totalAllowed: 0,
+  });
   const [activeTab, setActiveTab] = useState<TabOption>("All");
   const tabOptions: TabOption[] = ["All", "Approved", "Pending", "Rejected"];
 
   // Define a palette of Tailwind color classes for balance bars
   const barColors = [
-    'bg-corigreen-500',   // Annual Leave
-    'bg-red-500',         // Family Responsibility Leave
-    'bg-yellow-300',      // Sick Leave
-    'bg-sakura-500',      // Parental Leave
-    'bg-blue-400',        // Study Leave
-    'bg-orange-400',      // Compassionate Leave
+    "bg-corigreen-500", // Annual Leave
+    "bg-red-500", // Family Responsibility Leave
+    "bg-yellow-300", // Sick Leave
+    "bg-sakura-500", // Parental Leave
+    "bg-blue-400", // Study Leave
+    "bg-orange-400", // Compassionate Leave
   ];
 
   // Fetch data from backend
@@ -159,18 +162,23 @@ const EmployeeLeaveOverview: React.FC = () => {
                       const pct = Math.round((b.remainingDays / b.defaultDays) * 100);
                       const barColor = barColors[idx % barColors.length];
                       return (
-                        <div key={b.leaveTypeId}>
-                          <p className="text-xs text-zinc-700 mb-1">{b.leaveTypeName}</p>
-                          <div className="h-5 w-full bg-zinc-300 rounded-full relative">
-                            <div
-                              className={`h-5 ${barColor} rounded-full relative`}
-                              style={{ width: `${pct}%` }}
-                            >
-                              <div className="absolute right-0 top-0 bottom-0 w-2 h-5  rounded-r-full" />
+                        <Tooltip
+                          key={b.leaveTypeId}
+                          title={`${b.leaveTypeName}: ${b.remainingDays} of ${b.defaultDays} days remaining`}
+                          placement="top"
+                        >
+                          <div>
+                            <p className="text-xs text-zinc-700 mb-1">{b.leaveTypeName}</p>
+                            <div className="h-5 w-full bg-zinc-300 rounded-full relative">
+                              <div
+                                className={`h-5 ${barColor} rounded-full relative`}
+                                style={{ width: `${pct}%` }}
+                              >
+                                <div className="absolute right-0 top-0 bottom-0 w-2 h-5 rounded-r-full" />
+                              </div>
                             </div>
                           </div>
-
-                        </div>
+                        </Tooltip>
                       );
                     })}
                   </div>
