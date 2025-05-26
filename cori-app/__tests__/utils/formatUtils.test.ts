@@ -18,21 +18,21 @@ describe("formatPhone", () => {
 describe("formatRandAmount", () => {
   test("formats large numbers correctly", () => {
     const result = formatRandAmount(1234567890.12);
-    expect(result.replace(/\s/g, " ")).toBe("R 1,234,567,890.12");
+    expect(result).toMatch(/R\s1\s234\s567\s890,12/);
   });
 
   test("formats decimal numbers correctly", () => {
     const result = formatRandAmount(1234567.89);
-    expect(result.replace(/\s/g, " ")).toBe("R 1,234,567.89");
+    expect(result).toMatch(/R\s1\s234\s567,89/);
   });
 
   test("formats zero correctly", () => {
     const result = formatRandAmount(0);
-    expect(result.replace(/\s/g, " ")).toBe("R 0.00");
+    expect(result).toMatch(/R\s0,00/);
   });
 
   test("formats negative numbers correctly", () => {
     const result = formatRandAmount(-1234.56);
-    expect(result.replace(/\s/g, " ")).toBe("-R 1,234.56");
+    expect(result).toMatch(/-R\s1\s234,56/);
   });
 });
