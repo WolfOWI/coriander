@@ -193,24 +193,26 @@ const AdminDashboard: React.FC = () => {
                         View All
                       </button>
                     </div>
-                    <div className="w-full h-[335px] overflow-y-auto relative scrollbar-hide [&::-webkit-scrollbar]:hidden bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2" style={{ position: "relative" }}>
-                      {leaveRequests.map((request: any) => (
-                        <LeaveCardAdminDash
-                          key={request.leaveRequestId}
-                          leave={{
-                            leaveRequestId: request.leaveRequestId,
-                            employeeId: request.employeeId,
-                            employeeName: request.employeeName,
-                            startDate: request.startDate,
-                            endDate: request.endDate,
-                            leaveType: request.leaveType,
-                            createdAt: request.createdAt,
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <div className="py-10 bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0 text-transparent">
-                        _
+                    <div className="relative w-full">
+                      <div
+                        className="h-[335px] overflow-y-auto bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2"
+                        style={{ paddingBottom: 32 /* space for fade */ }}
+                      >
+                        {leaveRequests.map((request: any) => (
+                          <LeaveCardAdminDash
+                            key={request.leaveRequestId}
+                            leave={{
+                              leaveRequestId: request.leaveRequestId,
+                              employeeId: request.employeeId,
+                              employeeName: request.employeeName,
+                              startDate: request.startDate,
+                              endDate: request.endDate,
+                              leaveType: request.leaveType,
+                              createdAt: request.createdAt,
+                            }}
+                          />
+                        ))}
+                      </div> 
                     </div>
                   </div>
                 </Col>
