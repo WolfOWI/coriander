@@ -23,6 +23,9 @@ const AdminMeetings: React.FC = () => {
   const [meetRequests, setMeetRequests] = useState<MeetingRequestCard[]>([]);
   const [showCreatePRModal, setShowCreatePRModal] = useState(false);
 
+  // State to track if any actions have been performed that require data refresh
+  const [hasDataChanged, setHasDataChanged] = useState(false);
+
   const tabOptions: TabOption[] = [
     "All Upcoming",
     "General Meetings",
@@ -114,6 +117,16 @@ const AdminMeetings: React.FC = () => {
   // Handle tab change
   const handleTabChange = (tab: TabOption) => {
     setActiveTab(tab);
+
+    // If data has changed due to actions, refresh the data for the new tab
+    if (hasDataChanged) {
+      if (tab === "Completed") {
+        fetchCompletedGatherings();
+      } else {
+        fetchUpcomingGatherings();
+      }
+      setHasDataChanged(false);
+    }
   };
 
   // Handle data refresh after operations
@@ -124,6 +137,14 @@ const AdminMeetings: React.FC = () => {
     } else {
       fetchUpcomingGatherings();
     }
+    // Mark that data has changed so other tabs will refresh when opened
+    setHasDataChanged(true);
+  };
+
+  // Handle actions that affect gatherings (edit, delete, create)
+  const handleGatheringAction = () => {
+    // Refresh current tab data immediately
+    handleDataRefresh();
   };
 
   return (
@@ -175,8 +196,8 @@ const AdminMeetings: React.FC = () => {
               key={gathering.$id}
               gathering={gathering}
               loggedInAdminId={adminId.toString()}
-              onEditSuccess={handleDataRefresh}
-              onDeleteSuccess={handleDataRefresh}
+              onEditSuccess={handleGatheringAction}
+              onDeleteSuccess={handleGatheringAction}
             />
           ))}
           {displayedGatherings.length === 0 && (
@@ -199,7 +220,7 @@ const AdminMeetings: React.FC = () => {
       <CreatePRModal
         showModal={showCreatePRModal}
         setShowModal={setShowCreatePRModal}
-        onCreateSuccess={handleDataRefresh}
+        onCreateSuccess={handleGatheringAction}
       />
     </div>
   );
