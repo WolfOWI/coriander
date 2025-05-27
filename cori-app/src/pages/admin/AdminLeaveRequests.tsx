@@ -50,14 +50,27 @@ const AdminLeaveRequests: React.FC = () => {
     else fetchRejected();
   }, [activeTab]);
 
+  useEffect(() => {
+    console.log("Displaying Leave Requests:", displayingLeaveRequests);
+  }, [displayingLeaveRequests]);
+
   // Action handlers
   const handleApprove = async (id: number) => {
-    await empLeaveRequestsAPI.approveLeaveRequest(id);
+    try {
+      await empLeaveRequestsAPI.approveLeaveRequestById(id);
     setActiveTab("Approved");
+    } catch (error) {
+      console.error(`Error approving leave request ${id}:`, error);
+    }
   };
+  
   const handleReject = async (id: number) => {
-    await empLeaveRequestsAPI.rejectLeaveRequest(id);
+   try {
+     await empLeaveRequestsAPI.rejectLeaveRequestById(id);
     setActiveTab("Rejected");
+   } catch (error) {
+    console.error(`Error rejecting leave request ${id}:`, error);
+   }
   };
 
   // Table columns (unchanged)
@@ -140,16 +153,12 @@ const AdminLeaveRequests: React.FC = () => {
         <div className="flex justify-end gap-2 pe-4">
           {r.status === 0 && (
             <>
-              <CoriCircleBtn
-                style="default"
-                icon={<CheckOutlined />}
-                onClick={() => handleApprove(r.LeaveRequestId)}
-              />
-              <CoriCircleBtn
-                style="red"
-                icon={<CloseOutlined />}
-                onClick={() => handleReject(r.LeaveRequestId)}
-              />
+              <CoriBtn iconOnly onClick={() => handleApprove(r.leaveRequestId)}>
+                <CheckOutlined />
+              </CoriBtn>
+              <CoriBtn secondary style="red" iconOnly onClick={() => handleReject(r.leaveRequestId)}>
+                <CloseOutlined />
+              </CoriBtn>
             </>
           )}
           {r.status === 1 && (

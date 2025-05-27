@@ -331,7 +331,32 @@ export const empLeaveRequestsAPI = {
    */
   getRejectedLeaveRequests: (): Promise<AxiosResponse> =>
     apiClient.get("/EmpLeaveRequest/GetAllRejected"),
+
+  /**
+   * Approve Leave Request by its ID
+   * @param requestId - The leaveRequestId
+   *  @returns Promise containing the API response
+  */
+  approveLeaveRequestById: (id: number): Promise<AxiosResponse> =>
+    apiClient.put(`/EmpLeaveRequest/ApproveLeaveRequestById/${id}`),
+
+  /**
+   * Reject Leave Request by its ID
+   * @param requestId - The leaveRequestId
+   *  @returns Promise containing the API response
+  */
+  rejectLeaveRequestById: (id: number): Promise<AxiosResponse> =>
+    apiClient.put(`/EmpLeaveRequest/RejectLeaveRequestById/${id}`),
+
+  /**
+   * Set to Pendinge Leave Request by its ID
+   * @param requestId - The leaveRequestId
+   *  @returns Promise containing the API response
+  */
+  setPendingLeaveRequestById: (id: number): Promise<AxiosResponse> =>
+    apiClient.put(`/EmpLeaveRequest/SetLeaveRequestToPendingById/${id}`),
 };
+
 
 // PERFORMANCE REVIEW API
 // ------------------------------------------------------------
