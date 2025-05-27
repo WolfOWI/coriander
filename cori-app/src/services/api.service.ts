@@ -336,7 +336,7 @@ export const empLeaveRequestsAPI = {
    * Approve Leave Request by its ID
    * @param requestId - The leaveRequestId
    *  @returns Promise containing the API response
-  */
+   */
   approveLeaveRequestById: (id: number): Promise<AxiosResponse> =>
     apiClient.put(`/EmpLeaveRequest/ApproveLeaveRequestById/${id}`),
 
@@ -344,7 +344,7 @@ export const empLeaveRequestsAPI = {
    * Reject Leave Request by its ID
    * @param requestId - The leaveRequestId
    *  @returns Promise containing the API response
-  */
+   */
   rejectLeaveRequestById: (id: number): Promise<AxiosResponse> =>
     apiClient.put(`/EmpLeaveRequest/RejectLeaveRequestById/${id}`),
 
@@ -352,11 +352,10 @@ export const empLeaveRequestsAPI = {
    * Set to Pendinge Leave Request by its ID
    * @param requestId - The leaveRequestId
    *  @returns Promise containing the API response
-  */
+   */
   setPendingLeaveRequestById: (id: number): Promise<AxiosResponse> =>
     apiClient.put(`/EmpLeaveRequest/SetLeaveRequestToPendingById/${id}`),
 };
-
 
 // PERFORMANCE REVIEW API
 // ------------------------------------------------------------
@@ -398,6 +397,15 @@ export const performanceReviewsAPI = {
    */
   UpdatePerformanceReview: (id: number, data: object): Promise<AxiosResponse> =>
     apiClient.put(`/PerformanceReview/UpdatePerformanceReview/${id}`, data),
+
+  /**
+   * Updates the status of a performance review by its ID
+   * @param id - The performance review's ID
+   * @param status - The status to update the performance review to (can only be 1 - Upcoming, 2 - Completed)
+   * @returns Promise containing the API response
+   */
+  UpdatePerformanceReviewStatus: (id: number, status: number): Promise<AxiosResponse> =>
+    apiClient.put(`/PerformanceReview/update-status/${id}?status=${status}`),
 
   /**
    * Deletes a performance review by its ID
@@ -485,6 +493,14 @@ export const meetingAPI = {
    */
   markAsCompletedMeeting: (meetingId: number): Promise<AxiosResponse> =>
     apiClient.put(`/Meeting/MarkAsCompleted/${meetingId}`),
+
+  /**
+   * An admin marks a meeting request as upcoming
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  markAsUpcomingMeeting: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/MarkAsUpcoming/${meetingId}`),
 
   /**
    * An admin deletes a meeting request by its ID
