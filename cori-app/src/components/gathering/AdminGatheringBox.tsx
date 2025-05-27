@@ -166,21 +166,39 @@ function AdminGatheringBox({
 
   // Gathering title (Review by You, Review by Admin, Meet with Employee)
   const GatheringTitle = () => {
-    const titlePrefix = gatheringType.isPerformanceReview ? "Review" : "Meet with";
+    const adminName = adminPermissions.isOwner ? "You" : gathering.adminName;
+
+    // Determine action verbs based on type and completion status
+    const getActionVerbs = () => {
+      if (gatheringType.isPerformanceReview) {
+        return {
+          present: "Review",
+          past: "Reviewed",
+          preposition: "by",
+        };
+      } else {
+        return {
+          present: "Meet",
+          past: "Met",
+          preposition: "with",
+        };
+      }
+    };
+
+    const { present, past, preposition } = getActionVerbs();
+    const actionVerb = gatheringStatus.isCompleted ? past : present;
 
     if (withAdminNamesTitle) {
-      const adminName = adminPermissions.isOwner ? "You" : gathering.adminName;
-      const actionPrefix = gatheringType.isPerformanceReview ? "Review by" : "Meet with";
       return (
         <h2 className="text-zinc-800 font-bold w-full">
-          {actionPrefix} {adminName}
+          {actionVerb} {preposition} {adminName}
         </h2>
       );
     }
 
     return (
       <h2 className="text-zinc-800 font-bold w-full">
-        {titlePrefix} {gathering.employeeName}
+        {actionVerb} {preposition} {gathering.employeeName}
       </h2>
     );
   };
@@ -218,7 +236,11 @@ function AdminGatheringBox({
     return (
       <div className="w-full flex flex-col gap-3">
         {/* Comment */}
-        {gathering.comment && <p className="text-zinc-500 text-[12px]">{gathering.comment}</p>}
+        {gathering.comment ? (
+          <p className="text-zinc-500 text-[12px]">{gathering.comment}</p>
+        ) : (
+          <p className="text-zinc-500 text-[12px]">No comment</p>
+        )}
         <div className="flex w-full items-center gap-4">
           {/* Rating */}
           {gathering.rating && gathering.rating > 0 && (

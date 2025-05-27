@@ -201,9 +201,7 @@ const AdminMeetings: React.FC = () => {
             />
           ))}
           {displayedGatherings.length === 0 && (
-            <div className="col-span-3 text-center text-zinc-500 py-8">
-              No {activeTab.toLowerCase()} found.
-            </div>
+            <div className="col-span-3 text-center text-zinc-500 py-8">No meetings found.</div>
           )}
         </div>
       )}
