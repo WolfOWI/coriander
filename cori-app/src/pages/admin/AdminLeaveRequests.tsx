@@ -7,11 +7,7 @@ import { calculateDurationInDays } from "../../utils/dateUtils";
 import { Tooltip } from "antd";
 
 // Icons
-import {
-  ClockCircleOutlined,
-  CheckOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
+import { ClockCircleOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { Icons } from "../../constants/icons";
 
 // Badges & Buttons
@@ -58,19 +54,19 @@ const AdminLeaveRequests: React.FC = () => {
   const handleApprove = async (id: number) => {
     try {
       await empLeaveRequestsAPI.approveLeaveRequestById(id);
-    setActiveTab("Approved");
+      setActiveTab("Approved");
     } catch (error) {
       console.error(`Error approving leave request ${id}:`, error);
     }
   };
-  
+
   const handleReject = async (id: number) => {
-   try {
-     await empLeaveRequestsAPI.rejectLeaveRequestById(id);
-    setActiveTab("Rejected");
-   } catch (error) {
-    console.error(`Error rejecting leave request ${id}:`, error);
-   }
+    try {
+      await empLeaveRequestsAPI.rejectLeaveRequestById(id);
+      setActiveTab("Rejected");
+    } catch (error) {
+      console.error(`Error rejecting leave request ${id}:`, error);
+    }
   };
 
   // Table columns (unchanged)
@@ -97,8 +93,7 @@ const AdminLeaveRequests: React.FC = () => {
               {calculateDurationInDays(r.startDate, r.endDate)} Days {r.leaveTypeName} Leave
             </p>
             <p className="text-xs text-zinc-500">
-              {dayjs(r.startDate).format("DD MMM YYYY")} –{" "}
-              {dayjs(r.endDate).format("DD MMM YYYY")}
+              {dayjs(r.startDate).format("DD MMM YYYY")} – {dayjs(r.endDate).format("DD MMM YYYY")}
             </p>
           </div>
         </div>
@@ -127,9 +122,7 @@ const AdminLeaveRequests: React.FC = () => {
             text={`${r.remainingDays} days`}
             size="x-small"
             color={
-              r.remainingDays < calculateDurationInDays(r.startDate, r.endDate)
-                ? "red"
-                : "green"
+              r.remainingDays < calculateDurationInDays(r.startDate, r.endDate) ? "red" : "green"
             }
           />
         </div>
@@ -156,7 +149,12 @@ const AdminLeaveRequests: React.FC = () => {
               <CoriBtn iconOnly onClick={() => handleApprove(r.leaveRequestId)}>
                 <CheckOutlined />
               </CoriBtn>
-              <CoriBtn secondary style="red" iconOnly onClick={() => handleReject(r.leaveRequestId)}>
+              <CoriBtn
+                secondary
+                style="red"
+                iconOnly
+                onClick={() => handleReject(r.leaveRequestId)}
+              >
                 <CloseOutlined />
               </CoriBtn>
             </>
@@ -192,7 +190,7 @@ const AdminLeaveRequests: React.FC = () => {
 
         {/* Tabs */}
         <div className="flex gap-2 mb-4">
-          {(["Pending", "Approved", "Rejected"] as const).map(tab => (
+          {(["Pending", "Approved", "Rejected"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -219,10 +217,7 @@ const AdminLeaveRequests: React.FC = () => {
       </div>
 
       {/* Edit Policy Modal */}
-      <EditPolicyModal
-        showModal={showPolicyModal}
-        setShowModal={setShowPolicyModal}
-      />
+      <EditPolicyModal showModal={showPolicyModal} setShowModal={setShowPolicyModal} />
     </>
   );
 };

@@ -57,6 +57,7 @@ import ChatIcon from "@mui/icons-material/ChatRounded";
 import TextSnippetIcon from "@mui/icons-material/TextSnippetRounded";
 import LiveHelpIcon from "@mui/icons-material/LiveHelpRounded";
 import PlaceIcon from "@mui/icons-material/PlaceRounded";
+import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -118,4 +119,5 @@ export const Icons = {
   TextSnippet: TextSnippetIcon,
   LiveHelp: LiveHelpIcon,
   Place: PlaceIcon,
+  MoreVert: MoreVertIcon,
 };
