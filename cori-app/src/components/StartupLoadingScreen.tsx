@@ -1,10 +1,12 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Spin } from "antd";
-import { healthCheckAPI } from "../services/api.service";
+import { healthCheckAPI, empUserAPI } from "../services/api.service";
 import Lottie from "lottie-react";
 import plane from "../assets/lottie/plane.json";
+import datasearch from "../assets/lottie/datasearch.json";
 import confetti from "../assets/lottie/confetti.json";
 import logo from "../assets/logos/cori_logo_green.png";
+
 interface StartupLoadingScreenProps {
   onServerAwake: () => void;
 }
@@ -12,19 +14,39 @@ interface StartupLoadingScreenProps {
 const StartupLoadingScreen: React.FC<StartupLoadingScreenProps> = ({ onServerAwake }) => {
   const [isChecking, setIsChecking] = useState(true);
   const [isServerAwake, setIsServerAwake] = useState(false);
+  const [isDataReady, setIsDataReady] = useState(false);
   const [checkCount, setCheckCount] = useState(0);
+  const [dataCheckCount, setDataCheckCount] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
 
-  // Function to check if server is awake using lightweight health check
-  const checkServerStatus = useCallback(async () => {
+  // Refs to access current state values in interval
+  const isServerAwakeRef = useRef(isServerAwake);
+  const isDataReadyRef = useRef(isDataReady);
+  const fadeOutRef = useRef(fadeOut);
+
+  // Update refs when state changes
+  useEffect(() => {
+    isServerAwakeRef.current = isServerAwake;
+  }, [isServerAwake]);
+
+  useEffect(() => {
+    isDataReadyRef.current = isDataReady;
+  }, [isDataReady]);
+
+  useEffect(() => {
+    fadeOutRef.current = fadeOut;
+  }, [fadeOut]);
+
+  // Function to check if server can handle data operations
+  const checkDataConnection = useCallback(async () => {
     // Don't check if we're already in the process of transitioning
-    if (fadeOut) return;
+    if (fadeOutRef.current) return;
 
     setIsChecking(true);
-    setCheckCount((prev) => prev + 1);
+    setDataCheckCount((prev) => prev + 1);
     try {
-      await healthCheckAPI.checkHealth();
-      setIsServerAwake(true);
+      await empUserAPI.getAllEmpUsers();
+      setIsDataReady(true);
       setIsChecking(false);
 
       // Start fade out after showing success for 1.5 seconds
@@ -37,25 +59,56 @@ const StartupLoadingScreen: React.FC<StartupLoadingScreenProps> = ({ onServerAwa
         onServerAwake();
       }, 3000);
     } catch (error) {
+      setIsDataReady(false);
+      setTimeout(() => {
+        setIsChecking(false);
+      }, 2500);
+    }
+  }, [onServerAwake]);
+
+  // Function to check if server is awake using lightweight health check
+  const checkServerStatus = useCallback(async () => {
+    // Don't check if we're already in the process of transitioning or if server is already awake
+    if (fadeOutRef.current || isServerAwakeRef.current) return;
+
+    setIsChecking(true);
+    setCheckCount((prev) => prev + 1);
+    try {
+      await healthCheckAPI.checkHealth();
+      setIsServerAwake(true);
+      setIsChecking(false);
+
+      // Once server is awake, start checking data connection
+      setTimeout(() => {
+        checkDataConnection();
+      }, 1000);
+    } catch (error) {
       setIsServerAwake(false);
       setTimeout(() => {
         setIsChecking(false);
       }, 2500);
     }
-  }, [fadeOut, onServerAwake]);
+  }, [checkDataConnection]);
 
   // When component mounts, start checking server status
   useEffect(() => {
     setCheckCount(0);
+    setDataCheckCount(0);
     checkServerStatus();
 
     // Check every 10 seconds while waiting for server
-    const interval = setInterval(checkServerStatus, 10000);
+    const interval = setInterval(() => {
+      if (!isServerAwakeRef.current) {
+        checkServerStatus();
+      } else if (!isDataReadyRef.current) {
+        checkDataConnection();
+      }
+    }, 10000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [checkServerStatus]);
+  }, []); // Empty dependency array to run only on mount
 
   return (
     <div
@@ -85,6 +138,31 @@ const StartupLoadingScreen: React.FC<StartupLoadingScreenProps> = ({ onServerAwa
             ) : (
               <div className="h-20 flex items-center justify-center">
                 <p className="text-zinc-500 text-center px-10">This can take up to 50 seconds.</p>
+              </div>
+            )}
+          </div>
+        ) : !isDataReady ? (
+          <div>
+            <div className="flex items-center justify-center h-40 pb-10">
+              <Lottie animationData={datasearch} loop={true} style={{ width: 800, height: 400 }} />
+            </div>
+            <h1 className="text-4xl font-bold">Connected</h1>
+            <h3 className="text-2xl font-semi-bold mt-2">Preparing data services...</h3>
+
+            {isChecking ? (
+              <div className="h-20 flex items-center justify-center gap-2">
+                <Spin />
+                <p className="text-zinc-500 text-center">
+                  {dataCheckCount === 1
+                    ? "Testing data connection..."
+                    : `Verifying data services...`}
+                </p>
+              </div>
+            ) : (
+              <div className="h-20 flex items-center justify-center">
+                <p className="text-zinc-500 text-center px-10">
+                  Ensuring all services are ready...
+                </p>
               </div>
             )}
           </div>

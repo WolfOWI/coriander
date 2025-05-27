@@ -102,7 +102,7 @@ const AppContent: React.FC = () => {
           <Route path="/temp-new-gathering-box" element={<TempNewGatheringBoxPage />} />
         </Routes>
       </main>
-      <ServerStatusModal isVisible={isServerSleeping} onClose={() => checkServerStatus()} />
+      <ServerStatusModal isVisible={isServerSleeping} onClose={() => setServerSleeping(false)} />
     </div>
   );
 };
