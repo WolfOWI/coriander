@@ -42,6 +42,7 @@ function EditPRModal({
   const [reviews, setReviews] = useState<PerformanceReviewDTO[]>([]);
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string>("");
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
 
   // Initialize form values when the modal is opened
   useEffect(() => {
@@ -57,6 +58,7 @@ function EditPRModal({
       const timeRange = [startDateTime, endDateTime];
 
       setIsCompleted(statusValue);
+      setIsOnline(performanceReview.isOnline);
 
       form.setFieldsValue({
         reviewId: performanceReview.reviewId,
@@ -67,6 +69,9 @@ function EditPRModal({
         status: statusValue,
         meetingDate: startDateTime,
         timeRange: timeRange,
+        isOnline: performanceReview.isOnline,
+        meetLocation: performanceReview.meetLocation,
+        meetLink: performanceReview.meetLink,
       });
 
       setUploadedFileUrl(performanceReview.docUrl || "");
@@ -105,10 +110,23 @@ function EditPRModal({
     downloadFileFromUrl(url, messageApi);
   };
 
-  // Handle switch toggle
+  // Handle switch toggle for completion status
   const handleSwitchChange = (checked: boolean) => {
     setIsCompleted(checked);
     form.setFieldsValue({ status: checked });
+  };
+
+  // Handle switch toggle for online/in-person
+  const handleOnlineChange = (checked: boolean) => {
+    setIsOnline(checked);
+    form.setFieldsValue({ isOnline: checked });
+
+    // Clear the opposite field when switching
+    if (checked) {
+      form.setFieldsValue({ meetLocation: "" });
+    } else {
+      form.setFieldsValue({ meetLink: "" });
+    }
   };
 
   // Handle the editing of the performance review
@@ -144,9 +162,9 @@ function EditPRModal({
         reviewId: performanceReview.reviewId,
         adminId: performanceReview.adminId,
         employeeId: performanceReview.employeeId,
-        isOnline: performanceReview.isOnline,
-        meetLocation: performanceReview.meetLocation || "",
-        meetLink: performanceReview.meetLink || "",
+        isOnline: values.isOnline,
+        meetLocation: values.isOnline ? "" : values.meetLocation || "",
+        meetLink: values.isOnline ? values.meetLink || "" : "",
         startDate: fullStartDate,
         endDate: fullEndDate,
         rating: values.rating || null,
@@ -252,6 +270,45 @@ function EditPRModal({
               hideDisabledOptions={true} // Hide the disabled options
             />
           </Form.Item>
+
+          <Form.Item name="isOnline" valuePropName="checked" hidden>
+            {/* This hidden field tracks the isOnline value */}
+          </Form.Item>
+          <div className="flex items-center gap-2 mb-4">
+            <p className="text-zinc-500 text-[12px]">Meeting is online?</p>
+            <Switch
+              checked={isOnline}
+              checkedChildren="Yes"
+              unCheckedChildren="No"
+              onChange={handleOnlineChange}
+            />
+          </div>
+
+          {isOnline ? (
+            <Form.Item
+              name="meetLink"
+              label="Meeting Link"
+              rules={[{ required: isOnline, message: "Please enter the meeting link." }]}
+            >
+              <input
+                type="text"
+                placeholder="Enter meeting link"
+                className="w-full h-12 px-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-corigreen-500 focus:border-transparent"
+              />
+            </Form.Item>
+          ) : (
+            <Form.Item
+              name="meetLocation"
+              label="Meeting Location"
+              rules={[{ required: !isOnline, message: "Please enter the meeting location." }]}
+            >
+              <input
+                type="text"
+                placeholder="Enter meeting location"
+                className="w-full h-12 px-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-corigreen-500 focus:border-transparent"
+              />
+            </Form.Item>
+          )}
 
           <Form.Item name="rating" label="Rating">
             <Rate allowClear className="text-corigreen-500 text-3xl flex gap-1" />
