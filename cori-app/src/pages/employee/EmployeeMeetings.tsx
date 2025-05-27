@@ -133,6 +133,16 @@ const EmployeeMeetings: React.FC = () => {
     }
   };
 
+  const handleJoinMeeting = (gathering: Gathering) => {
+    if (gathering.meetLink) {
+      if (gathering.meetLink.includes("https://")) {
+        window.open(`${gathering.meetLink}`, "_blank");
+      } else {
+        window.open(`https://${gathering.meetLink}`, "_blank");
+      }
+    }
+  };
+
   // Table columns
   const columns = useMemo<ColumnsType<Gathering>>(
     () => [
@@ -374,7 +384,7 @@ const EmployeeMeetings: React.FC = () => {
                   key: "1",
                   label: "Join Meeting",
                   icon: <Icons.MeetingRoom />,
-                  onClick: () => window.open(record.meetLink, "_blank"),
+                  onClick: () => handleJoinMeeting(record),
                 },
               ];
             }
