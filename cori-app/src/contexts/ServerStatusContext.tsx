@@ -35,19 +35,14 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       // First wait 4 seconds to show success state
       await new Promise((resolve) => setTimeout(resolve, 4000));
-      console.log("⏰ Success state shown for 4 seconds");
 
       // Then set sleeping to false to trigger modal close
       setServerSleeping(false);
       setIsSuccessState(false);
 
-      // Only refresh if we had shown the offline modal
+      // Reset the offline modal flag without refreshing the page
       if (hasShownOfflineModal) {
-        // Wait 3 seconds before refreshing to give server time to fully wake up
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-        setHasShownOfflineModal(false); // Reset the flag
+        setHasShownOfflineModal(false);
       }
     } catch (error) {
       console.log("💤 Server is sleeping");
@@ -58,7 +53,6 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Register the check function with the API service
   useEffect(() => {
-    console.log("📝 Registering server status check with API service");
     setServerStatusCheck(checkServerStatus);
   }, [checkServerStatus]);
 

@@ -21,11 +21,9 @@ const ServerStatusModal: React.FC<ServerStatusModalProps> = ({ isVisible, onClos
     setCheckCount((prev) => prev + 1);
     try {
       await healthCheckAPI.checkHealth();
-      console.log("✅ Modal: Server is awake");
       setIsServerAwake(true);
       setIsChecking(false);
     } catch (error) {
-      console.log("💤 Modal: Server is sleeping");
       setIsServerAwake(false);
       setTimeout(() => {
         setIsChecking(false);

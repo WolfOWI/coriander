@@ -1,15 +1,12 @@
 // Wolf Botha
 import React, { useEffect, useState } from "react";
-import { empUserAPI, pageAPI, employeeAPI } from "../../services/api.service";
 import { useNavigate, useParams } from "react-router-dom";
 
-// Import 3rd party components
+// Import 3rd party components / plugins
 import GaugeComponent from "react-gauge-component";
 import { Avatar, DatePicker, Dropdown, Tooltip, message, Button, Spin } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
-
-// Extend dayjs with plugins
 dayjs.extend(relativeTime);
 
 // Import React Components
@@ -29,6 +26,7 @@ import AssignEmpToOneOrManyEquipsModal from "../../components/modals/AssignEmpTo
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
+import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 
 // Import Icons
 import { Icons } from "../../constants/icons";
@@ -36,15 +34,15 @@ import { Icons } from "../../constants/icons";
 // Import Assets
 import GoogleIcon from "../../assets/icons/googleIcon.png";
 
-// Import Utils
+// Import Utils / Functions
 import {
   calculateNextPayDay,
   formatEmploymentDuration,
   calculatePreviousPayDay,
 } from "../../utils/dateUtils";
-import TerminateEmployeeModal from "../../components/modals/TerminateEmployeeModal";
 import { formatPhone, formatRandAmount } from "../../utils/formatUtils";
 import { getFullImageUrl } from "../../utils/imageUtils";
+import { pageAPI, employeeAPI, empUserAPI } from "../../services/api.service";
 
 // Types / Interfaces
 import { Gender, PayCycle } from "../../types/common";
@@ -53,6 +51,7 @@ import { LeaveBalance } from "../../interfaces/leave/leaveBalance";
 import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetrics";
 import { Equipment } from "../../interfaces/equipment/equipment";
 import { Gathering } from "../../interfaces/gathering/gathering";
+import AdminGatheringBox from "../../components/gathering/AdminGatheringBox";
 
 // Admin Employee Details Page Response Interface
 interface AdminEmpDetailsResponse {
@@ -72,6 +71,9 @@ interface AdminEmpDetailsResponse {
 const AdminIndividualEmployee: React.FC = () => {
   // Get the employee ID from the URL params
   const { employeeId } = useParams();
+
+  // TODO Replace with the current admin logged in ID
+  const loggedInAdminId = "1";
 
   // Navigation
   const navigate = useNavigate();
@@ -336,9 +338,9 @@ const AdminIndividualEmployee: React.FC = () => {
                   >
                     <div className="flex gap-2 items-center justify-between overflow-clip">
                       {/* <WorkIcon /> */}
-                      <p className="text-zinc-900 truncate max-w-[40%]">{empUser.jobTitle}</p>
+                      <p className="text-zinc-900">{empUser.jobTitle}</p>
                       <p className="text-zinc-900">•</p>
-                      <p className="text-zinc-500 truncate max-w-[40%]">{empUser.department}</p>
+                      <p className="text-zinc-500">{empUser.department}</p>
                       <div className="w-fit">
                         {empUser.isSuspended ? (
                           <EmployTypeBadge status="suspended" />
@@ -469,7 +471,7 @@ const AdminIndividualEmployee: React.FC = () => {
             </div>
 
             {/* Equipment */}
-            <div className="w-full flex flex-col gap-2 items-center">
+            <div className="w-full flex flex-col gap-2 items-center relative">
               <div className="flex gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Equipment</h2>
                 <Dropdown
@@ -500,7 +502,10 @@ const AdminIndividualEmployee: React.FC = () => {
                   </Button>
                 </Dropdown>
               </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
+              <div
+                className={`bg-warmstone-50 px-4 pt-4 rounded-2xl w-full flex flex-col items-center gap-4 overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden
+                ${equipment.length > 3 ? "h-[224px] pb-20" : "h-fit pb-4"}`}
+              >
                 {equipment.map((item) => (
                   <EquipmentListItem
                     key={item.equipmentId}
@@ -525,6 +530,12 @@ const AdminIndividualEmployee: React.FC = () => {
                   <p className="text-zinc-500 py-4">No Equipment Assigned</p>
                 )}
               </div>
+
+              {equipment.length > 3 && (
+                <div className="py-8 w-full bg-gradient-to-b from-transparent to-warmstone-50 absolute rounded-b-2xl bottom-0 left-0 right-0 text-transparent">
+                  _
+                </div>
+              )}
             </div>
           </div>
           <div className="max-w-1/2 min-w-1/2 w-1/2">
@@ -594,7 +605,14 @@ const AdminIndividualEmployee: React.FC = () => {
                   {/* TODO Possibly create a performance review here? */}
                   <div className="w-full h-[580px] overflow-y-auto gap-4 flex flex-col rounded-2xl relative scrollbar-hide [&::-webkit-scrollbar]:hidden">
                     {gatherings.map((gathering) => (
-                      <EmpGatheringBox key={gathering.$id} gathering={gathering} />
+                      <AdminGatheringBox
+                        key={gathering.$id}
+                        gathering={gathering}
+                        withAdminNamesTitle={true}
+                        loggedInAdminId={loggedInAdminId}
+                        onEditSuccess={fetchEmployee}
+                        onDeleteSuccess={fetchEmployee}
+                      />
                     ))}
                     {gatherings.length === 0 && (
                       <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-3">

@@ -1,28 +1,36 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Import 3rd party components / plugins
 import type { GetProp, TableProps } from "antd";
 import { Table, Avatar, Dropdown, Tooltip, Input } from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
+import dayjs from "dayjs";
+
+// Import Services
 import { employeeAPI, pageAPI } from "../../services/api.service";
-import { useNavigate } from "react-router-dom";
-import { Gender, PayCycle } from "../../types/common";
+
+// Import Components
 import CoriBtn from "../../components/buttons/CoriBtn";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
+
+// Import Constants
 import { Icons } from "../../constants/icons";
-import { formatRandAmount, formatPhone } from "../../utils/formatUtils";
-import {
-  isDateInPast,
-  formatTimestampToDate,
-  calculateNextPayDay,
-  formatEmploymentDuration,
-} from "../../utils/dateUtils";
-import dayjs from "dayjs";
+
+// Import Utils
+import { formatRandAmount } from "../../utils/formatUtils";
 import { getFullImageUrl } from "../../utils/imageUtils";
+import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
+
+// Import Types / Interfaces
+import { EmployeeListItem } from "../../interfaces/people/employeeListItem";
+import { Gender, PayCycle } from "../../types/common";
 
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
 type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
 
-// Record list type
+// Record list interface
 interface DataType {
   employeeId: number;
   fullName: string;
@@ -41,7 +49,7 @@ interface DataType {
   totalLeaveDays?: number;
 }
 
-// Table parameters type
+// Table parameters interface
 interface TableParams {
   pagination?: TablePaginationConfig;
   sortField?: string;
@@ -68,8 +76,8 @@ const AdminEmployeeManagement: React.FC = () => {
       // Get ALL the employee data from the server
       const response = await pageAPI.getAdminEmpManagement();
 
-      // Clean up the data to match DataType interface
-      const processedData = response.data.$values.map((item: any) => ({
+      // Clean up the data to match DataType
+      const processedData = response.data.$values.map((item: EmployeeListItem) => ({
         employeeId: item.empUser.employeeId,
         fullName: item.empUser.fullName,
         gender: item.empUser.gender,
@@ -85,7 +93,7 @@ const AdminEmployeeManagement: React.FC = () => {
         numberOfRatings: item.empUserRatingMetrics?.numberOfRatings,
         totalRemainingDays: item.totalLeaveBalanceSum?.totalRemainingDays,
         totalLeaveDays: item.totalLeaveBalanceSum?.totalLeaveDays,
-      }));
+      })) as DataType[];
 
       setAllData(processedData);
     } catch (error) {
@@ -138,7 +146,6 @@ const AdminEmployeeManagement: React.FC = () => {
     if (tableParams.sortField && tableParams.sortOrder) {
       data.sort((a, b) => {
         // Get the values we want to compare
-        // The ?? '' means "use empty string if the value is null or undefined"
         const aValue = a[tableParams.sortField as keyof DataType] ?? "";
         const bValue = b[tableParams.sortField as keyof DataType] ?? "";
 

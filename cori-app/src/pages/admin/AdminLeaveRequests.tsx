@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { empLeaveRequestsAPI } from "../../services/api.service";
 import dayjs from "dayjs";
 import { calculateDurationInDays } from "../../utils/dateUtils";
@@ -7,80 +7,69 @@ import { calculateDurationInDays } from "../../utils/dateUtils";
 import { Tooltip } from "antd";
 
 // Icons
-import {
-  ClockCircleOutlined,
-  ArrowDownOutlined,
-  CheckOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
+import { ClockCircleOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { Icons } from "../../constants/icons";
 
-// Badges
+// Badges & Buttons
 import CoriBadge from "../../components/badges/CoriBadge";
-
-// Table
-import { Table } from "antd";
 import CoriCircleBtn from "../../components/buttons/CoriCircleBtn";
 import CoriBtn from "../../components/buttons/CoriBtn";
 
+// Table
+import { Table } from "antd";
+
+// Edit Policy Modal
+import EditPolicyModal from "../../components/modals/EditPolicyModal";
+
 const AdminLeaveRequests: React.FC = () => {
-
   const [displayingLeaveRequests, setDisplayingLeaveRequests] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<"Pending" | "Approved" | "Rejected">("Pending");
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
 
-  const fetchPendingLeaveRequests = async () => {
+  // Fetch handlers
+  const fetchPending = async () => {
+    const res = await empLeaveRequestsAPI.getPendingLeaveRequests();
+    setDisplayingLeaveRequests(res.data.$values);
+  };
+  const fetchApproved = async () => {
+    const res = await empLeaveRequestsAPI.getApprovedLeaveRequests();
+    setDisplayingLeaveRequests(res.data.$values);
+  };
+  const fetchRejected = async () => {
+    const res = await empLeaveRequestsAPI.getRejectedLeaveRequests();
+    setDisplayingLeaveRequests(res.data.$values);
+  };
+
+  useEffect(() => {
+    if (activeTab === "Pending") fetchPending();
+    else if (activeTab === "Approved") fetchApproved();
+    else fetchRejected();
+  }, [activeTab]);
+
+  useEffect(() => {
+    console.log("Displaying Leave Requests:", displayingLeaveRequests);
+  }, [displayingLeaveRequests]);
+
+  // Action handlers
+  const handleApprove = async (id: number) => {
     try {
-      const response = await empLeaveRequestsAPI.getPendingLeaveRequests();
-      setDisplayingLeaveRequests(response.data.$values);
+      await empLeaveRequestsAPI.approveLeaveRequestById(id);
+      setActiveTab("Approved");
     } catch (error) {
-      console.error("Error fetching leave requests:", error);
+      console.error(`Error approving leave request ${id}:`, error);
     }
   };
-  useEffect(() => {
-    fetchPendingLeaveRequests();
-  }, []);
 
-  const fetchApprovedLeaveRequests = async () => { 
-    try { 
-      const response = await empLeaveRequestsAPI.getApprovedLeaveRequests();
-      setDisplayingLeaveRequests(response.data.$values);
+  const handleReject = async (id: number) => {
+    try {
+      await empLeaveRequestsAPI.rejectLeaveRequestById(id);
+      setActiveTab("Rejected");
+    } catch (error) {
+      console.error(`Error rejecting leave request ${id}:`, error);
     }
-    
-   catch (error) {
-   console.error("Error fetching approved requests:", error);
+  };
 
-  }}
-
-  const fetchRejectedLeaveRequests = async () => { 
-    try { 
-      const response = await empLeaveRequestsAPI.getRejectedLeaveRequests();
-      setDisplayingLeaveRequests(response.data.$values);
-    }
-    
-   catch (error) {
-   console.error("Error fetching rejected requests:", error);
-
-  }}
-
-  type TabOption = "Pending" | "Approved" | "Rejected";
-  const [activeTab, setActiveTab] = useState<TabOption>("Pending");
-
-  const tabOptions: TabOption[] = ["Pending", "Approved", "Rejected"];
-
-  useEffect(() => {
-    if (activeTab === "Pending") {
-      fetchPendingLeaveRequests();
-    }
-    else if (activeTab === "Approved") {
-      fetchApprovedLeaveRequests();
-    }
-    else if (activeTab === "Rejected") {
-      fetchRejectedLeaveRequests();
-    }
-  
-  }, [activeTab]); 
-
-
-  // Icon rendering function
+  // Table columns (unchanged)
   const getLeaveIcon = (type: string) => {
     if (type.toLowerCase().includes("annual")) return <Icons.BeachAccess fontSize="large" />;
     if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize="large" />;
@@ -95,14 +84,16 @@ const AdminLeaveRequests: React.FC = () => {
     {
       title: "Leave Type & Duration",
       dataIndex: "startDate",
-      key: "$id",
-      render: (text: string, record: any) => (
+      key: "startDate",
+      render: (_: any, r: any) => (
         <div className="flex items-center gap-4 h-full">
-          {getLeaveIcon(record.leaveTypeName)}
+          {getLeaveIcon(r.leaveTypeName)}
           <div className="flex flex-col">
-            <p className="font-medium">{calculateDurationInDays(record.startDate, record.endDate)} Days {record.leaveTypeName} Leave</p>
+            <p className="font-medium">
+              {calculateDurationInDays(r.startDate, r.endDate)} Days {r.leaveTypeName} Leave
+            </p>
             <p className="text-xs text-zinc-500">
-              {dayjs(record.startDate).format("DD MMM YYYY")} - {dayjs(record.endDate).format("DD MMM YYYY")}
+              {dayjs(r.startDate).format("DD MMM YYYY")} – {dayjs(r.endDate).format("DD MMM YYYY")}
             </p>
           </div>
         </div>
@@ -113,10 +104,10 @@ const AdminLeaveRequests: React.FC = () => {
       dataIndex: "fullName",
       key: "fullName",
       className: "text-center",
-      render: (text: string, record: any) => (
-        <div className="flex flex-col items-center justify-center h-full">
-          <p className="font-normal text-xs">{record.fullName}</p>
-          <p className="text-xs text-zinc-500">ID-00{record.employeeId}</p>
+      render: (_: any, r: any) => (
+        <div className="flex flex-col items-center">
+          <p className="font-normal text-xs">{r.fullName}</p>
+          <p className="text-xs text-zinc-500">ID-00{r.employeeId}</p>
         </div>
       ),
     },
@@ -125,12 +116,14 @@ const AdminLeaveRequests: React.FC = () => {
       dataIndex: "remainingDays",
       key: "remainingDays",
       className: "text-center",
-      render: (balance: number, record: any) => (
-        <div className="flex justify-center items-center h-full">
+      render: (_: any, r: any) => (
+        <div className="flex justify-center">
           <CoriBadge
-            text={`${record.remainingDays} days`}
+            text={`${r.remainingDays} days`}
             size="x-small"
-            color={record.remainingDays < calculateDurationInDays(record.startDate, record.endDate) ? "red" : "green"}
+            color={
+              r.remainingDays < calculateDurationInDays(r.startDate, r.endDate) ? "red" : "green"
+            }
           />
         </div>
       ),
@@ -140,55 +133,40 @@ const AdminLeaveRequests: React.FC = () => {
       dataIndex: "comment",
       key: "comment",
       className: "text-center",
-      render: (comment: string, record: any) =>
-        comment ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-xs text-zinc-500">{record.comment}</p>
-          </div>
+      render: (_: any, r: any) =>
+        r.comment ? (
+          <p className="text-xs text-zinc-500">{r.comment}</p>
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="italic text-xs text-zinc-400">No comment</p>
-          </div>
+          <p className="italic text-xs text-zinc-400">No comment</p>
         ),
     },
     {
-      key: "Actions",
-      render: (_: any, record: any) => (
-        <div className="flex justify-end items-center gap-2 pe-4 h-full">
-          {record.status === 0 && (
+      key: "actions",
+      render: (_: any, r: any) => (
+        <div className="flex justify-end gap-2 pe-4">
+          {r.status === 0 && (
             <>
-                <CoriCircleBtn
-                  style="default"
-                  icon={<CheckOutlined className="text-s" />}
-                  // onClick={() =>
-                  //   setRequests((prev) =>
-                  //     prev.map(
-                  //       (req) => (req.id === record.id ? { ...req, status: "Approved" } : req) // Update status to Approved
-                  //     )
-                  //   )
-                  // }
-                />
-                <CoriCircleBtn
-                  style="red"
-                  icon={<CloseOutlined className="text-s" />}
-                  // onClick={() =>
-                  //   setRequests((prev) =>
-                  //     prev.map(
-                  //       (req) => (req.id === record.id ? { ...req, status: "Rejected" } : req) // Update status to Rejected
-                  //     )
-                  //   )
-                  // }
-                />
+              <CoriBtn iconOnly onClick={() => handleApprove(r.leaveRequestId)}>
+                <CheckOutlined />
+              </CoriBtn>
+              <CoriBtn
+                secondary
+                style="red"
+                iconOnly
+                onClick={() => handleReject(r.leaveRequestId)}
+              >
+                <CloseOutlined />
+              </CoriBtn>
             </>
           )}
-          {record.status === 1 && (
+          {r.status === 1 && (
             <Tooltip title="Approved">
-              <CoriCircleBtn style="default" icon={<CheckOutlined className="text-s" />} disabled />
+              <CoriCircleBtn style="default" icon={<CheckOutlined />} disabled />
             </Tooltip>
           )}
-          {record.status === 2 && (
+          {r.status === 2 && (
             <Tooltip title="Rejected">
-              <CoriCircleBtn style="red" icon={<CloseOutlined className="text-s" />} disabled />
+              <CoriCircleBtn style="red" icon={<CloseOutlined />} disabled />
             </Tooltip>
           )}
         </div>
@@ -197,38 +175,50 @@ const AdminLeaveRequests: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto m-4">
-      {/* Page Title & Edit Policy  */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <ClockCircleOutlined className="text-3xl text-zinc-900" />
-          <h1 className="text-3xl font-bold text-zinc-900">Leave Requests</h1>
+    <>
+      <div className="max-w-7xl mx-auto m-4">
+        {/* Title & Edit Policy */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <ClockCircleOutlined className="text-3xl text-zinc-900" />
+            <h1 className="text-3xl font-bold text-zinc-900">Leave Requests</h1>
+          </div>
+          <CoriBtn style="black" onClick={() => setShowPolicyModal(true)}>
+            Edit Policy
+          </CoriBtn>
         </div>
-        <CoriBtn style="black">Edit Policy</CoriBtn>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-4">
+          {(["Pending", "Approved", "Rejected"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`btn cori-btn ${
+                activeTab === tab
+                  ? "btn-primary bg-zinc-900 text-white"
+                  : "btn-outline-primary border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Table */}
+        <div className="overflow-hidden rounded-xl">
+          <Table
+            columns={columns}
+            dataSource={displayingLeaveRequests}
+            rowKey="LeaveRequestId"
+            pagination={false}
+          />
+        </div>
       </div>
 
-      {/* Tab Buttons */}
-      <div className="flex gap-2 mb-4">
-        {tabOptions.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`btn cori-btn ${
-              activeTab === tab
-                ? "btn-primary bg-zinc-900 text-white border-none"
-                : "btn-outline-primary border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white hover:border-none"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {/* Data Table */}
-      <div className="overflow-hidden rounded-xl">
-        <Table columns={columns} dataSource={displayingLeaveRequests} rowKey="id" pagination={false} />
-      </div>
-    </div>
+      {/* Edit Policy Modal */}
+      <EditPolicyModal showModal={showPolicyModal} setShowModal={setShowPolicyModal} />
+    </>
   );
 };
 

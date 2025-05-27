@@ -29,15 +29,14 @@ import { PieChart } from '@mui/x-charts/PieChart';
         series={[
           {
             data: doughnutData,
-            innerRadius: 45,
-            outerRadius: 70,
+            innerRadius: 50,
+            outerRadius: 80,
             cornerRadius: 4,
             paddingAngle: 1,
-            arcLabel: () => '', // removes text on arcs
           },
         ]}
-        width={220}
-        height={160}
+        width={230}
+        height={235}
         sx={{
           '& .MuiPieArc-root': {
             stroke: '#fff',
@@ -46,7 +45,7 @@ import { PieChart } from '@mui/x-charts/PieChart';
         }}
         hideLegend = {true}
       />
-      <div className='flex flex-col items-center justify-center' style={{ marginTop: '-110px', marginBottom: '65px' }}>
+      <div className='flex flex-col items-center justify-center' style={{ marginTop: '-145px', marginBottom: '65px' }}>
         <h1 className='text-zinc-900 font-semibold text-3xl'>{employeeStatusTotals.totalEmployees}</h1>
         <p className='text-zinc-900 text-xs'>Employees</p>
       </div>

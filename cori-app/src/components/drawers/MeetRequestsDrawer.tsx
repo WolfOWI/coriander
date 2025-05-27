@@ -28,7 +28,7 @@ function MeetRequestsDrawer({
     try {
       const response = await meetingAPI.getAllPendingRequestsByAdminId(adminId);
       setMeetRequests(response.data.$values);
-      console.log(response.data.$values);
+      // console.log(response.data.$values);
     } catch (error) {
       console.error("Error fetching meet requests:", error);
     }

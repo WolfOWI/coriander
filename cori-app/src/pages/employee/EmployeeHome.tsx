@@ -83,7 +83,7 @@ const EmployeeHome: React.FC = () => {
 
         const response = await fetch("https://api.api-ninjas.com/v1/quotes", {
           headers: {
-            "X-Api-Key": "/cP8Aq3lAI2uPIG9ePOHQg==8nCa4YBBLaFwGjYQ", // 🔐 Replace with your real key
+            "X-Api-Key": "/cP8Aq3lAI2uPIG9ePOHQg==8nCa4YBBLaFwGjYQ", 
           },
         });
 
@@ -274,12 +274,28 @@ const EmployeeHome: React.FC = () => {
 
           <Col md={4}>
             <Col xs={12} md={12}>
-                <div className="text-zinc-500 font-semibold text-center mb-2">Performance Reviews</div>
-                  <div className="grid gap-3">
-                    {gatherings.map((gathering) => (
-                      <EmpGatheringBox key={gathering.$id} gathering={gathering} />
-                    ))}
-                  </div>
+              <div className="text-zinc-500 font-semibold text-center mb-2">Performance Reviews</div>
+              <div className="relative">
+                <div
+                  className="grid gap-3 pr-2"
+                  style={{
+                    maxHeight: 700,
+                    overflowY: "auto",
+                    paddingBottom: 32, // space for fade
+                  }}
+                >
+                  {gatherings.map((gathering) => (
+                    <EmpGatheringBox key={gathering.$id} gathering={gathering} />
+                  ))}
+                </div>
+                {/* Fade overlay at the bottom */}
+                <div
+                  className="pointer-events-none w-full absolute left-0 right-0 bottom-0 h-7"
+                  style={{
+                    background: "linear-gradient(to bottom, rgba(231,229,228,0), #E7E5E4 100%)",
+                  }}
+                />
+              </div>
             </Col>
           </Col>
 

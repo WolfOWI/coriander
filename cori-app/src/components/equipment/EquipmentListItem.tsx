@@ -63,15 +63,21 @@ function EquipmentListItem({
   return (
     <>
       <div className="flex items-center gap-2 w-full justify-between group">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-6/12">
           {deviceIcon}
           <div className="flex flex-col">
             <p className="text-zinc-900">{item.equipmentName}</p>
             <p className="text-zinc-500 text-sm">{item.equipmentCategoryName}</p>
           </div>
         </div>
-        <p className="text-zinc-500 text-sm">{dayjs(item.assignedDate).format("DD MMM YYYY")}</p>
-        <div className="flex items-center gap-2">
+        <p
+          className={`text-zinc-500 text-sm w-4/12 text-center ${
+            adminView && "group-hover:opacity-0"
+          }`}
+        >
+          {dayjs(item.assignedDate).format("DD MMM YYYY")}
+        </p>
+        <div className="flex items-center justify-end gap-2 w-2/12">
           <EquipCondiBadge condition={item.condition} />
           {/* Edit button only for admins */}
           {adminView && (

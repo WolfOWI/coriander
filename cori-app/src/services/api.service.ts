@@ -39,7 +39,6 @@ let isCheckingHealth = false;
 
 // Function to set the server status check function
 export const setServerStatusCheck = (checkFn: () => Promise<void>) => {
-  console.log("🔧 Setting up server status check function");
   serverStatusCheck = checkFn;
 };
 
@@ -60,19 +59,14 @@ apiClient.interceptors.request.use(
     // Check server status before making the request, but don't block the request
     // and prevent recursive health checks
     if (serverStatusCheck && !isCheckingHealth) {
-      console.log("🔄 Initiating server status check");
       isCheckingHealth = true;
       serverStatusCheck()
         .catch((error) => {
           // Ignore errors from health check
-          console.log("⚠️ Server status check error:", error.message);
         })
         .finally(() => {
-          console.log("🏁 Server status check completed");
           isCheckingHealth = false;
         });
-    } else if (isCheckingHealth) {
-      console.log("⏳ Skipping health check - one already in progress");
     }
 
     // Return the modified config
@@ -80,7 +74,6 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     // Reject the promise with the error
-    console.log("❌ Request interceptor error:", error.message);
     return Promise.reject(error);
   }
 );
@@ -342,7 +335,6 @@ export const healthCheckAPI = {
    * @returns Promise containing the API response
    */
   checkHealth: (): Promise<AxiosResponse> => {
-    console.log("🏥 Starting health check request");
     return apiClient
       .get("/health", {
         timeout: 5000, // 5 second timeout for health checks
@@ -352,11 +344,9 @@ export const healthCheckAPI = {
         },
       })
       .then((response) => {
-        console.log("✅ Health check successful");
         return response;
       })
       .catch((error) => {
-        console.log("❌ Health check failed:", error.message);
         throw error;
       });
   },
@@ -386,6 +376,30 @@ export const empLeaveRequestsAPI = {
    */
   getRejectedLeaveRequests: (): Promise<AxiosResponse> =>
     apiClient.get("/EmpLeaveRequest/GetAllRejected"),
+
+  /**
+   * Approve Leave Request by its ID
+   * @param requestId - The leaveRequestId
+   *  @returns Promise containing the API response
+   */
+  approveLeaveRequestById: (id: number): Promise<AxiosResponse> =>
+    apiClient.put(`/EmpLeaveRequest/ApproveLeaveRequestById/${id}`),
+
+  /**
+   * Reject Leave Request by its ID
+   * @param requestId - The leaveRequestId
+   *  @returns Promise containing the API response
+   */
+  rejectLeaveRequestById: (id: number): Promise<AxiosResponse> =>
+    apiClient.put(`/EmpLeaveRequest/RejectLeaveRequestById/${id}`),
+
+  /**
+   * Set to Pendinge Leave Request by its ID
+   * @param requestId - The leaveRequestId
+   *  @returns Promise containing the API response
+   */
+  setPendingLeaveRequestById: (id: number): Promise<AxiosResponse> =>
+    apiClient.put(`/EmpLeaveRequest/SetLeaveRequestToPendingById/${id}`),
 };
 
 // PERFORMANCE REVIEW API
@@ -428,8 +442,24 @@ export const performanceReviewsAPI = {
    */
   UpdatePerformanceReview: (id: number, data: object): Promise<AxiosResponse> =>
     apiClient.put(`/PerformanceReview/UpdatePerformanceReview/${id}`, data),
+
+  /**
+   * Updates the status of a performance review by its ID
+   * @param id - The performance review's ID
+   * @param status - The status to update the performance review to (can only be 1 - Upcoming, 2 - Completed)
+   * @returns Promise containing the API response
+   */
+  UpdatePerformanceReviewStatus: (id: number, status: number): Promise<AxiosResponse> =>
+    apiClient.put(`/PerformanceReview/update-status/${id}?status=${status}`),
+
+  /**
+   * Deletes a performance review by its ID
+   * @param id - The performance review's ID
+   * @returns Promise containing the API response
+   */
+  deletePerformanceReview: (id: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/PerformanceReview/DeletePerformanceReview/${id}`),
 };
-// ------------------------------------------------------------
 
 // MEETING API
 // ------------------------------------------------------------
@@ -516,11 +546,27 @@ export const meetingAPI = {
     apiClient.put(`/Meeting/MarkAsCompleted/${meetingId}`),
 
   /**
+   * An admin marks a meeting request as upcoming
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  markAsUpcomingMeeting: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.put(`/Meeting/MarkAsUpcoming/${meetingId}`),
+
+  /**
    * An admin deletes a meeting request by its ID
    * @param meetingId - The meeting's ID
    * @returns Promise containing the API response
    */
   deleteMeetingRequest: (meetingId: number): Promise<AxiosResponse> =>
+    apiClient.delete(`/Meeting/Delete/${meetingId}`),
+
+  /**
+   * An admin deletes a meeting by its ID
+   * @param meetingId - The meeting's ID
+   * @returns Promise containing the API response
+   */
+  deleteMeeting: (meetingId: number): Promise<AxiosResponse> =>
     apiClient.delete(`/Meeting/Delete/${meetingId}`),
 };
 // ------------------------------------------------------------

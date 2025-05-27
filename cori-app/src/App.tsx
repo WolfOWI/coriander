@@ -1,10 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
@@ -14,6 +9,11 @@ import { ServerStatusProvider } from "./contexts/ServerStatusContext";
 import ServerStatusModal from "./components/modals/ServerStatusModal";
 import { useServerStatus } from "./contexts/ServerStatusContext";
 import "./styles/table.css";
+import StartupLoadingScreen from "./components/StartupLoadingScreen";
+import {
+  AppInitializationProvider,
+  useAppInitialization,
+} from "./contexts/AppInitializationContext";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
@@ -45,11 +45,25 @@ import TempNewGatheringBoxPage from "./pages/TempNewGatheringBoxPage";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
-  const { isServerSleeping, checkServerStatus } = useServerStatus();
+  const { isServerSleeping, checkServerStatus, setServerSleeping } = useServerStatus();
+  const { hasCompletedInitialCheck, setHasCompletedInitialCheck } = useAppInitialization();
+
   const isAuthPage =
     location.pathname === "/" ||
     location.pathname === "/employee/signup" ||
     location.pathname === "/admin/signup";
+
+  // Handle server wake-up from startup screen
+  const handleServerAwake = () => {
+    // Ensure the server is marked as awake to prevent the modal from showing
+    setServerSleeping(false);
+    setHasCompletedInitialCheck(true);
+  };
+
+  // If initial check hasn't been completed, show the startup loading screen
+  if (!hasCompletedInitialCheck) {
+    return <StartupLoadingScreen onServerAwake={handleServerAwake} />;
+  }
 
   return (
     <div className="flex h-screen mr-4">
@@ -63,56 +77,32 @@ const AppContent: React.FC = () => {
 
           {/* Employee Routes */}
           <Route path="/employee/home" element={<EmployeeHome />} />
-          <Route
-            path="/employee/leave-overview"
-            element={<EmployeeLeaveOverview />}
-          />
+          <Route path="/employee/leave-overview" element={<EmployeeLeaveOverview />} />
           <Route path="/employee/profile" element={<EmployeeProfile />} />
           <Route path="/employee/meetings" element={<EmployeeMeetings />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route
-            path="/admin/employees"
-            element={<AdminEmployeeManagement />}
-          />
-          <Route
-            path="/admin/equipment"
-            element={<AdminEquipmentManagement />}
-          />
-          <Route
-            path="/admin/create-employee"
-            element={<AdminCreateEmployee />}
-          />
+          <Route path="/admin/employees" element={<AdminEmployeeManagement />} />
+          <Route path="/admin/equipment" element={<AdminEquipmentManagement />} />
+          <Route path="/admin/create-employee" element={<AdminCreateEmployee />} />
           <Route
             path="/admin/individual-employee/:employeeId?"
             element={<AdminIndividualEmployee />}
           />
-          <Route
-            path="/admin/leave-requests"
-            element={<AdminLeaveRequests />}
-          />
+          <Route path="/admin/leave-requests" element={<AdminLeaveRequests />} />
           <Route path="/admin/meetings" element={<AdminMeetings />} />
 
           {/* Temporary Reference Route */}
           {/* TODO: Delete this later */}
           <Route path="/reference" element={<ReferencePage />} />
-          <Route
-            path="/temp-modals/leave-overview"
-            element={<TempModalsLeaveOverviewPage />}
-          />
-          <Route
-            path="/temp-modals/admin-dash"
-            element={<TempModalsAdminDashPage />}
-          />
+          <Route path="/temp-modals/leave-overview" element={<TempModalsLeaveOverviewPage />} />
+          <Route path="/temp-modals/admin-dash" element={<TempModalsAdminDashPage />} />
           <Route path="/apiplayground" element={<ApiPlayground />} />
-          <Route
-            path="/temp-new-gathering-box"
-            element={<TempNewGatheringBoxPage />}
-          />
+          <Route path="/temp-new-gathering-box" element={<TempNewGatheringBoxPage />} />
         </Routes>
       </main>
-      {/* <ServerStatusModal isVisible={isServerSleeping} onClose={() => checkServerStatus()} /> */}
+      <ServerStatusModal isVisible={isServerSleeping} onClose={() => checkServerStatus()} />
     </div>
   );
 };
@@ -241,11 +231,13 @@ const App: React.FC = () => {
         },
       }}
     >
-      <ServerStatusProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </ServerStatusProvider>
+      <AppInitializationProvider>
+        <ServerStatusProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </ServerStatusProvider>
+      </AppInitializationProvider>
     </ConfigProvider>
   );
 };

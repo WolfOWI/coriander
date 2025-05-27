@@ -14,6 +14,17 @@ const config: Config = {
   moduleNameMapper: {
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
   },
+  // Coverage configuration
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  coverageReporters: ["text", "lcov", "clover", "html"],
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/main.ts",
+    "!src/preload.ts",
+    "!**/node_modules/**",
+  ],
 };
 
 export default config;

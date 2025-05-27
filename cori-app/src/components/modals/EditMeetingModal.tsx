@@ -1,120 +1,54 @@
 import React, { useState, useEffect } from "react";
-import { performanceReviewsAPI } from "../../services/api.service";
-import { Modal, Button, Form, message, Rate, Switch, DatePicker, TimePicker } from "antd";
+import { meetingAPI } from "../../services/api.service";
+import { Modal, Button, Form, message, Switch, DatePicker, TimePicker } from "antd";
 import dayjs from "dayjs";
-import TextArea from "antd/es/input/TextArea";
 import { Icons } from "../../constants/icons";
-import DocUploadWidget from "../uploading/DocUploadWidget";
-import { downloadFileFromUrl } from "../../utils/fileUtils";
+import { MeetingDTO } from "../../interfaces/meetings/meetingDTO";
+import { MeetStatus } from "../../types/common";
 
-export interface PerformanceReviewDTO {
-  reviewId: number;
-  adminId: number;
-  adminName: string;
-  employeeId: number;
-  employeeName: string;
-  isOnline: boolean;
-  meetLocation: string;
-  meetLink: string;
-  startDate: string;
-  endDate: string;
-  rating: number;
-  comment: string;
-  docUrl: string;
-  status: number;
-}
-
-interface EditPRModalProps {
+interface EditMeetingModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   onEditSuccess: () => void;
-  performanceReview?: PerformanceReviewDTO;
+  meeting?: MeetingDTO;
 }
 
-function EditPRModal({
+function EditMeetingModal({
   showModal,
   setShowModal,
   onEditSuccess,
-  performanceReview,
-}: EditPRModalProps) {
+  meeting,
+}: EditMeetingModalProps) {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
-  const [reviews, setReviews] = useState<PerformanceReviewDTO[]>([]);
-  const [uploadedFileUrl, setUploadedFileUrl] = useState<string>("");
-  const [isCompleted, setIsCompleted] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   // Initialize form values when the modal is opened
   useEffect(() => {
-    if (showModal && performanceReview) {
-      const commentValue = performanceReview.comment || "";
-      const statusValue = performanceReview.status === 2;
+    if (showModal && meeting) {
+      setIsOnline(meeting.isOnline);
+      setIsCompleted(meeting.status === MeetStatus.Completed);
 
       // Convert dates to dayjs objects for form fields
-      const startDateTime = dayjs(performanceReview.startDate);
-      const endDateTime = dayjs(performanceReview.endDate);
+      const startDateTime = dayjs(meeting.startDate);
+      const endDateTime = dayjs(meeting.endDate);
 
       // Time values need to be in an array for TimePicker.RangePicker
       const timeRange = [startDateTime, endDateTime];
 
-      setIsCompleted(statusValue);
-      setIsOnline(performanceReview.isOnline);
-
       form.setFieldsValue({
-        reviewId: performanceReview.reviewId,
-        employeeId: performanceReview.employeeId,
-        rating: performanceReview.rating,
-        comment: commentValue,
-        docUrl: performanceReview.docUrl,
-        status: statusValue,
+        meetingId: meeting.meetingId,
+        isOnline: meeting.isOnline,
+        meetLocation: meeting.meetLocation,
+        meetLink: meeting.meetLink,
         meetingDate: startDateTime,
         timeRange: timeRange,
-        isOnline: performanceReview.isOnline,
-        meetLocation: performanceReview.meetLocation,
-        meetLink: performanceReview.meetLink,
+        status: meeting.status,
+        completedStatus: meeting.status === MeetStatus.Completed,
       });
-
-      setUploadedFileUrl(performanceReview.docUrl || "");
     }
-  }, [showModal, performanceReview, form]);
-
-  useEffect(() => {
-    if (!performanceReview) {
-      const fetchUpcoming = async () => {
-        try {
-          const response = await performanceReviewsAPI.GetAllUpcomingPrm();
-          const reviewsArray = Array.isArray(response.data)
-            ? response.data
-            : Array.isArray(response.data?.$values)
-            ? response.data.$values
-            : [];
-          setReviews(reviewsArray);
-        } catch (error) {
-          messageApi.error("Failed to fetch upcoming reviews");
-          setReviews([]);
-        }
-      };
-      fetchUpcoming();
-    }
-  }, [performanceReview]);
-
-  // Handle document upload success
-  const handleDocUploadSuccess = (url: string | null) => {
-    setUploadedFileUrl(url || "");
-    form.setFieldsValue({ docUrl: url });
-  };
-
-  // Handle document download
-  const handleViewDocument = (url: string) => {
-    if (!url) return;
-    downloadFileFromUrl(url, messageApi);
-  };
-
-  // Handle switch toggle for completion status
-  const handleSwitchChange = (checked: boolean) => {
-    setIsCompleted(checked);
-    form.setFieldsValue({ status: checked });
-  };
+  }, [showModal, meeting, form]);
 
   // Handle switch toggle for online/in-person
   const handleOnlineChange = (checked: boolean) => {
@@ -129,55 +63,58 @@ function EditPRModal({
     }
   };
 
-  // Handle the editing of the performance review
+  // Handle switch toggle for meeting status
+  const handleCompletedChange = (checked: boolean) => {
+    setIsCompleted(checked);
+    // Set the appropriate MeetStatus enum value based on the switch state
+    const statusValue = checked ? MeetStatus.Completed : MeetStatus.Upcoming;
+    form.setFieldsValue({ completedStatus: checked, status: statusValue });
+  };
+
+  // Handle the editing of the meeting
   const handleEdit = async () => {
     try {
       // Validate the form fields
       const values = await form.validateFields();
 
-      if (!performanceReview) {
-        messageApi.error("No review selected");
+      if (!meeting) {
+        messageApi.error("No meeting selected");
         return;
       }
 
-      const newStatus = isCompleted ? 2 : 1;
+      // Get the status directly from form values instead of the component state
+      const newStatus = values.completedStatus ? MeetStatus.Completed : MeetStatus.Upcoming;
 
       // Process date and time
       const meetingDate = values.meetingDate;
       const [startTime, endTime] = values.timeRange || [
-        dayjs(performanceReview.startDate),
-        dayjs(performanceReview.endDate),
+        dayjs(meeting.startDate),
+        dayjs(meeting.endDate),
       ];
 
       // Combine date and time
       const fullStartDate = meetingDate
         ? meetingDate.hour(startTime.hour()).minute(startTime.minute()).second(0).toISOString()
-        : performanceReview.startDate;
+        : meeting.startDate;
 
       const fullEndDate = meetingDate
         ? meetingDate.hour(endTime.hour()).minute(endTime.minute()).second(0).toISOString()
-        : performanceReview.endDate;
+        : meeting.endDate;
 
       const updatedValues = {
-        reviewId: performanceReview.reviewId,
-        adminId: performanceReview.adminId,
-        employeeId: performanceReview.employeeId,
         isOnline: values.isOnline,
         meetLocation: values.isOnline ? "" : values.meetLocation || "",
         meetLink: values.isOnline ? values.meetLink || "" : "",
         startDate: fullStartDate,
         endDate: fullEndDate,
-        rating: values.rating || null,
-        comment: values.comment || "",
-        docUrl: values.docUrl || "",
         status: newStatus,
       };
 
       try {
-        // Call the update API with reviewId and updatedValues
-        await performanceReviewsAPI.UpdatePerformanceReview(updatedValues.reviewId, updatedValues);
+        // Call the update API with meetingId and updatedValues
+        await meetingAPI.updateMeeting(meeting.meetingId, updatedValues);
 
-        messageApi.success("Performance Review was edited successfully");
+        messageApi.success("Meeting was updated successfully");
 
         // Reset form and close modal
         form.resetFields();
@@ -186,14 +123,14 @@ function EditPRModal({
         // Notify parent of success
         onEditSuccess();
       } catch (apiError: any) {
-        messageApi.error("The performance review was not updated.");
+        messageApi.error("The meeting was not updated.");
       }
     } catch (error: any) {
       messageApi.error("Please fill out all fields correctly.");
     }
   };
 
-  // Handle the cancellation of the performance review creation
+  // Handle the cancellation of the meeting edit
   const handleCancel = () => {
     setShowModal(false);
     form.resetFields(); // Clear the form fields
@@ -203,7 +140,7 @@ function EditPRModal({
     <>
       {contextHolder}
       <Modal
-        title={<h2 className="text-zinc-900 font-bold text-3xl">Edit Performance Review</h2>}
+        title={<h2 className="text-zinc-900 font-bold text-3xl">Edit Meeting</h2>}
         open={showModal}
         onCancel={handleCancel}
         width={600}
@@ -229,15 +166,13 @@ function EditPRModal({
             Cancel
           </Button>,
           <Button key="edit" type="primary" onClick={handleEdit}>
-            Update Review
+            Update Meeting
           </Button>,
         ]}
       >
-        {performanceReview && (
+        {meeting && (
           <div className="mb-6">
-            <div className="text-zinc-800 text-lg font-semibold">
-              {performanceReview.employeeName}
-            </div>
+            <div className="text-zinc-800 text-lg font-semibold">{meeting.employeeName}</div>
           </div>
         )}
 
@@ -310,24 +245,11 @@ function EditPRModal({
             </Form.Item>
           )}
 
-          <Form.Item name="rating" label="Rating">
-            <Rate allowClear className="text-corigreen-500 text-3xl flex gap-1" />
+          <Form.Item name="status" hidden>
+            {/* This hidden field stores the actual MeetStatus enum value */}
           </Form.Item>
-
-          <Form.Item name="comment" label="Comment">
-            <TextArea rows={4} placeholder="Enter a comment" />
-          </Form.Item>
-
-          <Form.Item name="docUrl" label="Supporting Document (PDF only)">
-            <DocUploadWidget
-              onUploadSuccess={handleDocUploadSuccess}
-              uploadedFileUrl={uploadedFileUrl}
-              onViewFile={handleViewDocument}
-            />
-          </Form.Item>
-
-          <Form.Item name="status" valuePropName="checked" hidden>
-            {/* This hidden field is bound to the form but not visible */}
+          <Form.Item name="completedStatus" valuePropName="checked" hidden>
+            {/* This hidden field tracks the completed status checkbox */}
           </Form.Item>
           <div className="flex items-center gap-2 mb-4">
             <p className="text-zinc-500 text-[12px]">Meeting is completed?</p>
@@ -335,7 +257,7 @@ function EditPRModal({
               checked={isCompleted}
               checkedChildren="Yes"
               unCheckedChildren="No"
-              onChange={handleSwitchChange}
+              onChange={handleCompletedChange}
             />
           </div>
         </Form>
@@ -344,4 +266,4 @@ function EditPRModal({
   );
 }
 
-export default EditPRModal;
+export default EditMeetingModal;

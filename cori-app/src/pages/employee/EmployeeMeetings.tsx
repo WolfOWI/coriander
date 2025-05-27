@@ -7,6 +7,7 @@ import { gatheringAPI, meetingAPI } from "../../services/api.service";
 import { GatheringType, MeetStatus, ReviewStatus } from "../../types/common";
 import GatheringStatusBadge from "../../components/badges/GatheringStatusBadge";
 import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUtils";
+import { downloadFileFromUrl } from "../../utils/fileUtils";
 import dayjs from "dayjs";
 import { Gathering } from "../../interfaces/gathering/gathering";
 import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
@@ -45,17 +46,17 @@ const EmployeeMeetings: React.FC = () => {
         if (a.startDate && b.startDate) {
           return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
         }
-        
+
         // If neither have start dates, sort by requestedAt (newest first)
         if (!a.startDate && !b.startDate) {
           if (!a.requestedAt || !b.requestedAt) return 0;
           return new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime();
         }
-        
+
         // If only one has a start date, the one without goes first
         if (!a.startDate) return -1;
         if (!b.startDate) return 1;
-        
+
         return 0;
       });
 
@@ -143,20 +144,21 @@ const EmployeeMeetings: React.FC = () => {
         render: (_, record) => (
           <div className="flex items-center gap-3">
             {record.type === GatheringType.Meeting ? (
-              record.meetingStatus === MeetStatus.Requested || record.meetingStatus === MeetStatus.Rejected ? (
+              record.meetingStatus === MeetStatus.Requested ||
+              record.meetingStatus === MeetStatus.Rejected ? (
                 // Meeting Request
-              <Tooltip title="Meeting Request">
-                <div className="bg-zinc-200 rounded-full h-12 w-12 flex items-center justify-center">
-                  <Icons.LiveHelp className="text-zinc-400" />
-                </div>
-              </Tooltip>) :
-              (
+                <Tooltip title="Meeting Request">
+                  <div className="bg-zinc-200 rounded-full h-12 w-12 flex items-center justify-center">
+                    <Icons.LiveHelp className="text-zinc-400" />
+                  </div>
+                </Tooltip>
+              ) : (
                 // Standard Meeting
                 <Tooltip title="Standard Meeting">
-                <div className="bg-corigreen-100 rounded-full h-12 w-12 flex items-center justify-center">
-                  <Icons.Chat className="text-corigreen-400" />
-                </div>
-              </Tooltip>
+                  <div className="bg-corigreen-100 rounded-full h-12 w-12 flex items-center justify-center">
+                    <Icons.Chat className="text-corigreen-400" />
+                  </div>
+                </Tooltip>
               )
             ) : (
               // Performance Review
@@ -289,12 +291,14 @@ const EmployeeMeetings: React.FC = () => {
             return <p className="text-zinc-500 text-sm">N/A</p>;
           } else {
             // Performance Review
-            return record.rating ? (
+            return record.rating || record.docUrl ? (
               <div className="flex items-center gap-2 justify-center">
-                <div className="flex items-center">
-                  <Icons.StarRounded className="text-yellow-500" />
-                  <span>{record.rating}</span>
-                </div>
+                {record.rating && (
+                  <div className="flex items-center">
+                    <Icons.StarRounded className="text-yellow-500" />
+                    <span>{record.rating}</span>
+                  </div>
+                )}
                 {record.docUrl && (
                   <Tooltip title="Document Attached">
                     <Icons.TextSnippet className="text-zinc-500" />
@@ -343,7 +347,10 @@ const EmployeeMeetings: React.FC = () => {
                   label: "Retract Request",
                   icon: <Icons.Delete />,
                   danger: true,
-                  onClick: () => { handleDeleteMeetingRequest(record.id); fetchAndUpdateData(); },
+                  onClick: () => {
+                    handleDeleteMeetingRequest(record.id);
+                    fetchAndUpdateData();
+                  },
                 },
               ];
               // Standard Meeting - Rejected Status
@@ -354,7 +361,10 @@ const EmployeeMeetings: React.FC = () => {
                   label: "Delete Request",
                   icon: <Icons.Delete />,
                   danger: true,
-                  onClick: () => { handleDeleteMeetingRequest(record.id); fetchAndUpdateData(); },
+                  onClick: () => {
+                    handleDeleteMeetingRequest(record.id);
+                    fetchAndUpdateData();
+                  },
                 },
               ];
               // Standard Meeting - Upcoming Status & Online
@@ -386,8 +396,7 @@ const EmployeeMeetings: React.FC = () => {
                 key: "2",
                 label: "Download Doc",
                 icon: <Icons.Download />,
-                onClick: () => window.open(record.docUrl, "_blank"),
-                // TODO: Download uploaded file
+                onClick: () => downloadFileFromUrl(record.docUrl || "", messageApi),
               });
             }
           }
@@ -419,78 +428,79 @@ const EmployeeMeetings: React.FC = () => {
       <div className="max-w-7xl mx-auto m-4">
         {/* Page Header */}
         <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
-            <h1 className="text-3xl font-bold text-zinc-900">My Meetings</h1>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
+              <h1 className="text-3xl font-bold text-zinc-900">My Meetings</h1>
+            </div>
+            <MeetRequestsBadge
+              requests={
+                filteredData.filter(
+                  (item) =>
+                    item.type === GatheringType.Meeting &&
+                    item.meetingStatus === MeetStatus.Requested
+                ).length
+              }
+              employee
+            />
           </div>
-          <MeetRequestsBadge
-            requests={
-              filteredData.filter(
-                (item) =>
-                  item.type === GatheringType.Meeting && item.meetingStatus === MeetStatus.Requested
-              ).length
-            }
-            employee
-          />
+          <div className="flex items-center gap-2">
+            <CoriBtn onClick={() => setShowRequestMeetingModal(true)}>
+              <Icons.Add />
+              Request a Meeting
+            </CoriBtn>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <CoriBtn onClick={() => setShowRequestMeetingModal(true)}>
-            <Icons.Add />
-            Request a Meeting
-          </CoriBtn>
+
+        {/* Tab Buttons */}
+        <div className="flex gap-2 mb-4">
+          {tabOptions.map((tab) => (
+            <CoriBtn
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              secondary
+              className={`btn cori-btn ${
+                activeTab === tab
+                  ? "bg-zinc-900 text-white border-none"
+                  : "border-zinc-900 text-zinc-900"
+              }`}
+            >
+              {tab}
+            </CoriBtn>
+          ))}
         </div>
+
+        {/* Table */}
+        <Table
+          columns={columns}
+          dataSource={filteredData}
+          rowKey={(record) => `${record.type}-${record.id}`}
+          loading={loading}
+          className="mt-4"
+          pagination={{ pageSize: 10 }}
+        />
+
+        <RequestMeetingModal
+          showModal={showRequestMeetingModal}
+          setShowModal={setShowRequestMeetingModal}
+          employeeId={employeeId}
+          onSubmitSuccess={() => {
+            setShowRequestMeetingModal(false);
+            fetchAndUpdateData();
+          }}
+        />
+
+        <EditMeetingRequestModal
+          showModal={showEditMeetingRequestModal}
+          setShowModal={setShowEditMeetingRequestModal}
+          gathering={selectedGathering}
+          onSubmitSuccess={() => {
+            setShowEditMeetingRequestModal(false);
+            setSelectedGathering(null);
+            fetchAndUpdateData();
+          }}
+        />
       </div>
-
-      {/* Tab Buttons */}
-      <div className="flex gap-2 mb-4">
-        {tabOptions.map((tab) => (
-          <CoriBtn
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            secondary
-            className={`btn cori-btn ${
-              activeTab === tab
-                ? "bg-zinc-900 text-white border-none"
-                : "border-zinc-900 text-zinc-900"
-            }`}
-          >
-            {tab}
-          </CoriBtn>
-        ))}
-      </div>
-
-      {/* Table */}
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey={(record) => `${record.type}-${record.id}`}
-        loading={loading}
-        className="mt-4"
-        pagination={{ pageSize: 10 }}
-      />
-
-      <RequestMeetingModal
-        showModal={showRequestMeetingModal}
-        setShowModal={setShowRequestMeetingModal}
-        employeeId={employeeId}
-        onSubmitSuccess={() => {
-          setShowRequestMeetingModal(false);
-          fetchAndUpdateData(); 
-        }}
-      />
-
-      <EditMeetingRequestModal
-        showModal={showEditMeetingRequestModal}
-        setShowModal={setShowEditMeetingRequestModal}
-        gathering={selectedGathering}
-        onSubmitSuccess={() => {
-          setShowEditMeetingRequestModal(false);
-          setSelectedGathering(null);
-          fetchAndUpdateData();
-        }}
-      />
-    </div>
     </>
   );
 };
