@@ -27,29 +27,20 @@ export const ServerStatusProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const checkServerStatus = useCallback(async () => {
     if (isSuccessState) return; // Don't check if we're in success state
 
-    console.log("🔍 Checking server status...");
+    // Don't interfere if the modal is already showing (server is sleeping)
+    // Let the modal handle its own timing
+    if (isServerSleeping) {
+      return;
+    }
+
     try {
       await healthCheckAPI.checkHealth();
-      console.log("✅ Server is awake");
-      setIsSuccessState(true);
-
-      // First wait 4 seconds to show success state
-      await new Promise((resolve) => setTimeout(resolve, 4000));
-
-      // Then set sleeping to false to trigger modal close
-      setServerSleeping(false);
-      setIsSuccessState(false);
-
-      // Reset the offline modal flag without refreshing the page
-      if (hasShownOfflineModal) {
-        setHasShownOfflineModal(false);
-      }
+      // Don't do anything here - let other components handle their own logic
     } catch (error) {
-      console.log("💤 Server is sleeping");
       setServerSleeping(true);
       setHasShownOfflineModal(true); // Set the flag when we show the offline modal
     }
-  }, [isSuccessState, hasShownOfflineModal]);
+  }, [isSuccessState, hasShownOfflineModal, isServerSleeping]);
 
   // Register the check function with the API service
   useEffect(() => {
