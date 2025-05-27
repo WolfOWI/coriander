@@ -368,7 +368,7 @@ function AdminGatheringBox({
     if (!adminPermissions.isOwner) return null;
 
     return (
-      <>
+      <div className="flex items-center gap-3">
         {gatheringStatus.isUpcoming && gathering.isOnline && (
           <CoriBtn primary style="black" onClick={handleJoinClick}>
             Join
@@ -386,7 +386,7 @@ function AdminGatheringBox({
             <MoreVertRoundedIcon className="text-zinc-500" />
           </Button>
         </Dropdown>
-      </>
+      </div>
     );
   };
 
@@ -395,8 +395,10 @@ function AdminGatheringBox({
     const displayText = gathering.isOnline ? gathering.meetLink : gathering.meetLocation;
 
     return (
-      <div className="w-full h-10 flex items-center justify-center bg-warmstone-100 rounded-xl px-10">
-        <p className="text-zinc-500 text-[12px] truncate max-w-[200px]">{displayText}</p>
+      <div className="w-full h-10 flex items-center justify-center bg-warmstone-100 rounded-xl overflow-hidden">
+        <Tooltip title={displayText}>
+          <p className="text-zinc-500 text-[12px] truncate mx-4">{displayText}</p>
+        </Tooltip>
       </div>
     );
   };
