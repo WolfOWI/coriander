@@ -608,7 +608,7 @@ const AdminIndividualEmployee: React.FC = () => {
                       <AdminGatheringBox
                         key={gathering.$id}
                         gathering={gathering}
-                        withAdminNamesTitle
+                        withAdminNamesTitle={true}
                         loggedInAdminId={loggedInAdminId}
                         onEditSuccess={fetchEmployee}
                         onDeleteSuccess={fetchEmployee}

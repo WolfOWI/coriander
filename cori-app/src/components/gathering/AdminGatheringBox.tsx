@@ -166,41 +166,64 @@ function AdminGatheringBox({
 
   // Gathering title (Review by You, Review by Admin, Meet with Employee)
   const GatheringTitle = () => {
-    const adminName = adminPermissions.isOwner ? "You" : gathering.adminName;
+    let title = "";
+    const withAdminNames = withAdminNamesTitle;
+    const isOwner = adminPermissions.isOwner;
+    const isMeeting = gatheringType.isMeeting;
+    const isPerformanceReview = gatheringType.isPerformanceReview;
+    const isCompleted = gatheringStatus.isCompleted;
 
-    // Determine action verbs based on type and completion status
-    const getActionVerbs = () => {
-      if (gatheringType.isPerformanceReview) {
-        return {
-          present: "Review",
-          past: "Reviewed",
-          preposition: "by",
-        };
-      } else {
-        return {
-          present: "Meet",
-          past: "Met",
-          preposition: "with",
-        };
+    // Standard Titles with Employee Names
+    if (!withAdminNames) {
+      if (isPerformanceReview) {
+        if (isCompleted) {
+          title = `Reviewed ${gathering.employeeName}`;
+        } else {
+          title = `Review ${gathering.employeeName}`;
+        }
+      } else if (isMeeting) {
+        if (isCompleted) {
+          title = `Met with ${gathering.employeeName}`;
+        } else {
+          title = `Meet with ${gathering.employeeName}`;
+        }
+        // Titles with Admin Names
       }
-    };
-
-    const { present, past, preposition } = getActionVerbs();
-    const actionVerb = gatheringStatus.isCompleted ? past : present;
-
-    if (withAdminNamesTitle) {
-      return (
-        <h2 className="text-zinc-800 font-bold w-full">
-          {actionVerb} {preposition} {adminName}
-        </h2>
-      );
+    } else {
+      // Admin not the owner
+      if (!isOwner) {
+        if (isPerformanceReview) {
+          if (isCompleted) {
+            title = `Reviewed by ${gathering.adminName}`;
+          } else {
+            title = `Review with ${gathering.adminName}`;
+          }
+        } else if (isMeeting) {
+          if (isCompleted) {
+            title = `Met with ${gathering.adminName}`;
+          } else {
+            title = `Meeting with ${gathering.adminName}`;
+          }
+        }
+        // Admin IS the owner
+      } else {
+        if (isPerformanceReview) {
+          if (isCompleted) {
+            title = `Reviewed by You`;
+          } else {
+            title = `Review with You`;
+          }
+        } else if (isMeeting) {
+          if (isCompleted) {
+            title = `Met with You`;
+          } else {
+            title = `Meet with You`;
+          }
+        }
+      }
     }
 
-    return (
-      <h2 className="text-zinc-800 font-bold w-full">
-        {actionVerb} {preposition} {gathering.employeeName}
-      </h2>
-    );
+    return <h2 className="text-zinc-800 font-bold w-full">{title}</h2>;
   };
 
   // Status indicator (Completed, Online, In Person)
@@ -372,8 +395,8 @@ function AdminGatheringBox({
     const displayText = gathering.isOnline ? gathering.meetLink : gathering.meetLocation;
 
     return (
-      <div className="w-full h-10 flex items-center justify-center bg-warmstone-100 rounded-xl">
-        <p className="text-zinc-500 text-[12px]">{displayText}</p>
+      <div className="w-full h-10 flex items-center justify-center bg-warmstone-100 rounded-xl px-10">
+        <p className="text-zinc-500 text-[12px] truncate max-w-[200px]">{displayText}</p>
       </div>
     );
   };
