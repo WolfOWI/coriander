@@ -29,11 +29,10 @@ import { PieChart } from '@mui/x-charts/PieChart';
         series={[
           {
             data: doughnutData,
-            innerRadius: 45,
-            outerRadius: 70,
+            innerRadius: 50,
+            outerRadius: 80,
             cornerRadius: 4,
             paddingAngle: 1,
-            arcLabel: () => '', // removes text on arcs
           },
         ]}
         width={230}
