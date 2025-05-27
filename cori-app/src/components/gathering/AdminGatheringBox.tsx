@@ -20,7 +20,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 // Functionality
-import { meetingAPI } from "../../services/api.service";
+import { meetingAPI, performanceReviewsAPI } from "../../services/api.service";
 
 // Utils
 import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUtils";
@@ -256,9 +256,7 @@ function AdminGatheringBox({
       key: "1",
       label: gatheringStatus.isCompleted ? "Mark as Upcoming" : "Mark as Completed",
       icon: gatheringStatus.isCompleted ? <Icons.Schedule /> : <Icons.CheckCircle />,
-      onClick: () => {
-        console.log("Mark as Completed");
-      },
+      onClick: handleStatusUpdate,
     },
     {
       key: "2",
@@ -283,6 +281,40 @@ function AdminGatheringBox({
       } else {
         window.open(`https://${gathering.meetLink}`, "_blank");
       }
+    }
+  };
+
+  // Handle status update (Mark as Upcoming/Completed)
+  const handleStatusUpdate = async () => {
+    try {
+      if (gatheringType.isPerformanceReview) {
+        // For Performance Reviews: toggle between Upcoming (1) and Completed (2)
+        const newStatus = gatheringStatus.isCompleted
+          ? ReviewStatus.Upcoming
+          : ReviewStatus.Completed;
+        await performanceReviewsAPI.UpdatePerformanceReviewStatus(gathering.id, newStatus);
+        console.log(
+          `Performance review status updated to: ${
+            newStatus === ReviewStatus.Upcoming ? "Upcoming" : "Completed"
+          }`
+        );
+      } else if (gatheringType.isMeeting) {
+        // For Meetings: use separate endpoints for marking as upcoming or completed
+        if (gatheringStatus.isCompleted) {
+          await meetingAPI.markAsUpcomingMeeting(gathering.id);
+          console.log("Meeting marked as upcoming");
+        } else {
+          await meetingAPI.markAsCompletedMeeting(gathering.id);
+          console.log("Meeting marked as completed");
+        }
+      }
+
+      // Call the parent component's onEditSuccess callback to refresh data
+      if (onEditSuccess) {
+        onEditSuccess();
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
     }
   };
 
