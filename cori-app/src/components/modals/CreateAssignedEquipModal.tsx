@@ -177,7 +177,6 @@ function CreateAssignedEquipModal({
                 <Select.Option value={4}>Monitor</Select.Option>
                 <Select.Option value={5}>Headset</Select.Option>
                 <Select.Option value={6}>Keyboard</Select.Option>
-                <Select.Option value={7}>Media</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item

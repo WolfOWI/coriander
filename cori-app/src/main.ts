@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, session, ipcMain } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
 import dotenv from "dotenv";
@@ -11,9 +11,52 @@ if (started) {
   app.quit();
 }
 
+let mainWindow: BrowserWindow;
+
+// Google Authentication Browserwindow config for electron
+function startGoogleOAuth() {
+  const authWindow = new BrowserWindow({
+    width: 500,
+    height: 600,
+    show: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+    },
+  });
+
+  const clientId = process.env.VITE_GOOGLE_CLIENT_ID!;
+  const redirectUri = "http://localhost"; // or your redirect URI
+
+  // 🔒 Generate a secure nonce (random string)
+  const nonce = crypto.randomUUID(); // Or use any random generator
+
+  const authUrl =
+    `https://accounts.google.com/o/oauth2/v2/auth` +
+    `?client_id=${clientId}` +
+    `&redirect_uri=${redirectUri}` +
+    `&response_type=id_token` + // 👈 ONLY id_token
+    `&scope=openid%20email%20profile` +
+    `&nonce=${nonce}`;
+
+  authWindow.loadURL(authUrl);
+
+  // Monitor for redirect to capture token
+  authWindow.webContents.on("will-redirect", (event, url) => {
+    if (url.startsWith(redirectUri)) {
+      const matched = url.match(/id_token=([^&]*)/);
+      if (matched) {
+        const token = matched[1];
+        mainWindow.webContents.send("google-token", token);
+        authWindow.close();
+      }
+    }
+  });
+}
+
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
     minWidth: 800,
@@ -21,7 +64,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: true,
     },
   });
 
@@ -36,6 +79,10 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+
+  ipcMain.handle("start-google-oauth", () => {
+    startGoogleOAuth();
+  });
 };
 
 // This method will be called when Electron has finished

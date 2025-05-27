@@ -81,7 +81,7 @@ export async function employeeSignup2FA(form: {
 
   try {
     const res = await fetch(
-      "http://localhost:5121/api/Auth/register-verified",
+      "https://coriander-backend.onrender.com/api/Auth/register-verified",
       {
         method: "POST",
         body: fd,
@@ -145,7 +145,7 @@ export async function adminSignup2FA(form: {
 
   try {
     const res = await fetch(
-      "http://localhost:5121/api/Auth/register-admin-verified",
+      "https://coriander-backend.onrender.com/api/Auth/register-admin-verified",
       {
         method: "POST",
         body: fd,
@@ -182,14 +182,6 @@ export async function adminSignup2FA(form: {
 }
 
 // Google Sign ups
-
-// employeeGoogleSignUp
-/**
- * Registers a user using their Google ID token.
- *
- * @param {string} idToken - The Google ID token.
- * @returns {Promise<AuthResult>} The result of the registration attempt.
- */
 export const employeeGoogleSignUp = async (
   idToken: string
 ): Promise<AuthResult> => {
@@ -273,75 +265,116 @@ export const adminGoogleSignUp = async (
 
 // Login Functions ----------------------------------------------------------------------------
 
-/**
- * Logs in a user using their email and password.
- *
- * @param {string} email - The user's email.
- * @param {string} password - The user's password.
- * @returns {Promise<AuthResult>} The result of the login attempt.
- */
 export const loginWithEmail = async (
   email: string,
   password: string
 ): Promise<AuthResult> => {
+  console.log("📤 loginWithEmail: Request started", { email });
+
   try {
     const res = await api.post(
       "/Auth/login",
       { email, password },
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        timeout: 25000, // ⏱️ Increased timeout to handle slow Render.com
+      }
     );
+
+    console.log("🐞 loginWithEmail: Full server response →", res);
+
+    if (res.data && res.data.token) {
+      console.log("✅ loginWithEmail: Token found →", res.data.token);
+      tokenService.setToken(res.data.token);
+      console.log(
+        "🔐 loginWithEmail: Token stored in localStorage →",
+        res.data.token
+      );
+    } else {
+      console.warn(
+        "⚠️ loginWithEmail: No token found in response.data →",
+        res.data
+      );
+    }
+
     return {
       errorCode: res.status,
-      message: res.data || "Login successful",
+      message: res.data.message || "Login successful",
     };
   } catch (err: any) {
+    console.error("❌ loginWithEmail: Request failed", err);
+
     const status = err?.response?.status || 500;
+    const message =
+      err?.response?.data?.message || "Incorrect email or password";
+
+    // Extra log for slow connection insight
+    if (err.code === "ECONNABORTED") {
+      console.error("⏰ loginWithEmail: Request timeout hit after 25s.");
+    }
+
     return {
       errorCode: status,
-      message: "Incorrect email or password",
+      message,
     };
   }
 };
 
-/**
- * Logs in a user using their Google ID token.
- *
- * @param {string} idToken - The Google ID token.
- * @param {number} role - The user's role (Sign In: 0. Sign Up: 1 for employee, 2 for admin).
- * @returns {Promise<AuthResult>} The result of the login attempt.
- */
 export const loginWithGoogle = async (
   idToken: string,
   role: number
 ): Promise<AuthResult> => {
+  console.log("📤 loginWithGoogle: Sending request...");
+  console.log("🪪 loginWithGoogle: ID Token:", idToken);
+  console.log("👤 loginWithGoogle: Role:", role);
+
   try {
     const res = await api.post(
       "/Auth/google-login",
       { idToken, role },
       { withCredentials: true }
     );
+
+    console.log("✅ loginWithGoogle: Request successful");
+    console.log("📥 loginWithGoogle: Response status →", res.status);
+    console.log("📥 loginWithGoogle: Response data →", res.data);
+
+    if (res.data?.token) {
+      tokenService.setToken(res.data.token);
+      console.log(
+        "🔐 loginWithGoogle: Token stored in cookies →",
+        res.data.token
+      );
+    } else {
+      console.warn(
+        "⚠️ loginWithGoogle: No token returned in response data →",
+        res.data
+      );
+    }
+
     return {
       errorCode: res.status,
-      message: res.data || "Google login successful",
+      message: res.data?.message || "Google login successful",
     };
   } catch (err: any) {
+    console.error("❌ loginWithGoogle: Request failed");
+    console.error("📛 loginWithGoogle: Error object →", err);
+
     const status = err?.response?.status || 500;
+    const responseData = err?.response?.data;
+
+    console.error("📥 loginWithGoogle: Response status →", status);
+    console.error("📥 loginWithGoogle: Response data →", responseData);
+
     return {
       errorCode: status,
-      message: "Google login failed",
+      message: responseData?.message || "Google login failed",
     };
   }
 };
 
 // Full logins - Login + session management ------------------------------------------------------------
 
-/**
- * Performs a full email login process.
- *
- * @param {string} email - The user's email.
- * @param {string} password - The user's password.
- * @returns {Promise<AuthResult>} The result of the login process.
- */
 export const fullEmailLogin = async (
   email: string,
   password: string
@@ -375,52 +408,46 @@ export const fullEmailLogin = async (
   return { errorCode: 200, message: "Login successful." };
 };
 
-/**
- * Performs a full Google sign-in process.
- *
- * @param {string} idToken - The Google ID token.
- * @returns {Promise<AuthResult>} The result of the sign-in process.
- */
 export const fullGoogleSignIn = async (
   idToken: string
 ): Promise<AuthResult> => {
-  // Step 1: Perform the Google login
-  const loginResult = await loginWithGoogle(idToken, 0); // 0 for Sign In
+  console.log("📤 fullGoogleSignIn: Starting login process");
 
-  // If login fails, return the error result
+  // 1️⃣ Perform the Google login
+  const loginResult = await loginWithGoogle(idToken, 0); // 0 = Sign In
+
   if (loginResult.errorCode !== 200) {
+    console.warn("❌ fullGoogleSignIn: Google login failed", loginResult);
     return loginResult;
   }
 
-  // Step 2: Fetch the current user's details
+  // 2️⃣ Fetch user details
   const user = await getCurrentUser();
 
-  // Step 3: Check if the user's account is linked
-  if (!user || !user.isLinked) {
-    return {
-      errorCode: 200,
-      message: "User account not linked",
-    };
+  if (!user) {
+    console.warn("❌ fullGoogleSignIn: Could not fetch user details.");
+    return { errorCode: 404, message: "Could not fetch user details." };
   }
 
-  // Step 4: Check if the user is an Employee or an Admin and redirect
+  // 3️⃣ Ensure the user is “linked”
+  if (!user.isLinked) {
+    console.warn("⚠️ fullGoogleSignIn: User account not linked.");
+    return { errorCode: 300, message: "User account not linked." };
+  }
+
+  // 4️⃣ Redirect based on user role
   if (user.adminId) {
-    window.location.href = "/admin/dashboard"; // Redirect to admin dashboard
+    console.log("✅ fullGoogleSignIn: Redirecting to admin dashboard");
+    window.location.href = "/admin/dashboard";
   } else if (user.employeeId) {
-    window.location.href = "/employee/home"; // Redirect to employee home
-  } else {
-    return {
-      errorCode: 403,
-      message: "User role not recognized",
-    };
+    console.log("✅ fullGoogleSignIn: Redirecting to employee home");
     window.location.href = "/employee/home";
+  } else {
+    console.error("❌ fullGoogleSignIn: Unrecognized user role");
+    return { errorCode: 403, message: "Unrecognized user role." };
   }
 
-  // Step 5: Return success if the user is linked and redirected
-  return {
-    errorCode: 200,
-    message: "Login successful",
-  };
+  return { errorCode: 200, message: "Login successful." };
 };
 
 // Session management ----------------------------------------------------------------------------
@@ -433,16 +460,37 @@ export const fullGoogleSignIn = async (
 export const getCurrentUser = async (): Promise<CurrentUserDTO | null> => {
   try {
     const token = tokenService.getToken();
+
+    console.log("getCurrentUserLog: Retrieved token →", token);
+
     if (!token) {
+      console.warn("getCurrentUserLog: No token found, returning null.");
       return null;
     }
 
-    const { data } = await api.get<CurrentUserDTO>("/Auth/decode-token", {
+    const response = await api.get<CurrentUserDTO>("/Auth/decode-token", {
       params: { token },
     });
 
-    return data;
-  } catch {
+    console.log("getCurrentUserLog: Response status →", response.status);
+    console.log("getCurrentUserLog: Response data →", response.data);
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "getCurrentUserLog: Error occurred during token decode →",
+      error
+    );
+    if (error?.response) {
+      console.error(
+        "getCurrentUserLog: Server response status →",
+        error.response.status
+      );
+      console.error(
+        "getCurrentUserLog: Server response data →",
+        error.response.data
+      );
+    }
     return null;
   }
 };

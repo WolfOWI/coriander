@@ -12,10 +12,10 @@ import {
 import CoriBtn from "../../components/buttons/CoriBtn";
 import { GoogleOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate, Link } from "react-router-dom";
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import GoogleIcon from "@mui/icons-material/Google";
 
 import VeriCodeForm from "../../components/auth/VeriCodeForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // API calls:
 import {
@@ -76,35 +76,51 @@ const EmployeeSignUp: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = async (idToken: string) => {
-    try {
+  useEffect(() => {
+    const handleToken = async (idToken: string) => {
       messageApi.open({
         key: messageKey,
         type: "loading",
-        content: "Signing you up with Google...",
+        content: "Signing up with Google...",
       });
 
-      const result = await employeeGoogleSignUp(idToken);
+      try {
+        const result = await employeeGoogleSignUp(idToken);
 
-      messageApi.open({
-        key: messageKey,
-        type: result.errorCode === 200 ? "success" : "error",
-        content: result.message,
-      });
-    } catch (error: any) {
-      console.error("Google signup/login failed:", error);
-      messageApi.open({
-        key: messageKey,
-        type: "error",
-        content: `Google signup/login failed: ${
-          error?.message || "Unexpected error"
-        }`,
-      });
-    }
-  };
+        if (result.errorCode === 200) {
+          messageApi.open({
+            key: messageKey,
+            type: "success",
+            content: result.message,
+            duration: 3,
+          });
+        } else {
+          messageApi.open({
+            key: messageKey,
+            type: "error",
+            content: `Sign-up failed: ${result.message}`,
+            duration: 3,
+          });
+        }
+      } catch (error: any) {
+        console.error("❌ Google signup failed:", error);
+        messageApi.open({
+          key: messageKey,
+          type: "error",
+          content: `Google signup failed: ${
+            error?.message || "Unexpected error"
+          }`,
+          duration: 3,
+        });
+      }
+    };
+
+    // Electron preload hook
+    window.electronAPI?.onGoogleToken(handleToken);
+  }, []);
 
   return (
-    <GoogleOAuthProvider clientId={process.env.VITE_GOOGLE_CLIENT_ID || ""}>
+    <>
       {contextHolder}
       <div className="relative">
         {/* TODO: Remove this later */}
@@ -227,16 +243,16 @@ const EmployeeSignUp: React.FC = () => {
                     Sign Up
                   </CoriBtn>
                 </Form>
-                <GoogleLogin
-                  width="300"
-                  shape="circle"
-                  logo_alignment="center"
-                  theme="outline"
-                  onSuccess={async (resp) => {
-                    const idToken = resp.credential;
-                    await handleGoogleLogin(idToken || "");
-                  }}
-                />
+                <CoriBtn
+                  type="button"
+                  secondary
+                  style="black"
+                  onClick={() => window.electronAPI?.startGoogleOAuth?.()}
+                  className="w-[300px] mt-3 flex items-center justify-center gap-2"
+                >
+                  <GoogleIcon fontSize="small" />
+                  Sign up with Google
+                </CoriBtn>
                 <p className="mt-4 text-zinc-500">
                   Already have an account?{" "}
                   <Link
@@ -258,7 +274,7 @@ const EmployeeSignUp: React.FC = () => {
           </div>
         </div>
       </div>
-    </GoogleOAuthProvider>
+    </>
   );
 };
 
