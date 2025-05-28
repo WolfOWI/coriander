@@ -96,7 +96,7 @@ export async function employeeSignup2FA(form: {
       // 🔐 Attempt to login after successful signup
       const loginResult = await fullEmailLogin(form.email, form.password);
 
-      window.location.href = "/employee/home";
+      window.location.href = "/#notlinked";
 
       // Combine messages if needed
       return {
@@ -452,11 +452,6 @@ export const fullGoogleSignIn = async (
 
 // Session management ----------------------------------------------------------------------------
 
-/**
- * Retrieves the current user's information by decoding the JWT token.
- *
- * @returns {Promise<CurrentUserDTO | null>} The current user's details or null.
- */
 export const getCurrentUser = async (): Promise<CurrentUserDTO | null> => {
   try {
     const token = tokenService.getToken();
@@ -495,12 +490,6 @@ export const getCurrentUser = async (): Promise<CurrentUserDTO | null> => {
   }
 };
 
-/**
- * Retrieves the current user's information and redirects if not linked.
- * This function is used to ensure that the user is linked before accessing certain pages.
- *
- * @returns {Promise<CurrentUserDTO | null>} The current user's details or null.
- */
 export const getFullCurrentUser = async (): Promise<CurrentUserDTO | null> => {
   const user = await getCurrentUser();
 
@@ -515,11 +504,6 @@ export const getFullCurrentUser = async (): Promise<CurrentUserDTO | null> => {
   }
 };
 
-/**
- * Checks if the user is linked and redirects them accordingly.
- *
- * @returns {Promise<CurrentUserDTO | null>} The current user's details or null.
- */
 export const checkIfUserIsLinked = async (): Promise<AuthResult> => {
   const user = await getCurrentUser();
 
@@ -539,11 +523,6 @@ export const checkIfUserIsLinked = async (): Promise<AuthResult> => {
   return { errorCode: 500, message: "Unexpected error occurred" };
 };
 
-/**
- * Retrieves the current user's secured information.
- *
- * @returns {Promise<CurrentUserDTO | null>} The current user's details or null.
- */
 export const getSecuredUser = async (): Promise<CurrentUserDTO | null> => {
   try {
     const { data } = await api.get<CurrentUserDTO>("/Auth/me", {
