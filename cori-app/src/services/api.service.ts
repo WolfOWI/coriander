@@ -23,8 +23,7 @@ const apiClient: AxiosInstance = axios.create({
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
 
     // Define which headers are allowed in requests
-    "Access-Control-Allow-Headers":
-      "Origin, Content-Type, Accept, Authorization",
+    "Access-Control-Allow-Headers": "Origin, Content-Type, Accept, Authorization",
   },
 
   // Enable sending cookies and authentication headers with cross-origin requests
@@ -115,8 +114,7 @@ export const empUserAPI = {
    * @param id - The employee's ID (must be a number)
    * @returns Promise containing the API response
    */
-  getEmpUserById: (id: string): Promise<AxiosResponse> =>
-    apiClient.get(`/EmpUser/${id}`),
+  getEmpUserById: (id: string): Promise<AxiosResponse> => apiClient.get(`/EmpUser/${id}`),
 
   /**
    * Edit an emp user by their ID
@@ -132,9 +130,7 @@ export const empUserAPI = {
    * @param comparedEquipId - The equipment's ID to compare against
    * @returns Promise containing the API response
    */
-  getAllEmpUsersAndEquipStats: (
-    comparedEquipId: number
-  ): Promise<AxiosResponse> =>
+  getAllEmpUsersAndEquipStats: (comparedEquipId: number): Promise<AxiosResponse> =>
     apiClient.get(`/EmpUser/equip-stats/${comparedEquipId}`),
 };
 // ------------------------------------------------------------
@@ -155,8 +151,7 @@ export const employeeAPI = {
    * @param id - The employee's ID
    * @returns Promise containing the API response
    */
-  terminateEmpById: (id: string): Promise<AxiosResponse> =>
-    apiClient.delete(`/Employee/${id}`),
+  terminateEmpById: (id: string): Promise<AxiosResponse> => apiClient.delete(`/Employee/${id}`),
 
   /**
    * Registers a new employee for a selected user
@@ -177,8 +172,7 @@ export const employeeAPI = {
     employDate: string;
     isSuspended?: boolean;
     equipmentIds?: number[];
-  }): Promise<AxiosResponse> =>
-    apiClient.post("/Employee/setup-user-as-employee", data),
+  }): Promise<AxiosResponse> => apiClient.post("/Employee/setup-user-as-employee", data),
 };
 // ------------------------------------------------------------
 
@@ -189,8 +183,7 @@ export const userAPI = {
    * Fetches all users who have signed up but are not yet linked to an employee
    * @returns Promise containing the API response
    */
-  getUnlinkedUsers: (): Promise<AxiosResponse> =>
-    apiClient.get("/User/unlinked"),
+  getUnlinkedUsers: (): Promise<AxiosResponse> => apiClient.get("/User/unlinked"),
 };
 // ------------------------------------------------------------
 
@@ -227,8 +220,7 @@ export const pageAPI = {
    * Fetches the list of all employees for the admin employee management page
    * @returns Promise containing the API response
    */
-  getAdminEmpManagement: (): Promise<AxiosResponse> =>
-    apiClient.get("/Page/admin-emp-management"),
+  getAdminEmpManagement: (): Promise<AxiosResponse> => apiClient.get("/Page/admin-emp-management"),
 
   /**
    * Fetches the list of all employees for the employee profile page
@@ -265,8 +257,7 @@ export const equipmentAPI = {
    * Fetches all unassigned equipment items
    * @returns Promise containing the API response
    */
-  getAllUnassignedEquipItems: (): Promise<AxiosResponse> =>
-    apiClient.get("/Equipment/unassigned"),
+  getAllUnassignedEquipItems: (): Promise<AxiosResponse> => apiClient.get("/Equipment/unassigned"),
 
   /**
    * Create a single or multiple equipment items (based on the request body)
@@ -291,10 +282,7 @@ export const equipmentAPI = {
    * @param equipIds - An array of equipment IDs
    * @returns A message confirming the assignment
    */
-  assignEquipItemOrItemsToEmp: (
-    empId: number,
-    equipIds: number[]
-  ): Promise<AxiosResponse> =>
+  assignEquipItemOrItemsToEmp: (empId: number, equipIds: number[]): Promise<AxiosResponse> =>
     apiClient.post(`/Equipment/assign-equipment/${empId}`, equipIds),
 
   /**
@@ -321,8 +309,7 @@ export const equipmentAPI = {
    * @param id - The equipment's ID
    * @returns Promise containing the API response
    */
-  deleteEquipItemById: (id: number): Promise<AxiosResponse> =>
-    apiClient.delete(`/Equipment/${id}`),
+  deleteEquipItemById: (id: number): Promise<AxiosResponse> => apiClient.delete(`/Equipment/${id}`),
 };
 
 // ------------------------------------------------------------
@@ -411,8 +398,7 @@ export const empLeaveRequestsAPI = {
     startDate: string;
     endDate: string;
     comment: string;
-  }):Promise<AxiosResponse> => 
-    apiClient.post(`/LeaveRequest/SubmitLeaveRequest`, data),
+  }): Promise<AxiosResponse> => apiClient.post(`/LeaveRequest/SubmitLeaveRequest`, data),
 };
 
 // PERFORMANCE REVIEW API
@@ -462,10 +448,7 @@ export const performanceReviewsAPI = {
    * @param status - The status to update the performance review to (can only be 1 - Upcoming, 2 - Completed)
    * @returns Promise containing the API response
    */
-  UpdatePerformanceReviewStatus: (
-    id: number,
-    status: number
-  ): Promise<AxiosResponse> =>
+  UpdatePerformanceReviewStatus: (id: number, status: number): Promise<AxiosResponse> =>
     apiClient.put(`/PerformanceReview/update-status/${id}?status=${status}`),
 
   /**
@@ -518,10 +501,7 @@ export const meetingAPI = {
    * @param data - The meeting schedule data
    * @returns Promise containing the API response
    */
-  confirmAndScheduleMeeting: (
-    meetingId: number,
-    data: object
-  ): Promise<AxiosResponse> =>
+  confirmAndScheduleMeeting: (meetingId: number, data: object): Promise<AxiosResponse> =>
     apiClient.put(`/Meeting/ConfirmAndSchedule/${meetingId}`, data),
 
   /**
@@ -539,10 +519,7 @@ export const meetingAPI = {
    * @param data - The updated meeting request data
    * @returns Promise containing the API response
    */
-  updateMeetingRequest: (
-    meetingId: number,
-    data: object
-  ): Promise<AxiosResponse> =>
+  updateMeetingRequest: (meetingId: number, data: object): Promise<AxiosResponse> =>
     apiClient.put(`/Meeting/UpdateRequest/${meetingId}`, data),
 
   /**
@@ -596,16 +573,15 @@ export const gatheringAPI = {
    * @returns Promise containing the API response
    */
   getAllGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
-    apiClient.get(`/Gathering/all-by-empId/${employeeId}`),
+    apiClient.get(`/Gathering/upcoming-and-completed-by-empId-desc/${employeeId}`),
+  // apiClient.get(`/Gathering/all-by-empId/${employeeId}`),
 
   /**
    * Fetches all upcoming gatherings (performance reviews + general meetings) for a specific employee
    * @param employeeId - The employee's ID
    * @returns Promise containing the API response
    */
-  getAllUpcomingGatheringsByEmpId: (
-    employeeId: number
-  ): Promise<AxiosResponse> =>
+  getAllUpcomingGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
     apiClient.get(`/Gathering/upcoming-by-empId/${employeeId}`),
 
   /**
@@ -613,9 +589,7 @@ export const gatheringAPI = {
    * @param employeeId - The employee's ID
    * @returns Promise containing the API response
    */
-  getAllCompletedGatheringsByEmpId: (
-    employeeId: number
-  ): Promise<AxiosResponse> =>
+  getAllCompletedGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
     apiClient.get(`/Gathering/completed-by-empId/${employeeId}`),
 
   /**
@@ -623,9 +597,7 @@ export const gatheringAPI = {
    * @param adminId - The admin's ID
    * @returns Promise containing the API response
    */
-  getAllUpcomingGatheringsByAdminId: (
-    adminId: number
-  ): Promise<AxiosResponse> =>
+  getAllUpcomingGatheringsByAdminId: (adminId: number): Promise<AxiosResponse> =>
     apiClient.get(`/Gathering/upcoming-by-adminId/${adminId}`),
 
   /**
@@ -633,18 +605,14 @@ export const gatheringAPI = {
    * @param adminId - The admin's ID
    * @returns Promise containing the API response
    */
-  getAllCompletedGatheringsByAdminId: (
-    adminId: number
-  ): Promise<AxiosResponse> =>
+  getAllCompletedGatheringsByAdminId: (adminId: number): Promise<AxiosResponse> =>
     apiClient.get(`/Gathering/completed-by-adminId/${adminId}`),
 
   /**
    * Fetches all upcoming and completes Gatherings
    */
-  getUpcomingAndCompletedGatheringsByAdminIdAndMonth: (
-    adminId: number,
-    month: number
-  ) => apiClient.get(`/Gathering/by-adminId/${adminId}/month/${month}`),
+  getUpcomingAndCompletedGatheringsByAdminIdAndMonth: (adminId: number, month: number) =>
+    apiClient.get(`/Gathering/by-adminId/${adminId}/month/${month}`),
 };
 // ------------------------------------------------------------
 
