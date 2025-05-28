@@ -13,7 +13,7 @@ import AdminCalendar from "../../components/calender";
 import AdminGatheringBox from "../../components/gathering/AdminGatheringBox";
 
 //Functionality
-import { gatheringAPI, pageAPI } from "../../services/api.service";
+import { empLeaveRequestsAPI, gatheringAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 
 //Interface
@@ -33,6 +33,7 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 const AdminDashboard: React.FC = () => {
   // State variables
   const [dashboardData, setDashboardData] = useState<any>(null);
+  const [pendingLeaveRequests, setPendingLeaveRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreatePRModal, setShowCreatePRModal] = useState(false);
@@ -58,6 +59,40 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  //Fetch pending Leave Requests
+  const fetchPendingLeaveRequest = async () => {
+    try {
+      const response = await empLeaveRequestsAPI.getPendingLeaveRequests(); 
+      // Ensure we always set an array, extracting $values if present
+      const data = response.data;
+      let leaveArray: any[] = [];
+      if (Array.isArray(data)) {
+        leaveArray = data;
+      } else if (data?.$values) {
+        leaveArray = data.$values;
+      } else {
+        leaveArray = [];
+      }
+      setPendingLeaveRequests(leaveArray);
+      console.log("Pending Leave Requests:", leaveArray);
+    } catch (err) {
+      setError("Failed to load pending leave requests.");
+    }
+  };
+  useEffect(() => {
+    fetchPendingLeaveRequest();
+  }, []);
+
+  const mappedLeaveRequests = pendingLeaveRequests.map((leave: any) => ({
+  leaveRequestId: leave.leaveRequestId,
+  employeeId: leave.employeeId,
+  fullName: leave.fullName,
+  startDate: leave.startDate,
+  endDate: leave.endDate,
+  leaveTypeName: leave.leaveTypeName,
+  createdAt: leave.createdAt,
+}));
 
   const fetchGatherings = async (adminId: number, month: number) => {
     try {
@@ -140,7 +175,7 @@ const AdminDashboard: React.FC = () => {
   const topRatedEmployees = dashboardData?.topRatedEmployees?.$values || [];
 
   return (
-    <div className="max-w-7xl mx-auto m-4">
+    <div className="max-w-7xl mx-auto m-4 mb-4">
       {/* Heading */}
       <h1 className="text-3xl font-bold mb-2 text-zinc-900">
         Welcome, {dashboardData?.adminUser?.fullName || "Admin"}
@@ -198,20 +233,15 @@ const AdminDashboard: React.FC = () => {
                         className="h-[335px] overflow-y-auto bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2"
                         style={{ paddingBottom: 32 /* space for fade */ }}
                       >
-                        {leaveRequests.map((request: any) => (
-                          <LeaveCardAdminDash
-                            key={request.leaveRequestId}
-                            leave={{
-                              leaveRequestId: request.leaveRequestId,
-                              employeeId: request.employeeId,
-                              employeeName: request.employeeName,
-                              startDate: request.startDate,
-                              endDate: request.endDate,
-                              leaveType: request.leaveType,
-                              createdAt: request.createdAt,
-                            }}
-                          />
-                        ))}
+                        {mappedLeaveRequests.length > 0 ? (
+                          mappedLeaveRequests.map((leave) => (
+                            <LeaveCardAdminDash key={leave.leaveRequestId} leave={leave} />
+                          ))
+                        ) : (
+                          <div className="text-center text-zinc-500">
+                            No pending leave requests.
+                          </div>
+                        )}
                       </div> 
                     </div>
                   </div>
