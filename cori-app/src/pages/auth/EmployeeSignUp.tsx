@@ -163,7 +163,7 @@ const EmployeeSignUp: React.FC = () => {
                   variant="filled"
                   className="flex flex-col w-full"
                 >
-                  <Form.Item name="profilepic" valuePropName="fileList">
+                  {/* <Form.Item name="profilepic" valuePropName="fileList">
                     <Upload.Dragger name="profilepic" action="/">
                       <p className="ant-upload-drag-icon">
                         <UserOutlined />
@@ -172,7 +172,7 @@ const EmployeeSignUp: React.FC = () => {
                         Upload your profile picture
                       </p>
                     </Upload.Dragger>
-                  </Form.Item>
+                  </Form.Item> */}
                   <Form.Item
                     name="fullName"
                     label="Full Name"
