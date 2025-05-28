@@ -148,16 +148,16 @@ function AdminGatheringBox({
     if (gatheringType.isPerformanceReview) {
       return (
         <Tooltip title="Performance Review">
-          <div className="bg-sakura-100 rounded-full h-12 w-12 flex items-center justify-center">
-            <Icons.StarRounded className="text-sakura-400" fontSize="large" />
+          <div className="bg-corigreen-100 rounded-full h-12 w-12 flex items-center justify-center">
+            <Icons.StarRounded className="text-corigreen-400" fontSize="large" />
           </div>
         </Tooltip>
       );
     } else if (gatheringType.isMeeting) {
       return (
         <Tooltip title="Standard Meeting">
-          <div className="bg-corigreen-100 rounded-full h-12 w-12 flex items-center justify-center">
-            <Icons.Chat className="text-corigreen-400" />
+          <div className="bg-sakura-100 rounded-full h-12 w-12 flex items-center justify-center">
+            <Icons.Chat className="text-sakura-500" />
           </div>
         </Tooltip>
       );

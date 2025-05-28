@@ -50,14 +50,14 @@ function EmpGatheringBox({ gathering }: GatheringBoxProps) {
           <div className=" flex items-center gap-2 w-full">
             {isPerformanceReview ? (
               <Tooltip title="Performance Review">
-                <div className="bg-sakura-100 rounded-full h-12 w-12 flex items-center justify-center">
-                  <Icons.StarRounded className="text-sakura-400" fontSize="large" />
+                <div className="bg-corigreen-100 rounded-full h-12 w-12 flex items-center justify-center">
+                  <Icons.StarRounded className="text-corigreen-400" fontSize="large" />
                 </div>
               </Tooltip>
             ) : (
               <Tooltip title="Standard Meeting">
-                <div className="bg-corigreen-100 rounded-full h-12 w-12 flex items-center justify-center">
-                  <Icons.Chat className="text-corigreen-400" />
+                <div className="bg-sakura-100 rounded-full h-12 w-12 flex items-center justify-center">
+                  <Icons.Chat className="text-sakura-400" />
                 </div>
               </Tooltip>
             )}
