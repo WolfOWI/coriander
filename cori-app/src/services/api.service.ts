@@ -4,7 +4,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 // This instance will be used for all API calls
 const apiClient: AxiosInstance = axios.create({
   // Set the base URL for all API requests (from .env file)
-  baseURL: process.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL,
 
   // Timeout of 10 seconds - if a request takes longer than this, it will be cancelled
   timeout: 10000,
@@ -449,7 +449,10 @@ export const performanceReviewsAPI = {
    * @param status - The status to update the performance review to (can only be 1 - Upcoming, 2 - Completed)
    * @returns Promise containing the API response
    */
-  UpdatePerformanceReviewStatus: (id: number, status: number): Promise<AxiosResponse> =>
+  UpdatePerformanceReviewStatus: (
+    id: number,
+    status: number
+  ): Promise<AxiosResponse> =>
     apiClient.put(`/PerformanceReview/update-status/${id}?status=${status}`),
 
   /**
