@@ -1,4 +1,13 @@
 import React, { useState } from "react";
+
+// Import API service
+import { empLeaveRequestsAPI } from "../../services/api.service";
+
+import dayjs from "dayjs";
+import CoriBtn from "../buttons/CoriBtn";
+import TextArea from "antd/es/input/TextArea";
+import { Icons } from "../../constants/icons";
+
 import {
   Modal,
   Button,
@@ -12,10 +21,6 @@ import {
   Upload,
   Switch,
 } from "antd";
-import dayjs from "dayjs";
-import CoriBtn from "../buttons/CoriBtn";
-import TextArea from "antd/es/input/TextArea";
-import { Icons } from "../../constants/icons";
 
 interface ApplyForLeaveModalProps {
   showModal: boolean;
@@ -26,6 +31,7 @@ interface ApplyForLeaveModalProps {
 function ApplyForLeaveModal({ showModal, setShowModal, onSubmitSuccess }: ApplyForLeaveModalProps) {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const loggedInEmployeeId = 8; // TODO: replace with actual logged-in employee ID
 
   // Handle the submission of the leave request
   const handleSubmit = async () => {
@@ -33,7 +39,24 @@ function ApplyForLeaveModal({ showModal, setShowModal, onSubmitSuccess }: ApplyF
       // Validate the form fields
       const values = await form.validateFields();
 
-      // TODO: Submit the leave request
+      // Submit the leave request
+      // build payload
+      const [startDate, endDate] = values.leaveDateRange;
+      const payload = {
+        employeeId: loggedInEmployeeId,
+        leaveTypeId: values.leaveTypeId,
+        startDate: dayjs(startDate).format("YYYY-MM-DD"),
+        endDate: dayjs(endDate).format("YYYY-MM-DD"),
+        comment: values.comment || "",
+        status: 0,
+      };
+
+      // send to backend 
+      // this is where you would call your API to create the leave request
+      await empLeaveRequestsAPI.createLeaveRequest(payload); 
+
+      console.log("Leave request payload:", payload);
+
       //   await equipmentAPI.createEquipItemOrItems([values]);
       messageApi.success("Leave request was submitted successfully");
 

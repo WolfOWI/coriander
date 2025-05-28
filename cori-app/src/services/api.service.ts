@@ -400,6 +400,19 @@ export const empLeaveRequestsAPI = {
    */
   setPendingLeaveRequestById: (id: number): Promise<AxiosResponse> =>
     apiClient.put(`/EmpLeaveRequest/SetLeaveRequestToPendingById/${id}`),
+
+  /**
+   * Create a new leave request with modal
+   * @param data - The leave request data
+   * @returns Promise containing the API response
+   */
+  createLeaveRequest: (data: {
+    leaveTypeId: number;
+    startDate: string;
+    endDate: string;
+    comment: string;
+  }):Promise<AxiosResponse> => 
+    apiClient.post(`/LeaveRequest/SubmitLeaveRequest`, data),
 };
 
 // PERFORMANCE REVIEW API
