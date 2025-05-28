@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { fullGoogleSignIn, fullEmailLogin } from "../../services/authService";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Form, Input, message, notification } from "antd";
+import GoogleIcon from "@mui/icons-material/Google";
 
 import VeriCodeForm from "../../components/auth/VeriCodeForm";
 import UnlinkedMessage from "../../components/auth/UnlinkedMessage";
@@ -31,7 +32,13 @@ const Login: React.FC = () => {
   }, []);
 
   // Email login handler
-  const handleEmailLogin = async ({ email, password }: { email: string; password: string }) => {
+  const handleEmailLogin = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
     messageApi.open({
       key: messageKey,
       type: "loading",
@@ -74,37 +81,75 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = async (idToken: string) => {
-    try {
-      // Call fullGoogleSignIn
-      const { errorCode, message } = await fullGoogleSignIn(idToken);
+  useEffect(() => {
+    const handleToken = async (idToken: string) => {
+      messageApi.open({
+        key: messageKey,
+        type: "loading",
+        content: "Logging in with Google...",
+      });
 
-      if (errorCode !== 200) {
-        // Display error notification
-        notification.error({
-          message: "Login Failed",
-          description: message,
+      try {
+        const { errorCode, message } = await fullGoogleSignIn(idToken);
+
+        if (errorCode === 200) {
+          messageApi.open({
+            key: messageKey,
+            type: "success",
+            content: "Login successful! Redirecting...",
+            duration: 2,
+          });
+          // Redirection is handled internally in fullGoogleSignIn
+        } else if (errorCode === 300) {
+          setShowUnlinkedMessage(true);
+          messageApi.open({
+            key: messageKey,
+            type: "error",
+            content: "Account not linked yet.",
+            duration: 3,
+          });
+        } else {
+          messageApi.open({
+            key: messageKey,
+            type: "error",
+            content: `Login failed: ${message}`,
+            duration: 3,
+          });
+        }
+      } catch (error: any) {
+        console.error("❌ Error during Google login:", error);
+        messageApi.open({
+          key: messageKey,
+          type: "error",
+          content: `Unexpected error during Google login: ${
+            error.message || "Please try again"
+          }`,
+          duration: 3,
         });
       }
-    } catch (error) {
-      // Handle unexpected errors
-      notification.error({
-        message: "Unexpected Error",
-        description: "An unexpected error occurred. Please try again later.",
-      });
-    }
-  };
+    };
+
+    window.electronAPI?.onGoogleToken(handleToken);
+  }, []);
 
   return (
-    <GoogleOAuthProvider clientId={process.env.VITE_GOOGLE_CLIENT_ID || ""}>
+    <>
       {contextHolder}
       <div className="relative">
         {/* TODO: Remove this later */}
         <div className="absolute top-0 right-0 flex flex-col gap-2">
-          <CoriBtn type="submit" style="black" onClick={() => navigate("/employee/home")}>
+          <CoriBtn
+            type="submit"
+            style="black"
+            onClick={() => navigate("/employee/home")}
+          >
             Go to Home
           </CoriBtn>
-          <CoriBtn type="submit" style="black" onClick={() => navigate("/employee/profile")}>
+          <CoriBtn
+            type="submit"
+            style="black"
+            onClick={() => navigate("/employee/profile")}
+          >
             Skip Login To Emp Profile
           </CoriBtn>
           <CoriBtn
@@ -113,7 +158,15 @@ const Login: React.FC = () => {
             style="black"
             onClick={() => navigate("/employee/signup")}
           >
-            Next Auth Page
+            emp sign up
+          </CoriBtn>
+          <CoriBtn
+            secondary
+            type="submit"
+            style="black"
+            onClick={() => navigate("/admin/signup")}
+          >
+            admin sign up
           </CoriBtn>
           <CoriBtn
             secondary
@@ -176,14 +229,18 @@ const Login: React.FC = () => {
                     name="email"
                     label="Email"
                     normalize={(value: string) => value.toLowerCase().trim()}
-                    rules={[{ required: true, message: "Please enter an email" }]}
+                    rules={[
+                      { required: true, message: "Please enter an email" },
+                    ]}
                   >
                     <Input type="email" />
                   </Form.Item>
                   <Form.Item
                     name="password"
                     label="Password"
-                    rules={[{ required: true, message: "Please enter a password" }]}
+                    rules={[
+                      { required: true, message: "Please enter a password" },
+                    ]}
                   >
                     <Input type="password" />
                   </Form.Item>
@@ -191,19 +248,17 @@ const Login: React.FC = () => {
                     Log In
                   </CoriBtn>
                 </Form>
+                <CoriBtn
+                  type="button"
+                  secondary
+                  style="black"
+                  onClick={() => window.electronAPI?.startGoogleOAuth?.()}
+                  className="w-[300px] mt-3 flex items-center justify-center gap-2"
+                >
+                  <GoogleIcon fontSize="small" />
+                  Log In with Google
+                </CoriBtn>
 
-                <div className="mt-3 rounded-sm overflow-hidden">
-                  <GoogleLogin
-                    width="300"
-                    shape="circle"
-                    logo_alignment="center"
-                    theme="outline"
-                    onSuccess={async (resp) => {
-                      const idToken = resp.credential;
-                      await handleGoogleLogin(idToken || "");
-                    }}
-                  />
-                </div>
                 <p className="mt-4 text-zinc-500">
                   Not with us?{" "}
                   <Link
@@ -215,14 +270,13 @@ const Login: React.FC = () => {
                 </p>
               </div>
             )}
-            {showOTPForm && <VeriCodeForm showLoginScreen={() => setShowOTPForm(false)} />}
             {showUnlinkedMessage && (
               <UnlinkedMessage onLogOut={() => setShowUnlinkedMessage(false)} />
             )}
           </div>
         </div>
       </div>
-    </GoogleOAuthProvider>
+    </>
   );
 };
 
