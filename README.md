@@ -12,20 +12,16 @@
 [![Behance][behance-shield]][behance-url]
 
 <!-- HEADER SECTION -->
-<h5 align="center" style="padding:0;margin:0;">Iné Smith</h5>
-<h5 align="center" style="padding:0;margin:0;">Student Number</h5>
-<h5 align="center" style="padding:0;margin:0;">Kayla Posthumus</h5>
-<h5 align="center" style="padding:0;margin:0;">Student Number</h5>
-<h5 align="center" style="padding:0;margin:0;">Ruan Klopper</h5>
-<h5 align="center" style="padding:0;margin:0;">231280</h5>
-<h5 align="center" style="padding:0;margin:0;">Wolf Botha</h5>
-<h5 align="center" style="padding:0;margin:0;">21100255</h5>
+<h5 align="center" style="padding:0;margin:0;">Iné Smith - Student Number</h5>
+<h5 align="center" style="padding:0;margin:0;">Kayla Posthumus - Student Number</h5>
+<h5 align="center" style="padding:0;margin:0;">Ruan Klopper - 231280</h5>
+<h5 align="center" style="padding:0;margin:0;">Wolf Botha - 21100255</h5>
 <h6 align="center">Interactive Development 300 • 2025</h6>
 </br>
 <p align="center">
 
   <a href="https://github.com/WolfOWI/coriander">
-    <img src="cori-app/src/assets/logos/cori_logo_green.png" alt="Coriander HR Logo" width="140" height="140">
+    <img src="cori-app/src/assets/logos/cori_logo_green.png" alt="Coriander HR Logo" height="140">
   </a>
   
   <h3 align="center">Coriander HR</h3>
