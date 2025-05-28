@@ -109,7 +109,11 @@ function VeriCodeForm({
       console.log("✅ VeriCodeForm → handleSubmit → response:", response);
 
       if (response.errorCode === 200) {
-        message.success("Account created successfully!");
+        messageApi.open({
+          key: messageKey,
+          type: "success",
+          content: "Account created successfully!",
+        });
         showLoginScreen();
       } else {
         message.error(response.message);
