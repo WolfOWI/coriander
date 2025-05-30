@@ -163,7 +163,7 @@ const EmployeeHome: React.FC = () => {
                             hideMinMax: false,
                             defaultTickValueConfig: {
                               formatTextValue: (value) => `${(Number(value) / 100).toFixed(1)}`,
-                              style: { fontSize: "16px", fill: "#18181b" },
+                              style: { fontSize: "12px", fill: "#18181b" },
                             },
                           },
                         }}
@@ -192,22 +192,21 @@ const EmployeeHome: React.FC = () => {
 
               {/* Leave Balances */}
               <Col xs={12} md={7}>
-                  <div className="text-zinc-500 font-semibold text-center mb-2">Your Remaining Leave</div>
-                    <div className="bg-red flex flex-col items-center">
-                        <div className="flex flex-wrap gap-3">
-                        {leaveBalances?.map((balance: any) => (
-                            <LeaveBalanceBlock
-                              key={balance.leaveBalanceId}
-                              leaveType={balance.leaveTypeName}
-                              remainingDays={balance.remainingDays}
-                              totalDays={balance.defaultDays}
-                              description={balance.description}
-                              width={148}
-                              shadow
-                            />
-                          ))}
-                        </div>
-                    </div>
+                <div className="text-zinc-500 font-semibold text-center mb-2">Your Remaining Leave</div>
+                <div className="flex flex-col items-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 w-full">
+                    {leaveBalances?.slice(0, 6).map((balance: any) => (
+                      <LeaveBalanceBlock
+                        key={balance.leaveBalanceId}
+                        leaveType={balance.leaveTypeName}
+                        remainingDays={balance.remainingDays}
+                        totalDays={balance.defaultDays}
+                        description={balance.description}
+                        shadow
+                      />
+                    ))}
+                  </div>
+                </div>
               </Col>
             </Row>
             {/* Payroll Information */}
@@ -274,7 +273,7 @@ const EmployeeHome: React.FC = () => {
 
           <Col md={4}>
             <Col xs={12} md={12}>
-              <div className="text-zinc-500 font-semibold text-center mb-2">Performance Reviews</div>
+              <div className="text-zinc-500 font-semibold text-center mb-2">Meetings Overview</div>
               <div className="relative">
                 <div
                   className="grid gap-3 pr-2"

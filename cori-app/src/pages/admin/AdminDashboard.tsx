@@ -221,7 +221,7 @@ const AdminDashboard: React.FC = () => {
                         Leave Requests
                       </div>
                       <button
-                        className="bg-sakura-500 text-white text-xs font-semibold px-3 py-1 rounded-lg shadow hover:bg-sakura-400 transition"
+                        className="bg-zinc-600 text-white text-xs font-semibold px-3 py-1 rounded-lg shadow hover:bg-zinc-400 transition"
                         onClick={() => navigate("/admin/leave-requests")}
                         type="button"
                       >

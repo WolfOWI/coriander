@@ -551,7 +551,6 @@ const AdminIndividualEmployee: React.FC = () => {
                       remainingDays={balance.remainingDays}
                       totalDays={balance.defaultDays}
                       description={balance.description}
-                      width={136}
                     />
                   ))}
                 </div>

@@ -20,7 +20,7 @@ const LeaveCardAdminDash: React.FC<LeaveCardAdminDashProps> = ({ leave }) => {
   const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
 
   return (
-    <div className="hover:bg-sakura-500 p-3 rounded-xl flex flex-col border-2 border-sakura-500 group transition-colors duration-200">
+    <div className="p-3 rounded-xl flex flex-col border-2 border-zinc-500 group transition-colors duration-200">
       <h4 className="font-semibold text-md">{leave.fullName}</h4>
       <p className="text-xs">Submitted on {new Date(leave.createdAt).toLocaleDateString()} </p>
 
