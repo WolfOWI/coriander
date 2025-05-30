@@ -61,7 +61,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
       height={260}
       sx={{
         "& .MuiBarElement-root": {
-          rx: 6, // Rounded bars
+          rx: 6, 
         },
       }}
       {...chartSetting}
