@@ -534,12 +534,35 @@ export const getSecuredUser = async (): Promise<CurrentUserDTO | null> => {
   }
 };
 
-/**
- * Logs out the current user.
- *
- * @param {boolean} [redirect=true] - Whether to redirect to the login page.
- * @returns {Promise<void>} Resolves when the logout process is complete.
- */
+export const handleExistingLoginRedirect = async (): Promise<void> => {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    console.log("👤 No user session found, staying on login screen.");
+    return;
+  }
+
+  if (!user.isLinked) {
+    console.warn("🔗 User exists but not linked → redirecting to /#notlinked");
+    window.location.href = "/#notlinked";
+    return;
+  }
+
+  if (user.adminId) {
+    console.log("✅ Linked Admin detected → redirecting to /admin/dashboard");
+    window.location.href = "/admin/dashboard";
+    return;
+  }
+
+  if (user.employeeId) {
+    console.log("✅ Linked Employee detected → redirecting to /employee/home");
+    window.location.href = "/employee/home";
+    return;
+  }
+
+  console.error("❓ User is linked but has no role ID (adminId or employeeId)");
+};
+
 export const logout = async (redirect = true): Promise<void> => {
   try {
     await api.post("/Auth/logout", null, { withCredentials: true });
@@ -555,3 +578,27 @@ export const logout = async (redirect = true): Promise<void> => {
 };
 
 // ---------------------------------------------
+// Page helper functions
+
+// navbarUserStatus: utilise getFullCurrentUser, returns int 1 for employee, 2 for admin, 0 for not linked
+export const navbarUserStatus = async (): Promise<number> => {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return -1; // Not logged in
+  }
+
+  if (!user.isLinked) {
+    return 0; // Logged in but not linked
+  }
+
+  if (user.employeeId) {
+    return 1; // Employee
+  }
+
+  if (user.adminId) {
+    return 2; // Admin
+  }
+
+  return -1; // Fallback for unexpected state
+};

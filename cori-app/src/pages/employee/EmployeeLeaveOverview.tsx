@@ -15,25 +15,33 @@ import LeaveRequestCard from "../../components/cards/empCards/LeaveRequestCard";
 
 // Apply-for-leave modal
 import ApplyForLeaveModal from "../../components/modals/ApplyForLeaveModal";
+import { getFullCurrentUser } from "../../services/authService";
 
 const getLeaveIcon = (type: string) => {
-  if (type.toLowerCase().includes("annual")) return <Icons.BeachAccess fontSize="large" />;
-  if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize="large" />;
-  if (type.toLowerCase().includes("sick")) return <Icons.Sick fontSize="large" />;
-  if (type.toLowerCase().includes("compassion")) return <Icons.HeartBroken fontSize="large" />;
-  if (type.toLowerCase().includes("study")) return <Icons.MenuBook fontSize="large" />;
-  if (type.toLowerCase().includes("parental")) return <Icons.ChildFriendly fontSize="large" />;
+  if (type.toLowerCase().includes("annual"))
+    return <Icons.BeachAccess fontSize="large" />;
+  if (type.toLowerCase().includes("family"))
+    return <Icons.FamilyRestroom fontSize="large" />;
+  if (type.toLowerCase().includes("sick"))
+    return <Icons.Sick fontSize="large" />;
+  if (type.toLowerCase().includes("compassion"))
+    return <Icons.HeartBroken fontSize="large" />;
+  if (type.toLowerCase().includes("study"))
+    return <Icons.MenuBook fontSize="large" />;
+  if (type.toLowerCase().includes("parental"))
+    return <Icons.ChildFriendly fontSize="large" />;
   return null;
 };
 
 type TabOption = "All" | "Approved" | "Pending" | "Rejected";
 
 const EmployeeLeaveOverview: React.FC = () => {
-  const employeeId = 8; // TODO: replace with actual employee ID
-
   const [requests, setRequests] = useState<any[]>([]);
   const [balances, setBalances] = useState<any[]>([]);
-  const [summary, setSummary] = useState<{ totalTaken: number; totalAllowed: number }>({
+  const [summary, setSummary] = useState<{
+    totalTaken: number;
+    totalAllowed: number;
+  }>({
     totalTaken: 0,
     totalAllowed: 0,
   });
@@ -54,7 +62,10 @@ const EmployeeLeaveOverview: React.FC = () => {
   // Fetch data from backend
   const fetchEmployeeData = async () => {
     try {
-      const resp = await pageAPI.getEmployeeLeaveData(employeeId.toString());
+      const user = await getFullCurrentUser();
+      const resp = await pageAPI.getEmployeeLeaveData(
+        user?.employeeId?.toString() || ""
+      );
       const leaveRequests = resp.data.leaveRequests?.$values || [];
       const leaveBalances = resp.data.leaveBalances?.$values || [];
 
@@ -67,17 +78,29 @@ const EmployeeLeaveOverview: React.FC = () => {
         }))
       );
 
-      const totalAllowed = leaveBalances.reduce((sum: number, b: any) => sum + b.defaultDays, 0);
-      const totalRemaining = leaveBalances.reduce((sum: number, b: any) => sum + b.remainingDays, 0);
+      const totalAllowed = leaveBalances.reduce(
+        (sum: number, b: any) => sum + b.defaultDays,
+        0
+      );
+      const totalRemaining = leaveBalances.reduce(
+        (sum: number, b: any) => sum + b.remainingDays,
+        0
+      );
       setSummary({ totalTaken: totalAllowed - totalRemaining, totalAllowed });
 
       let filtered = leaveRequests;
       if (activeTab === "Approved") {
-        filtered = leaveRequests.filter((r: any) => r.status === LeaveStatus.Approved);
+        filtered = leaveRequests.filter(
+          (r: any) => r.status === LeaveStatus.Approved
+        );
       } else if (activeTab === "Pending") {
-        filtered = leaveRequests.filter((r: any) => r.status === LeaveStatus.Pending);
+        filtered = leaveRequests.filter(
+          (r: any) => r.status === LeaveStatus.Pending
+        );
       } else if (activeTab === "Rejected") {
-        filtered = leaveRequests.filter((r: any) => r.status === LeaveStatus.Rejected);
+        filtered = leaveRequests.filter(
+          (r: any) => r.status === LeaveStatus.Rejected
+        );
       }
       setRequests(filtered);
     } catch (err) {
@@ -104,7 +127,9 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <ClockCircleOutlined className="text-3xl text-zinc-900" />
-                <h1 className="text-3xl font-bold text-zinc-900">Leave Overview</h1>
+                <h1 className="text-3xl font-bold text-zinc-900">
+                  Leave Overview
+                </h1>
               </div>
               <button
                 className="btn cori-btn btn-primary bg-corigreen-500 text-white border-none hover:bg-corigreen-600"
@@ -135,7 +160,9 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
             <div className="grid gap-4 grid-cols-3">
               <div
                 className={`grid gap-3 h-fit ${
-                  activeTab === "All" ? "grid-cols-2 col-span-2" : "grid-cols-3 col-span-3"
+                  activeTab === "All"
+                    ? "grid-cols-2 col-span-2"
+                    : "grid-cols-3 col-span-3"
                 }`}
               >
                 {requests.map((req) => (
@@ -151,8 +178,12 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                   <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center">
                     <Progress
                       type="circle"
-                      percent={Math.round((summary.totalTaken / summary.totalAllowed) * 100)}
-                      format={() => `${summary.totalTaken}/${summary.totalAllowed}`}
+                      percent={Math.round(
+                        (summary.totalTaken / summary.totalAllowed) * 100
+                      )}
+                      format={() =>
+                        `${summary.totalTaken}/${summary.totalAllowed}`
+                      }
                       strokeColor={{ "0%": "#3CB4E7", "100%": "#E0F4FD" }}
                       trailColor="#F4F4F5"
                       strokeWidth={10}
@@ -166,7 +197,9 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                   <div className="bg-white p-6 rounded-2xl shadow-sm">
                     <div className="space-y-4 -mt-1">
                       {balances.map((b, idx) => {
-                        const pct = Math.round((b.remainingDays / b.defaultDays) * 100);
+                        const pct = Math.round(
+                          (b.remainingDays / b.defaultDays) * 100
+                        );
                         const barColor = barColors[idx % barColors.length];
                         return (
                           <Tooltip
@@ -175,7 +208,9 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                             placement="top"
                           >
                             <div>
-                              <p className="text-xs text-zinc-700 mb-1">{b.leaveTypeName}</p>
+                              <p className="text-xs text-zinc-700 mb-1">
+                                {b.leaveTypeName}
+                              </p>
                               <div className="h-5 w-full bg-zinc-300 rounded-full relative">
                                 <div
                                   className={`h-5 ${barColor} rounded-full relative`}

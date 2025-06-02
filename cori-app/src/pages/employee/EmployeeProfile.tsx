@@ -27,6 +27,7 @@ import { EmpUserRatingMetrics } from "../../interfaces/people/empUserRatingMetri
 import { formatPhone } from "../../utils/formatUtils";
 import { formatEmploymentDuration } from "../../utils/dateUtils";
 import { generatePayrollPDF } from "../../utils/pdfUtils";
+import { getFullCurrentUser } from "../../services/authService";
 
 interface Equipment {
   equipmentId: number;
@@ -47,7 +48,8 @@ interface EmployeeProfileResponse {
 }
 
 const EmployeeProfile: React.FC = () => {
-  const [profileData, setProfileData] = useState<EmployeeProfileResponse | null>(null);
+  const [profileData, setProfileData] =
+    useState<EmployeeProfileResponse | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
@@ -56,13 +58,24 @@ const EmployeeProfile: React.FC = () => {
 
   // const { employeeId } = useParams();
   // TODO Temporary set employee ID (TODO: Fetch from logged in user)
-  const employeeId = "8";
+  const [employeeId, setEmployeeId] = useState<number | null>(null);
+  useEffect(() => {
+    const fetchUserAndSetId = async () => {
+      const user = await getFullCurrentUser();
+      if (user?.employeeId) {
+        setEmployeeId(user.employeeId);
+      }
+    };
+    fetchUserAndSetId();
+  }, []);
 
   // Fetch employee data
   const fetchEmployee = async () => {
     try {
       if (employeeId) {
-        const response = await pageAPI.getEmployeeProfile(employeeId);
+        const response = await pageAPI.getEmployeeProfile(
+          employeeId.toString()
+        );
         setProfileData(response.data);
       } else {
         messageApi.error("No ID found - can't display employee details");
@@ -82,7 +95,16 @@ const EmployeeProfile: React.FC = () => {
 
   const handleProfilePicUploadSuccess = async (url: string) => {
     // console.log("Profile picture URL:", url);
-    const response = await empUserAPI.updateEmpUserById(employeeId, { profilePicture: url });
+    if (employeeId !== null) {
+      const response = await empUserAPI.updateEmpUserById(
+        employeeId.toString(),
+        {
+          profilePicture: url,
+        }
+      );
+    } else {
+      messageApi.error("Employee ID is not available.");
+    }
 
     // wait for response before fetching employee data
     await response.data;
@@ -118,7 +140,11 @@ const EmployeeProfile: React.FC = () => {
         {/* Top buttons */}
         <div className="flex justify-end items-center">
           <div className="flex gap-2 z-10">
-            <CoriBtn secondary style="black" onClick={() => setShowEditDetailsModal(true)}>
+            <CoriBtn
+              secondary
+              style="black"
+              onClick={() => setShowEditDetailsModal(true)}
+            >
               <Icons.Edit />
               Edit Details
             </CoriBtn>
@@ -178,7 +204,9 @@ const EmployeeProfile: React.FC = () => {
                 </div>
               )}
               <div className="flex gap-3 items-center">
-                <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
+                <h2 className="text-zinc-900 font-bold text-3xl">
+                  {empUser.fullName}
+                </h2>
                 {empUserRatingMetrics && (
                   <div className="flex items-center gap-1">
                     <Icons.StarRounded className="text-yellow-500" />
@@ -225,7 +253,9 @@ const EmployeeProfile: React.FC = () => {
                 <div className="flex flex-grow flex-col gap-4 w-1/2">
                   <div className="flex gap-2 items-center">
                     <Icons.Phone />
-                    <p className="text-zinc-500">{formatPhone(empUser.phoneNumber)}</p>
+                    <p className="text-zinc-500">
+                      {formatPhone(empUser.phoneNumber)}
+                    </p>
                   </div>
                   <div className="flex gap-2 items-center">
                     <Icons.Email />
@@ -238,7 +268,9 @@ const EmployeeProfile: React.FC = () => {
             {/* Employment & Payroll Info */}
             <div className="flex flex-col gap-2 items-center w-full">
               <div className="flex gap-2 items-center">
-                <h2 className="text-zinc-500 font-semibold">Employment & Payroll</h2>
+                <h2 className="text-zinc-500 font-semibold">
+                  Employment & Payroll
+                </h2>
               </div>
               <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col w-full">
                 <div className="flex flex-col gap-4">
@@ -251,7 +283,9 @@ const EmployeeProfile: React.FC = () => {
                       </div>
                       <div className="flex gap-2 items-center">
                         <Icons.CorporateFare />
-                        <p className="text-zinc-500">{empUser.department} Department</p>
+                        <p className="text-zinc-500">
+                          {empUser.department} Department
+                        </p>
                       </div>
                     </div>
                     {/* Right Side */}
@@ -270,7 +304,9 @@ const EmployeeProfile: React.FC = () => {
                       </div>
                       <div className="flex gap-2 items-center">
                         <Icons.Badge />
-                        <p className="text-zinc-500">Employee ID {empUser.employeeId}</p>
+                        <p className="text-zinc-500">
+                          Employee ID {empUser.employeeId}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -278,9 +314,11 @@ const EmployeeProfile: React.FC = () => {
                   <div className="flex gap-2 items-center">
                     <Icons.AssistantPhoto />
                     <p className="text-zinc-500">
-                      Employed for {formatEmploymentDuration(empUser.employDate)}
+                      Employed for{" "}
+                      {formatEmploymentDuration(empUser.employDate)}
                       <span className="text-zinc-400 text-sm ml-2">
-                        (Since {dayjs(empUser.employDate).format("DD MMM YYYY")})
+                        (Since {dayjs(empUser.employDate).format("DD MMM YYYY")}
+                        )
                       </span>
                     </p>
                   </div>

@@ -6,13 +6,17 @@ import CoriBtn from "../../components/buttons/CoriBtn";
 import { gatheringAPI, meetingAPI } from "../../services/api.service";
 import { GatheringType, MeetStatus, ReviewStatus } from "../../types/common";
 import GatheringStatusBadge from "../../components/badges/GatheringStatusBadge";
-import { formatTimestampToDate, formatTimestampToTime } from "../../utils/dateUtils";
+import {
+  formatTimestampToDate,
+  formatTimestampToTime,
+} from "../../utils/dateUtils";
 import { downloadFileFromUrl } from "../../utils/fileUtils";
 import dayjs from "dayjs";
 import { Gathering } from "../../interfaces/gathering/gathering";
 import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
 import RequestMeetingModal from "../../components/modals/RequestMeetingModal";
 import EditMeetingRequestModal from "../../components/modals/EditMeetingRequestModal";
+import { getFullCurrentUser } from "../../services/authService";
 
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
@@ -26,12 +30,25 @@ const EmployeeMeetings: React.FC = () => {
   const [allData, setAllData] = useState<Gathering[]>([]);
   const [filteredData, setFilteredData] = useState<Gathering[]>([]);
   const [loading, setLoading] = useState(false);
-  const employeeId = 8; // TODO: Get from user login later
-  const [selectedGathering, setSelectedGathering] = useState<Gathering | null>(null);
+  const [selectedGathering, setSelectedGathering] = useState<Gathering | null>(
+    null
+  );
   const [messageApi, contextHolder] = message.useMessage();
   // Modals
   const [showRequestMeetingModal, setShowRequestMeetingModal] = useState(false);
-  const [showEditMeetingRequestModal, setShowEditMeetingRequestModal] = useState(false);
+  const [showEditMeetingRequestModal, setShowEditMeetingRequestModal] =
+    useState(false);
+
+  const [employeeId, setEmployeeId] = useState<number | null>(null);
+  useEffect(() => {
+    const fetchUserAndSetId = async () => {
+      const user = await getFullCurrentUser();
+      if (user?.employeeId) {
+        setEmployeeId(user.employeeId);
+      }
+    };
+    fetchUserAndSetId();
+  }, []);
 
   // Function to fetch and update data
   const fetchAndUpdateData = async () => {
@@ -44,13 +61,18 @@ const EmployeeMeetings: React.FC = () => {
       const sortedGatherings = [...gatherings].sort((a, b) => {
         // If both have start dates, sort by start date (newest first)
         if (a.startDate && b.startDate) {
-          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+          return (
+            new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+          );
         }
 
         // If neither have start dates, sort by requestedAt (newest first)
         if (!a.startDate && !b.startDate) {
           if (!a.requestedAt || !b.requestedAt) return 0;
-          return new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime();
+          return (
+            new Date(b.requestedAt).getTime() -
+            new Date(a.requestedAt).getTime()
+          );
         }
 
         // If only one has a start date, the one without goes first
@@ -86,7 +108,8 @@ const EmployeeMeetings: React.FC = () => {
       case "Upcoming":
         filtered = allData.filter(
           (item) =>
-            (item.type === GatheringType.Meeting && item.meetingStatus === MeetStatus.Upcoming) ||
+            (item.type === GatheringType.Meeting &&
+              item.meetingStatus === MeetStatus.Upcoming) ||
             (item.type === GatheringType.PerformanceReview &&
               item.reviewStatus === ReviewStatus.Upcoming)
         );
@@ -94,7 +117,8 @@ const EmployeeMeetings: React.FC = () => {
       case "Completed":
         filtered = allData.filter(
           (item) =>
-            (item.type === GatheringType.Meeting && item.meetingStatus === MeetStatus.Completed) ||
+            (item.type === GatheringType.Meeting &&
+              item.meetingStatus === MeetStatus.Completed) ||
             (item.type === GatheringType.PerformanceReview &&
               item.reviewStatus === ReviewStatus.Completed)
         );
@@ -104,7 +128,9 @@ const EmployeeMeetings: React.FC = () => {
           (item) =>
             item.type === GatheringType.Meeting &&
             item.meetingStatus &&
-            [MeetStatus.Requested, MeetStatus.Rejected].includes(item.meetingStatus)
+            [MeetStatus.Requested, MeetStatus.Rejected].includes(
+              item.meetingStatus
+            )
         );
         break;
       default:
@@ -180,7 +206,9 @@ const EmployeeMeetings: React.FC = () => {
             )}
             <div className="flex flex-col">
               <p className="font-medium">
-                {record.type === GatheringType.Meeting ? "Meet with" : "Review with"}{" "}
+                {record.type === GatheringType.Meeting
+                  ? "Meet with"
+                  : "Review with"}{" "}
                 {record.adminName}
               </p>
               {record.startDate && record.endDate ? (
@@ -219,7 +247,9 @@ const EmployeeMeetings: React.FC = () => {
             else if (record.meetingStatus === MeetStatus.Upcoming) {
               return (
                 <div className="flex items-center justify-center">
-                  <GatheringStatusBadge status={record.isOnline ? "Online" : MeetStatus.Upcoming} />
+                  <GatheringStatusBadge
+                    status={record.isOnline ? "Online" : MeetStatus.Upcoming}
+                  />
                 </div>
               );
             }
@@ -245,7 +275,9 @@ const EmployeeMeetings: React.FC = () => {
             if (record.reviewStatus === ReviewStatus.Upcoming) {
               return (
                 <div className="flex items-center justify-center">
-                  <GatheringStatusBadge status={record.isOnline ? "Online" : MeetStatus.Upcoming} />
+                  <GatheringStatusBadge
+                    status={record.isOnline ? "Online" : MeetStatus.Upcoming}
+                  />
                 </div>
               );
             }
@@ -286,7 +318,9 @@ const EmployeeMeetings: React.FC = () => {
                 {record.meetLink}
               </a>
             ) : (
-              <p className="text-zinc-700 text-sm">{record.meetLocation || "-"}</p>
+              <p className="text-zinc-700 text-sm">
+                {record.meetLocation || "-"}
+              </p>
             );
           }
         },
@@ -328,11 +362,17 @@ const EmployeeMeetings: React.FC = () => {
         render: (_, record) => {
           if (record.type === GatheringType.Meeting) {
             return (
-              <p className="text-zinc-700 text-sm">{record.purpose || "No Purpose Specified"}</p>
+              <p className="text-zinc-700 text-sm">
+                {record.purpose || "No Purpose Specified"}
+              </p>
             );
           } else {
             // Performance Review
-            return <p className="text-zinc-700 text-sm">{record.comment || "No Comment"}</p>;
+            return (
+              <p className="text-zinc-700 text-sm">
+                {record.comment || "No Comment"}
+              </p>
+            );
           }
         },
       },
@@ -378,7 +418,10 @@ const EmployeeMeetings: React.FC = () => {
                 },
               ];
               // Standard Meeting - Upcoming Status & Online
-            } else if (record.meetingStatus === MeetStatus.Upcoming && record.isOnline) {
+            } else if (
+              record.meetingStatus === MeetStatus.Upcoming &&
+              record.isOnline
+            ) {
               menuItems = [
                 {
                   key: "1",
@@ -406,7 +449,8 @@ const EmployeeMeetings: React.FC = () => {
                 key: "2",
                 label: "Download Doc",
                 icon: <Icons.Download />,
-                onClick: () => downloadFileFromUrl(record.docUrl || "", messageApi),
+                onClick: () =>
+                  downloadFileFromUrl(record.docUrl || "", messageApi),
               });
             }
           }
@@ -418,7 +462,9 @@ const EmployeeMeetings: React.FC = () => {
               disabled={menuItems.length === 0}
               placement="bottomRight"
               dropdownRender={(menu) => (
-                <div className="border-2 border-zinc-100 rounded-2xl">{menu}</div>
+                <div className="border-2 border-zinc-100 rounded-2xl">
+                  {menu}
+                </div>
               )}
             >
               <Button className="border-none bg-transparent">
