@@ -146,8 +146,10 @@ const EmployeeHome: React.FC = () => {
             <Row className="g-3">
               {/* Ratings */}
               <Col xs={12} md={5}>
-                  <div className="text-zinc-500 font-semibold text-center mb-2">Your Ratings</div>
-                    <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow">
+                  <div className="text-zinc-500 font-semibold text-center mb-2">Your Average Rating</div>
+                    <div 
+                      className="rating bg-warmstone-50 h-(170px) p-4 pt-2 rounded-2xl shadow"
+                      style={{ height: "271px" }}>
                       <div className="w-full py-4 flex flex-col gap-2 items-center">
                       <GaugeComponent
                         minValue={0}
