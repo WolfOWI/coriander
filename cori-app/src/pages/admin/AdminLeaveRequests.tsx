@@ -191,17 +191,18 @@ const AdminLeaveRequests: React.FC = () => {
         {/* Tabs */}
         <div className="flex gap-2 mb-4">
           {(["Pending", "Approved", "Rejected"] as const).map((tab) => (
-            <button
+            <CoriBtn
               key={tab}
               onClick={() => setActiveTab(tab)}
+              secondary
               className={`btn cori-btn ${
                 activeTab === tab
-                  ? "btn-primary bg-zinc-900 text-white"
-                  : "btn-outline-primary border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white"
+                  ? "bg-zinc-900 text-white border-none"
+                  : "border-zinc-900 text-zinc-900"
               }`}
             >
               {tab}
-            </button>
+            </CoriBtn>
           ))}
         </div>
 

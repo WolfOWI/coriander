@@ -170,17 +170,18 @@ const AdminMeetings: React.FC = () => {
       {/* Tab Buttons */}
       <div className="flex gap-2 mb-4">
         {tabOptions.map((tab) => (
-          <button
+          <CoriBtn
             key={tab}
             onClick={() => handleTabChange(tab)}
+            secondary
             className={`btn cori-btn ${
               activeTab === tab
-                ? "btn-primary bg-zinc-900 text-white border-none"
-                : "btn-outline-primary border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white hover:border-none"
+                ? "bg-zinc-900 text-white border-none"
+                : "border-zinc-900 text-zinc-900"
             }`}
           >
             {tab}
-          </button>
+          </CoriBtn>
         ))}
       </div>
 

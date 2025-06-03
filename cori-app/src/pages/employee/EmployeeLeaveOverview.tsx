@@ -16,6 +16,9 @@ import LeaveRequestCard from "../../components/cards/empCards/LeaveRequestCard";
 // Apply-for-leave modal
 import ApplyForLeaveModal from "../../components/modals/ApplyForLeaveModal";
 
+// CoriBtn component
+import CoriBtn from "../../components/buttons/CoriBtn";
+
 const getLeaveIcon = (type: string) => {
   if (type.toLowerCase().includes("annual")) return <Icons.BeachAccess fontSize="large" />;
   if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize="large" />;
@@ -68,7 +71,10 @@ const EmployeeLeaveOverview: React.FC = () => {
       );
 
       const totalAllowed = leaveBalances.reduce((sum: number, b: any) => sum + b.defaultDays, 0);
-      const totalRemaining = leaveBalances.reduce((sum: number, b: any) => sum + b.remainingDays, 0);
+      const totalRemaining = leaveBalances.reduce(
+        (sum: number, b: any) => sum + b.remainingDays,
+        0
+      );
       setSummary({ totalTaken: totalAllowed - totalRemaining, totalAllowed });
 
       let filtered = leaveRequests;
@@ -117,17 +123,18 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
             {/* Tabs */}
             <div className="flex gap-2 mb-4">
               {tabOptions.map((tab) => (
-                <button
+                <CoriBtn
                   key={tab}
                   onClick={() => setActiveTab(tab)}
+                  secondary
                   className={`btn cori-btn ${
                     activeTab === tab
-                      ? "btn-primary bg-zinc-900 text-white border-none"
-                      : "btn-outline-primary border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white hover:border-none"
+                      ? "bg-zinc-900 text-white border-none"
+                      : "border-zinc-900 text-zinc-900"
                   }`}
                 >
                   {tab}
-                </button>
+                </CoriBtn>
               ))}
             </div>
 
