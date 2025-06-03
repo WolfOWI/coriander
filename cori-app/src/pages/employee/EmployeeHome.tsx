@@ -15,11 +15,8 @@ import { useParams } from "react-router-dom";
 import { Spin } from "antd";
 import EmpGatheringBox from "../../components/gathering/EmpGatheringBox";
 
-// Authentication
-import { getFullCurrentUser } from "../../services/authService"; // or wherever it's located
-
 const EmployeeHome: React.FC = () => {
-  const [employeeId, setEmployeeId] = useState<number | null>(null);
+  const { employeeId = "8" } = useParams();
 
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [leaveBalances, setLeaveBalances] = useState<any>(null); //
@@ -29,25 +26,10 @@ const EmployeeHome: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUserAndSetId = async () => {
-      setLoading(true);
-      const user = await getFullCurrentUser();
-      if (user?.employeeId) {
-        setEmployeeId(user.employeeId);
-        setLoading(false);
-      }
-    };
-    fetchUserAndSetId();
-  }, []);
-
   const fetchEmployeeData = async () => {
     try {
       if (employeeId) {
-        const user = await getFullCurrentUser();
-        const response = await pageAPI.getAdminEmpDetails(
-          user?.employeeId?.toString() || ""
-        );
+        const response = await pageAPI.getAdminEmpDetails(employeeId);
         const data: any = response.data;
 
         setEmpUser(data.empUser);
@@ -62,17 +44,14 @@ const EmployeeHome: React.FC = () => {
   };
 
   useEffect(() => {
-    if (employeeId) {
-      fetchEmployeeData();
-    }
+    fetchEmployeeData();
   }, [employeeId]);
 
   useEffect(() => {
     const fetchGatherings = async () => {
       try {
-        const user = await getFullCurrentUser();
         const response = await gatheringAPI.getAllGatheringsByEmpId(
-          Number(user?.employeeId)
+          Number(employeeId)
         );
         setGatherings(response.data.$values || []);
       } catch (err) {
@@ -200,35 +179,35 @@ const EmployeeHome: React.FC = () => {
                           defaultTickValueConfig: {
                             formatTextValue: (value) =>
                               `${(Number(value) / 100).toFixed(1)}`,
-                            style: { fontSize: "16px", fill: "#18181b" },
+                            style: { fontSize: "12px", fill: "#18181b" },
                           },
-                          tickLabels: {
-                            hideMinMax: false,
-                            defaultTickValueConfig: {
-                              formatTextValue: (value) => `${(Number(value) / 100).toFixed(1)}`,
-                              style: { fontSize: "12px", fill: "#18181b" },
-                            },
-                          },
-                        }}
-                        arc={{
-                          nbSubArcs: 5,
-                          colorArray: ["#d32f2f", "#f57c00", "#fbc02d", "#388e3c", "#1976d2"],
-                          padding: 0.02,
-                          width: 0.2,
-                        }}
-                        pointer={{
-                          type: "arrow",
-                          animationDuration: 1000,
-                        }}
-                      />
-                      {empUserRatingMetrics && (
-                        <div className="text-center mt-2">
-                          <p className="text-zinc-500 text-sm">
-                            Based on {empUserRatingMetrics.numberOfRatings} rating
-                            {empUserRatingMetrics.numberOfRatings !== 1 ? "s" : ""}
-                          </p>
-                        </div>
-                      )}
+                        },
+                      }}
+                      arc={{
+                        nbSubArcs: 5,
+                        colorArray: [
+                          "#d32f2f",
+                          "#f57c00",
+                          "#fbc02d",
+                          "#388e3c",
+                          "#1976d2",
+                        ],
+                        padding: 0.02,
+                        width: 0.2,
+                      }}
+                      pointer={{
+                        type: "arrow",
+                        animationDuration: 1000,
+                      }}
+                    />
+                    {empUserRatingMetrics && (
+                      <div className="text-center mt-2">
+                        <p className="text-zinc-500 text-sm">
+                          Based on {empUserRatingMetrics.numberOfRatings} rating
+                          {empUserRatingMetrics.numberOfRatings !== 1
+                            ? "s"
+                            : ""}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -237,7 +216,9 @@ const EmployeeHome: React.FC = () => {
 
               {/* Leave Balances */}
               <Col xs={12} md={7}>
-                <div className="text-zinc-500 font-semibold text-center mb-2">Your Remaining Leave</div>
+                <div className="text-zinc-500 font-semibold text-center mb-2">
+                  Your Remaining Leave
+                </div>
                 <div className="flex flex-col items-center">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 w-full">
                     {leaveBalances?.slice(0, 6).map((balance: any) => (
@@ -336,7 +317,9 @@ const EmployeeHome: React.FC = () => {
 
           <Col md={4}>
             <Col xs={12} md={12}>
-              <div className="text-zinc-500 font-semibold text-center mb-2">Meetings Overview</div>
+              <div className="text-zinc-500 font-semibold text-center mb-2">
+                Meetings Overview
+              </div>
               <div className="relative">
                 <div
                   className="grid gap-3 pr-2"
