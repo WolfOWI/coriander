@@ -1,6 +1,15 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import type { GetProp, TableProps } from "antd";
-import { Table, Avatar, Tooltip, Button, Dropdown, Popover, message, DatePicker } from "antd";
+import {
+  Table,
+  Avatar,
+  Tooltip,
+  Button,
+  Dropdown,
+  Popover,
+  message,
+  DatePicker,
+} from "antd";
 import type { SorterResult, FilterValue } from "antd/es/table/interface";
 import { equipmentAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
@@ -26,8 +35,14 @@ import dayjs from "dayjs";
 import { EquipmentCategory, EquipmentCondition } from "../../types/common";
 import { EmpUser } from "../../interfaces/people/empUser";
 
+// Authentication
+import { getFullCurrentUser } from "../../services/authService";
+
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
-type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
+type TablePaginationConfig = Exclude<
+  GetProp<TableProps, "pagination">,
+  boolean
+>;
 
 interface EquipmentData {
   equipmentId: number;
@@ -65,11 +80,30 @@ const AdminEquipmentManagement: React.FC = () => {
   });
 
   // Modal States
-  const [showCreateUnlinkedEquipModal, setShowCreateUnlinkedEquipModal] = useState(false);
-  const [showEditEquipDetailsModal, setShowEditEquipDetailsModal] = useState(false);
-  const [showAssignSingleEquipToEmpModal, setShowAssignSingleEquipToEmpModal] = useState(false);
-  const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
-  const [selectedEquipment, setSelectedEquipment] = useState<EquipmentData | null>(null);
+  const [showCreateUnlinkedEquipModal, setShowCreateUnlinkedEquipModal] =
+    useState(false);
+  const [showEditEquipDetailsModal, setShowEditEquipDetailsModal] =
+    useState(false);
+  const [showAssignSingleEquipToEmpModal, setShowAssignSingleEquipToEmpModal] =
+    useState(false);
+  const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] =
+    useState(false);
+  const [selectedEquipment, setSelectedEquipment] =
+    useState<EquipmentData | null>(null);
+
+  const [adminId, setAdminId] = useState<number | 0>(0);
+
+  useEffect(() => {
+    const fetchUserAndSetId = async () => {
+      const user = await getFullCurrentUser();
+      setLoading(true);
+      if (user?.adminId) {
+        setAdminId(user.adminId);
+        setLoading(false);
+      }
+    };
+    fetchUserAndSetId();
+  }, []);
 
   // Fetch equipment data
   const fetchData = useCallback(async () => {
@@ -88,7 +122,9 @@ const AdminEquipmentManagement: React.FC = () => {
         employDate: item.employDate ? new Date(item.employDate) : null,
         isSuspended: item.isSuspended || null,
         numberOfItems: item.numberOfItems || null,
-        assignedDate: item.equipment.assignedDate ? new Date(item.equipment.assignedDate) : null,
+        assignedDate: item.equipment.assignedDate
+          ? new Date(item.equipment.assignedDate)
+          : null,
       }));
       setAllData(processedData);
     } catch (error) {
@@ -112,7 +148,9 @@ const AdminEquipmentManagement: React.FC = () => {
         pagination,
         filters,
         sortOrder: Array.isArray(sorter) ? sorter[0]?.order : sorter.order,
-        sortField: Array.isArray(sorter) ? (sorter[0]?.field as string) : (sorter.field as string),
+        sortField: Array.isArray(sorter)
+          ? (sorter[0]?.field as string)
+          : (sorter.field as string),
       });
     },
     []
@@ -155,7 +193,10 @@ const AdminEquipmentManagement: React.FC = () => {
   };
 
   // Update assigned date
-  const handleUpdateAssignedDate = async (record: EquipmentData, date: dayjs.Dayjs) => {
+  const handleUpdateAssignedDate = async (
+    record: EquipmentData,
+    date: dayjs.Dayjs
+  ) => {
     try {
       await equipmentAPI.editEquipItemById(record.equipmentId, {
         assignedDate: date.format("YYYY-MM-DD"),
@@ -179,14 +220,21 @@ const AdminEquipmentManagement: React.FC = () => {
         render: (_, record) => (
           <div className="flex items-center gap-2">
             {record.isSuspended ? (
-              <EquipmentTypeAvatar equipmentCategoryId={record.equipmentCatId} colour="red" />
+              <EquipmentTypeAvatar
+                equipmentCategoryId={record.equipmentCatId}
+                colour="red"
+              />
             ) : (
-              <EquipmentTypeAvatar equipmentCategoryId={record.equipmentCatId} />
+              <EquipmentTypeAvatar
+                equipmentCategoryId={record.equipmentCatId}
+              />
             )}
 
             <div className="flex flex-col">
               <p className="font-medium">{record.equipmentName}</p>
-              <p className="text-sm text-zinc-500 truncate">{record.equipmentCategoryName}</p>
+              <p className="text-sm text-zinc-500 truncate">
+                {record.equipmentCategoryName}
+              </p>
             </div>
           </div>
         ),
@@ -212,14 +260,18 @@ const AdminEquipmentManagement: React.FC = () => {
                         label: "View Employee",
                         icon: <Icons.Person fontSize="small" />,
                         onClick: () => {
-                          navigate(`/admin/individual-employee/${record.employeeId}`);
+                          navigate(
+                            `/admin/individual-employee/${record.employeeId}`
+                          );
                         },
                       },
                     ]
                   : []),
                 {
                   key: "assign",
-                  label: record.employeeId ? "Unlink Employee" : "Assign an Employee",
+                  label: record.employeeId
+                    ? "Unlink Employee"
+                    : "Assign an Employee",
                   icon: record.employeeId ? (
                     <Icons.PersonOff fontSize="small" />
                   ) : (
@@ -259,13 +311,17 @@ const AdminEquipmentManagement: React.FC = () => {
                       <p className="font-medium">{record.fullName}</p>
                       {record.isSuspended && (
                         <Tooltip title="Employee is suspended">
-                          <Icons.Error fontSize="small" className="text-red-600" />
+                          <Icons.Error
+                            fontSize="small"
+                            className="text-red-600"
+                          />
                         </Tooltip>
                       )}
                     </div>
 
                     <p className="text-sm text-zinc-500">
-                      {record.numberOfItems} item{record.numberOfItems === 1 ? "" : "s"}
+                      {record.numberOfItems} item
+                      {record.numberOfItems === 1 ? "" : "s"}
                     </p>
                   </div>
                 </div>
@@ -293,7 +349,11 @@ const AdminEquipmentManagement: React.FC = () => {
               <Popover
                 content={
                   <DatePicker
-                    defaultValue={record.assignedDate ? dayjs(record.assignedDate) : undefined}
+                    defaultValue={
+                      record.assignedDate
+                        ? dayjs(record.assignedDate)
+                        : undefined
+                    }
                     onChange={(date) => {
                       if (date) {
                         handleUpdateAssignedDate(record, date);
@@ -303,7 +363,9 @@ const AdminEquipmentManagement: React.FC = () => {
                     format="DD MMM YYYY"
                     allowClear={false}
                     maxDate={dayjs()} // Can't assign date after today
-                    minDate={record.employDate ? dayjs(record.employDate) : undefined} // Can't assign date before employment date
+                    minDate={
+                      record.employDate ? dayjs(record.employDate) : undefined
+                    } // Can't assign date before employment date
                   />
                 }
                 trigger="click"
@@ -417,7 +479,10 @@ const AdminEquipmentManagement: React.FC = () => {
             <Icons.Construction fontSize="large" className="text-zinc-900" />
             <h1 className="text-3xl font-bold text-zinc-900">Equipment</h1>
           </div>
-          <CoriBtn style="black" onClick={() => setShowCreateUnlinkedEquipModal(true)}>
+          <CoriBtn
+            style="black"
+            onClick={() => setShowCreateUnlinkedEquipModal(true)}
+          >
             Create
             <Icons.Add />
           </CoriBtn>

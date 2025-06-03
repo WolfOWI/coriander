@@ -7,7 +7,11 @@ import { calculateDurationInDays } from "../../utils/dateUtils";
 import { Tooltip } from "antd";
 
 // Icons
-import { ClockCircleOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  ClockCircleOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import { Icons } from "../../constants/icons";
 
 // Badges & Buttons
@@ -21,9 +25,16 @@ import { Table } from "antd";
 // Edit Policy Modal
 import EditPolicyModal from "../../components/modals/EditPolicyModal";
 
+// Authentication
+import { getFullCurrentUser } from "../../services/authService";
+
 const AdminLeaveRequests: React.FC = () => {
-  const [displayingLeaveRequests, setDisplayingLeaveRequests] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"Pending" | "Approved" | "Rejected">("Pending");
+  const [displayingLeaveRequests, setDisplayingLeaveRequests] = useState<any[]>(
+    []
+  );
+  const [activeTab, setActiveTab] = useState<
+    "Pending" | "Approved" | "Rejected"
+  >("Pending");
   const [showPolicyModal, setShowPolicyModal] = useState(false);
 
   // Fetch handlers
@@ -71,12 +82,18 @@ const AdminLeaveRequests: React.FC = () => {
 
   // Table columns (unchanged)
   const getLeaveIcon = (type: string) => {
-    if (type.toLowerCase().includes("annual")) return <Icons.BeachAccess fontSize="large" />;
-    if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize="large" />;
-    if (type.toLowerCase().includes("sick")) return <Icons.Sick fontSize="large" />;
-    if (type.toLowerCase().includes("compassion")) return <Icons.HeartBroken fontSize="large" />;
-    if (type.toLowerCase().includes("study")) return <Icons.MenuBook fontSize="large" />;
-    if (type.toLowerCase().includes("parental")) return <Icons.ChildFriendly fontSize="large" />;
+    if (type.toLowerCase().includes("annual"))
+      return <Icons.BeachAccess fontSize="large" />;
+    if (type.toLowerCase().includes("family"))
+      return <Icons.FamilyRestroom fontSize="large" />;
+    if (type.toLowerCase().includes("sick"))
+      return <Icons.Sick fontSize="large" />;
+    if (type.toLowerCase().includes("compassion"))
+      return <Icons.HeartBroken fontSize="large" />;
+    if (type.toLowerCase().includes("study"))
+      return <Icons.MenuBook fontSize="large" />;
+    if (type.toLowerCase().includes("parental"))
+      return <Icons.ChildFriendly fontSize="large" />;
     return null;
   };
 
@@ -90,10 +107,12 @@ const AdminLeaveRequests: React.FC = () => {
           {getLeaveIcon(r.leaveTypeName)}
           <div className="flex flex-col">
             <p className="font-medium">
-              {calculateDurationInDays(r.startDate, r.endDate)} Days {r.leaveTypeName} Leave
+              {calculateDurationInDays(r.startDate, r.endDate)} Days{" "}
+              {r.leaveTypeName} Leave
             </p>
             <p className="text-xs text-zinc-500">
-              {dayjs(r.startDate).format("DD MMM YYYY")} – {dayjs(r.endDate).format("DD MMM YYYY")}
+              {dayjs(r.startDate).format("DD MMM YYYY")} –{" "}
+              {dayjs(r.endDate).format("DD MMM YYYY")}
             </p>
           </div>
         </div>
@@ -122,7 +141,9 @@ const AdminLeaveRequests: React.FC = () => {
             text={`${r.remainingDays} days`}
             size="x-small"
             color={
-              r.remainingDays < calculateDurationInDays(r.startDate, r.endDate) ? "red" : "green"
+              r.remainingDays < calculateDurationInDays(r.startDate, r.endDate)
+                ? "red"
+                : "green"
             }
           />
         </div>
@@ -161,7 +182,11 @@ const AdminLeaveRequests: React.FC = () => {
           )}
           {r.status === 1 && (
             <Tooltip title="Approved">
-              <CoriCircleBtn style="default" icon={<CheckOutlined />} disabled />
+              <CoriCircleBtn
+                style="default"
+                icon={<CheckOutlined />}
+                disabled
+              />
             </Tooltip>
           )}
           {r.status === 2 && (
@@ -218,7 +243,10 @@ const AdminLeaveRequests: React.FC = () => {
       </div>
 
       {/* Edit Policy Modal */}
-      <EditPolicyModal showModal={showPolicyModal} setShowModal={setShowPolicyModal} />
+      <EditPolicyModal
+        showModal={showPolicyModal}
+        setShowModal={setShowPolicyModal}
+      />
     </>
   );
 };

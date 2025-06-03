@@ -13,7 +13,11 @@ import AdminCalendar from "../../components/calender";
 import AdminGatheringBox from "../../components/gathering/AdminGatheringBox";
 
 //Functionality
-import { empLeaveRequestsAPI, gatheringAPI, pageAPI } from "../../services/api.service";
+import {
+  empLeaveRequestsAPI,
+  gatheringAPI,
+  pageAPI,
+} from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 
 //Interface
@@ -30,6 +34,9 @@ import dayjs from "dayjs";
 import { Icons } from "../../constants/icons";
 import CoriBtn from "../../components/buttons/CoriBtn";
 
+// Authentication
+import { getFullCurrentUser } from "../../services/authService";
+
 const AdminDashboard: React.FC = () => {
   // State variables
   const [dashboardData, setDashboardData] = useState<any>(null);
@@ -39,14 +46,29 @@ const AdminDashboard: React.FC = () => {
   const [showCreatePRModal, setShowCreatePRModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [gatherings, setGatherings] = useState<any>({ all: [] });
-  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
+  const [currentMonth, setCurrentMonth] = useState<number>(
+    new Date().getMonth() + 1
+  );
   const [loadingGatherings, setLoadingGatherings] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  const [adminId, setAdminId] = useState<number | 0>(0);
+  useEffect(() => {
+    const fetchUserAndSetId = async () => {
+      setLoading(true);
+      const user = await getFullCurrentUser();
+      if (user?.adminId) {
+        setAdminId(user.adminId);
+        setLoading(false);
+      }
+    };
+    fetchUserAndSetId();
+  }, []);
+
   // Fetch dashboard data from the API
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (adminId: number) => {
     try {
-      const response = await pageAPI.getAdminDashboardData(1); //set adminId = 2 *Change later
+      const response = await pageAPI.getAdminDashboardData(adminId);
       setDashboardData(response.data);
       console.log("Dashboard Data:", response.data);
     } catch (err) {
@@ -57,13 +79,23 @@ const AdminDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    if (!adminId) return; // ⛔ Wait until adminId is available
+
+    const fetchData = async () => {
+      const initialMonth = selectedDate.getMonth() + 1;
+      setCurrentMonth(initialMonth);
+
+      await fetchDashboardData(adminId);
+      await fetchGatherings(adminId, initialMonth);
+    };
+
+    fetchData();
+  }, [adminId]);
 
   //Fetch pending Leave Requests
   const fetchPendingLeaveRequest = async () => {
     try {
-      const response = await empLeaveRequestsAPI.getPendingLeaveRequests(); 
+      const response = await empLeaveRequestsAPI.getPendingLeaveRequests();
       // Ensure we always set an array, extracting $values if present
       const data = response.data;
       let leaveArray: any[] = [];
@@ -85,14 +117,14 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   const mappedLeaveRequests = pendingLeaveRequests.map((leave: any) => ({
-  leaveRequestId: leave.leaveRequestId,
-  employeeId: leave.employeeId,
-  fullName: leave.fullName,
-  startDate: leave.startDate,
-  endDate: leave.endDate,
-  leaveTypeName: leave.leaveTypeName,
-  createdAt: leave.createdAt,
-}));
+    leaveRequestId: leave.leaveRequestId,
+    employeeId: leave.employeeId,
+    fullName: leave.fullName,
+    startDate: leave.startDate,
+    endDate: leave.endDate,
+    leaveTypeName: leave.leaveTypeName,
+    createdAt: leave.createdAt,
+  }));
 
   const fetchGatherings = async (adminId: number, month: number) => {
     try {
@@ -100,10 +132,11 @@ const AdminDashboard: React.FC = () => {
       // Clear existing gatherings before fetching new ones
       setGatherings({ all: [] });
 
-      const response = await gatheringAPI.getUpcomingAndCompletedGatheringsByAdminIdAndMonth(
-        adminId,
-        month
-      );
+      const response =
+        await gatheringAPI.getUpcomingAndCompletedGatheringsByAdminIdAndMonth(
+          adminId,
+          month
+        );
 
       // Ensure we're working with a clean array and no duplicates
       const gatheringsData = response.data.$values || [];
@@ -122,14 +155,14 @@ const AdminDashboard: React.FC = () => {
   };
 
   // If a different month is selected, fetch the gatherings for the new month
-  useEffect(() => {
-    const newMonth = selectedDate.getMonth() + 1;
-    // Only fetch if month actually changes
-    if (newMonth !== currentMonth) {
-      setCurrentMonth(newMonth);
-      fetchGatherings(1, newMonth);
-    }
-  }, [selectedDate]);
+  // useEffect(() => {
+  //   const newMonth = selectedDate.getMonth() + 1;
+  //   // Only fetch if month actually changes
+  //   if (newMonth !== currentMonth) {
+  //     setCurrentMonth(newMonth);
+  //     fetchGatherings(1, newMonth);
+  //   }
+  // }, [selectedDate]);
 
   // Initial fetch only on component mount
   useEffect(() => {
@@ -140,15 +173,17 @@ const AdminDashboard: React.FC = () => {
 
   //Display gatherings for selected Day
   const gatheringsForSelectedDay = React.useMemo(() => {
-    return (gatherings.all || []).filter((g: { startDate: string | number | Date }) => {
-      if (!g || !g.startDate) return false;
-      const d = new Date(g.startDate);
-      return (
-        d.getFullYear() === selectedDate.getFullYear() &&
-        d.getMonth() === selectedDate.getMonth() &&
-        d.getDate() === selectedDate.getDate()
-      );
-    });
+    return (gatherings.all || []).filter(
+      (g: { startDate: string | number | Date }) => {
+        if (!g || !g.startDate) return false;
+        const d = new Date(g.startDate);
+        return (
+          d.getFullYear() === selectedDate.getFullYear() &&
+          d.getMonth() === selectedDate.getMonth() &&
+          d.getDate() === selectedDate.getDate()
+        );
+      }
+    );
   }, [gatherings.all, selectedDate]);
 
   if (loading)
@@ -160,7 +195,8 @@ const AdminDashboard: React.FC = () => {
   if (error) return <div>Error: {error}</div>;
 
   // Destructure the data from the API response
-  const empUserRatingMetrics = dashboardData?.empUserRatingMetrics?.$values || [];
+  const empUserRatingMetrics =
+    dashboardData?.empUserRatingMetrics?.$values || [];
   //Default values for employee status totals
   // If the API response is empty or undefined
   const employeeStatusTotals = dashboardData?.employeeStatusTotals || {
@@ -180,7 +216,9 @@ const AdminDashboard: React.FC = () => {
       <h1 className="text-3xl font-bold mb-2 text-zinc-900">
         Welcome, {dashboardData?.adminUser?.fullName || "Admin"}
       </h1>
-      <h4 className="text-zinc-900 mb-3">Stay updated on key HR activities and pending tasks.</h4>
+      <h4 className="text-zinc-900 mb-3">
+        Stay updated on key HR activities and pending tasks.
+      </h4>
       <div className="line-horisontal mb-4"></div>
 
       {/* Page Body */}
@@ -209,7 +247,9 @@ const AdminDashboard: React.FC = () => {
                     Employment Overview
                   </div>
                   <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow">
-                    <DoughnutChartCard employeeStatusTotals={employeeStatusTotals} />
+                    <DoughnutChartCard
+                      employeeStatusTotals={employeeStatusTotals}
+                    />
                   </div>
                 </Col>
 
@@ -235,14 +275,17 @@ const AdminDashboard: React.FC = () => {
                       >
                         {mappedLeaveRequests.length > 0 ? (
                           mappedLeaveRequests.map((leave) => (
-                            <LeaveCardAdminDash key={leave.leaveRequestId} leave={leave} />
+                            <LeaveCardAdminDash
+                              key={leave.leaveRequestId}
+                              leave={leave}
+                            />
                           ))
                         ) : (
                           <div className="text-center text-zinc-500">
                             No pending leave requests.
                           </div>
                         )}
-                      </div> 
+                      </div>
                     </div>
                   </div>
                 </Col>
@@ -255,9 +298,15 @@ const AdminDashboard: React.FC = () => {
                         className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer"
                         onClick={() => setShowCreatePRModal(true)}
                       >
-                        <p className="text-sm font-bold mb-2">New Performance Review</p>
+                        <p className="text-sm font-bold mb-2">
+                          New Performance Review
+                        </p>
                         <div className="flex justify-end h-full">
-                          <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
+                          <img
+                            src={AdminAddIcon}
+                            alt="Plus Icon"
+                            className="AdminAddIcon"
+                          />
                         </div>
                       </div>
                     </Col>
@@ -268,7 +317,9 @@ const AdminDashboard: React.FC = () => {
                           navigate("/admin/meetings");
                         }}
                       >
-                        <p className="text-zinc-900 text-sm font-bold mb-2">View All Meetings</p>
+                        <p className="text-zinc-900 text-sm font-bold mb-2">
+                          View All Meetings
+                        </p>
                         <div className="flex bg-zinc-900 rounded-full p-2 w-fit align-self-end">
                           <Icons.MeetingRoom className="w-6 h-6" />
                         </div>
@@ -307,9 +358,9 @@ const AdminDashboard: React.FC = () => {
             {/* Right Card -> Performance Review calender and meetCards */}
             <Col lg="4" md="4">
               <AdminCalendar value={selectedDate} onChange={setSelectedDate} />
-            <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">
-              <h4>Your Meetings on {dayjs(selectedDate).format("D MMMM")}</h4>
-            </div>
+              <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">
+                <h4>Your Meetings on {dayjs(selectedDate).format("D MMMM")}</h4>
+              </div>
               <div className="relative">
                 <div
                   className="meetings w-full h-[390px] flex flex-col rounded-2xl overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden"
@@ -326,23 +377,27 @@ const AdminDashboard: React.FC = () => {
                           key={gathering.id}
                           gathering={gathering}
                           onEditSuccess={() => {
-                            fetchDashboardData();
+                            fetchDashboardData(adminId || 0);
                             fetchGatherings(1, currentMonth);
                           }}
                           onDeleteSuccess={() => {
-                            fetchDashboardData();
+                            fetchDashboardData(adminId || 0);
                             fetchGatherings(1, currentMonth);
                           }}
-                          loggedInAdminId={dashboardData?.adminUser?.adminId?.toString() || "1"}
+                          loggedInAdminId={
+                            dashboardData?.adminUser?.adminId?.toString() || "1"
+                          }
                         />
                       ))
                     ) : (
-                      <div className="text-center py-4 text-zinc-500">You have no meetings today!</div>
+                      <div className="text-center py-4 text-zinc-500">
+                        You have no meetings today!
+                      </div>
                     )}
                   </div>
                   {/* Fade effect at the bottom */}
                   <div className=" w-full bg-gradient-to-b from-transparent to-stone-200 sticky bottom-0 left-0 right-0 text-transparent">
-                      _
+                    _
                   </div>
                 </div>
               </div>
@@ -355,7 +410,7 @@ const AdminDashboard: React.FC = () => {
           showModal={showCreatePRModal}
           setShowModal={setShowCreatePRModal}
           onCreateSuccess={() => {
-            fetchDashboardData(); // Refresh dashboard data
+            fetchDashboardData(adminId || 0); // Refresh dashboard data
             fetchGatherings(1, currentMonth); // Refresh meetings list
             setShowCreatePRModal(false);
             console.log("Performance Review created successfully!");

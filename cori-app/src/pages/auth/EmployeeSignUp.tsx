@@ -16,6 +16,8 @@ import GoogleIcon from "@mui/icons-material/Google";
 
 import VeriCodeForm from "../../components/auth/VeriCodeForm";
 import { useEffect, useState } from "react";
+import BackgroundImage from "../../assets/images/Auth_Background.png";
+import Logo from "../../assets/logos/cori_logo_green.png";
 
 // API calls:
 import {
@@ -123,31 +125,17 @@ const EmployeeSignUp: React.FC = () => {
     <>
       {contextHolder}
       <div className="relative">
-        {/* TODO: Remove this later */}
-        <div className="absolute top-0 right-0 flex flex-col gap-2">
-          <CoriBtn
-            type="submit"
-            style="black"
-            onClick={() => navigate("/employee/home")}
-          >
-            Skip Sign Up
-          </CoriBtn>
-          <CoriBtn
-            secondary
-            type="submit"
-            style="black"
-            onClick={() => navigate("/admin/signup")}
-          >
-            Next Auth Page
-          </CoriBtn>
-        </div>
-
         <div className="flex w-full h-screen">
           <div className="w-1/2">
             <img
-              src="/images/login-bg.png"
-              alt="Sign Up Background"
-              className="w-full h-full bg-corigreen-500"
+              src={Logo}
+              alt="Logo"
+              className="absolute top-4 left-4 w-[225px] h-[45px] object-contain mt-4 ml-4"
+            />
+            <img
+              src={BackgroundImage}
+              alt="Login Background"
+              className="w-full h-full bg-corigreen-500 object-cover rounded-tr-[25px] rounded-br-[25px]"
             />
           </div>
           <div className="w-1/2 flex items-center justify-center mb-16">

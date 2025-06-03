@@ -22,6 +22,10 @@ import UnlinkedUserDropdown, {
 import { employeeAPI, userAPI } from "../../services/api.service";
 import dayjs from "dayjs";
 
+// Authentication
+import { getFullCurrentUser } from "../../services/authService";
+import { Equipment } from "../../interfaces/equipment/equipment";
+
 const AdminCreateEmployee: React.FC = () => {
   const [form] = Form.useForm();
   const [loadingUsers, setLoadingUsers] = useState(true);
@@ -34,24 +38,16 @@ const AdminCreateEmployee: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const messageKey = "Create Employee";
 
-  const assignedEquipments = [
-    {
-      equipmentId: 1,
-      equipmentName: "Samsung Galaxy S24",
-      assignedDate: new Date(),
-      condition: EquipmentCondition.Good,
-      equipmentCategoryName: "Phone",
-      equipmentCatId: EquipmentCategory.Cellphone,
-    },
-    {
-      equipmentId: 2,
-      equipmentName: "Lenovo ThinkPad",
-      assignedDate: new Date(),
-      condition: EquipmentCondition.New,
-      equipmentCategoryName: "Laptop",
-      equipmentCatId: EquipmentCategory.Laptop,
-    },
-  ];
+  const [adminId, setAdminId] = useState<number | null>(null);
+  useEffect(() => {
+    const fetchUserAndSetId = async () => {
+      const user = await getFullCurrentUser();
+      if (user?.adminId) {
+        setAdminId(user.adminId);
+      }
+    };
+    fetchUserAndSetId();
+  }, []);
 
   // Fetch unlinked users on mount
   useEffect(() => {
