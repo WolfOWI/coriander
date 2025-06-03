@@ -171,10 +171,8 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
               </div>
 
               {activeTab === "All" && (
-                <div className="flex flex-col gap-4">
-                  <p className="text-sm font-medium text-zinc-700 px-2 -mb-2 text-center -mt-9">
-                    Leave Summary
-                  </p>
+                <div className="flex flex-col gap-2">
+                  <div className="text-zinc-500 font-semibold text-center">Leave Summary</div>
                   <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center">
                     <Progress
                       type="circle"
@@ -191,9 +189,7 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                     />
                   </div>
 
-                  <p className="text-sm font-medium text-zinc-700 px-2 -mb-2 text-center">
-                    Leave Balances
-                  </p>
+                  <div className="text-zinc-500 font-semibold text-center">Leave Balances</div>
                   <div className="bg-white p-6 rounded-2xl shadow-sm">
                     <div className="space-y-4 -mt-1">
                       {balances.map((b, idx) => {

@@ -441,7 +441,7 @@ const AdminEmployeeManagement: React.FC = () => {
           <Input.Search
             placeholder="Search By Name"
             allowClear
-            className="w-64"
+            className="w-64 rounded-lg"
             value={searchValue}
             onChange={(e) => handleSearch(e.target.value)}
           />
