@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { fullGoogleSignIn, fullEmailLogin } from "../../services/authService";
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { Form, Input, message, notification } from "antd";
-import GoogleIcon from "@mui/icons-material/Google";
 
+// Authentication
+import {
+  fullGoogleSignIn,
+  fullEmailLogin,
+  handleExistingLoginRedirect,
+} from "../../services/authService";
+
+// Styling
+import { Form, Input, message, notification, Spin } from "antd";
+import GoogleIcon from "@mui/icons-material/Google";
+import BackgroundImage from "../../assets/images/Auth_Background.png";
+import Logo from "../../assets/logos/cori_logo_green.png";
+
+// Modals and Components
 import VeriCodeForm from "../../components/auth/VeriCodeForm";
 import UnlinkedMessage from "../../components/auth/UnlinkedMessage";
 import CoriBtn from "../../components/buttons/CoriBtn";
@@ -16,6 +26,36 @@ const Login: React.FC = () => {
 
   const [showOTPForm, setShowOTPForm] = useState(false);
   const [showUnlinkedMessage, setShowUnlinkedMessage] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const [showAdminBtn, setShowAdminBtn] = useState(false);
+
+  useEffect(() => {
+    const handleKeyCombo = (e: KeyboardEvent) => {
+      // Avoid triggering when typing in input or textarea
+      const tag = (document.activeElement?.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+
+      // Check for key combo
+      if ((e.ctrlKey || e.metaKey) && e.altKey && e.key.toLowerCase() === "a") {
+        setShowAdminBtn((prev) => !prev);
+        console.log("✅ Admin sign-up toggle triggered");
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyCombo);
+    return () => document.removeEventListener("keydown", handleKeyCombo);
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    const fetch = async () => {
+      await handleExistingLoginRedirect();
+      setLoading(false);
+    };
+    fetch();
+  }, []);
 
   useEffect(() => {
     if (window.location.hash === "#notlinked") {
@@ -135,80 +175,24 @@ const Login: React.FC = () => {
   return (
     <>
       {contextHolder}
-      <div className="relative">
-        {/* TODO: Remove this later */}
-        <div className="absolute top-0 right-0 flex flex-col gap-2">
-          <CoriBtn
-            type="submit"
-            style="black"
-            onClick={() => navigate("/employee/home")}
-          >
-            Go to Home
-          </CoriBtn>
-          <CoriBtn
-            type="submit"
-            style="black"
-            onClick={() => navigate("/employee/profile")}
-          >
-            Skip Login To Emp Profile
-          </CoriBtn>
-          <CoriBtn
-            secondary
-            type="submit"
-            style="black"
-            onClick={() => navigate("/employee/signup")}
-          >
-            emp sign up
-          </CoriBtn>
-          <CoriBtn
-            secondary
-            type="submit"
-            style="black"
-            onClick={() => navigate("/admin/signup")}
-          >
-            admin sign up
-          </CoriBtn>
-          <CoriBtn
-            secondary
-            type="submit"
-            style="black"
-            className="mt-4"
-            onClick={() => {
-              setShowOTPForm(false);
-              setShowUnlinkedMessage(false);
-            }}
-          >
-            Show Login
-          </CoriBtn>
-          <CoriBtn
-            secondary
-            type="submit"
-            style="black"
-            onClick={() => {
-              setShowOTPForm(true);
-              setShowUnlinkedMessage(false);
-            }}
-          >
-            Show OTP Form
-          </CoriBtn>
-          <CoriBtn
-            secondary
-            type="submit"
-            style="black"
-            onClick={() => {
-              setShowOTPForm(false);
-              setShowUnlinkedMessage(true);
-            }}
-          >
-            Show Unlinked
-          </CoriBtn>
+      {loading && (
+        <div className="flex items-center justify-center h-screen bg-white z-50 fixed top-0 left-0 w-full">
+          <Spin size="large" tip="Fetching user details..." />
         </div>
+      )}
+      <div className="relative">
         <div className="flex w-full h-screen">
           <div className="w-1/2">
             <img
-              src="/images/login-bg.png"
+              src={Logo}
+              alt="Logo"
+              onDoubleClick={() => navigate("/admin/signup")}
+              className="cursor-pointer absolute top-4 left-4 w-[225px] h-[45px] object-contain mt-4 ml-4"
+            />
+            <img
+              src={BackgroundImage}
               alt="Login Background"
-              className="w-full h-full bg-corigreen-500"
+              className="w-full h-full bg-corigreen-500 object-cover rounded-tr-[25px] rounded-br-[25px]"
             />
           </div>
           <div className="w-1/2 flex items-center justify-center mb-16">
@@ -260,7 +244,7 @@ const Login: React.FC = () => {
                 </CoriBtn>
 
                 <p className="mt-4 text-zinc-500">
-                  Not with us?{" "}
+                  New employee?{" "}
                   <Link
                     to="/employee/signup"
                     className="text-corigreen-500 hover:text-corigreen-300 transition-colors font-bold"
@@ -268,6 +252,19 @@ const Login: React.FC = () => {
                     Sign up
                   </Link>
                 </p>
+                {showAdminBtn && (
+                  <>
+                    <p className="mt-4 text-zinc-500">
+                      For admins?{" "}
+                      <Link
+                        to="/admin/signup"
+                        className="text-corigreen-500 hover:text-corigreen-300 transition-colors font-bold"
+                      >
+                        Sign up
+                      </Link>
+                    </p>
+                  </>
+                )}
               </div>
             )}
             {showUnlinkedMessage && (

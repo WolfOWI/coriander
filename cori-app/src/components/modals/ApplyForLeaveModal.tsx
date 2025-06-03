@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Import API service
 import { empLeaveRequestsAPI } from "../../services/api.service";
@@ -21,6 +21,7 @@ import {
   Upload,
   Switch,
 } from "antd";
+import { getFullCurrentUser } from "../../services/authService";
 
 interface ApplyForLeaveModalProps {
   showModal: boolean;
@@ -28,22 +29,25 @@ interface ApplyForLeaveModalProps {
   onSubmitSuccess: () => void;
 }
 
-function ApplyForLeaveModal({ showModal, setShowModal, onSubmitSuccess }: ApplyForLeaveModalProps) {
+function ApplyForLeaveModal({
+  showModal,
+  setShowModal,
+  onSubmitSuccess,
+}: ApplyForLeaveModalProps) {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
-  const loggedInEmployeeId = 8; // TODO: replace with actual logged-in employee ID
 
   // Handle the submission of the leave request
   const handleSubmit = async () => {
     try {
       // Validate the form fields
       const values = await form.validateFields();
-
+      const user = await getFullCurrentUser();
       // Submit the leave request
       // build payload
       const [startDate, endDate] = values.leaveDateRange;
       const payload = {
-        employeeId: loggedInEmployeeId,
+        employeeId: user.employeeId?.toString(),
         leaveTypeId: values.leaveTypeId,
         startDate: dayjs(startDate).format("YYYY-MM-DD"),
         endDate: dayjs(endDate).format("YYYY-MM-DD"),
@@ -51,9 +55,9 @@ function ApplyForLeaveModal({ showModal, setShowModal, onSubmitSuccess }: ApplyF
         status: 0,
       };
 
-      // send to backend 
+      // send to backend
       // this is where you would call your API to create the leave request
-      await empLeaveRequestsAPI.createLeaveRequest(payload); 
+      await empLeaveRequestsAPI.createLeaveRequest(payload);
 
       console.log("Leave request payload:", payload);
 
@@ -87,7 +91,9 @@ function ApplyForLeaveModal({ showModal, setShowModal, onSubmitSuccess }: ApplyF
     <>
       {contextHolder}
       <Modal
-        title={<h2 className="text-zinc-900 font-bold text-3xl">Apply for Leave</h2>}
+        title={
+          <h2 className="text-zinc-900 font-bold text-3xl">Apply for Leave</h2>
+        }
         open={showModal}
         onCancel={handleCancel}
         width={600}
@@ -117,7 +123,12 @@ function ApplyForLeaveModal({ showModal, setShowModal, onSubmitSuccess }: ApplyF
           </Button>,
         ]}
       >
-        <Form form={form} layout="vertical" variant="filled" className="flex flex-col">
+        <Form
+          form={form}
+          layout="vertical"
+          variant="filled"
+          className="flex flex-col"
+        >
           <Form.Item
             name="leaveTypeId"
             label="Leave Type"
@@ -127,7 +138,9 @@ function ApplyForLeaveModal({ showModal, setShowModal, onSubmitSuccess }: ApplyF
               <Select.Option value={1}>Annual Leave</Select.Option>
               <Select.Option value={2}>Sick Leave</Select.Option>
               <Select.Option value={3}>Parental Leave</Select.Option>
-              <Select.Option value={4}>Family Responsibility Leave</Select.Option>
+              <Select.Option value={4}>
+                Family Responsibility Leave
+              </Select.Option>
               <Select.Option value={5}>Study Leave</Select.Option>
               <Select.Option value={6}>Compassionate Leave</Select.Option>
             </Select>
