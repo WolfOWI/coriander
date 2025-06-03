@@ -7,7 +7,7 @@ import logo from "../assets/logos/cori_logo_green.png";
 
 const Navigation: React.FC = () => {
   return (
-    <div className="w-[296px] flex-shrink-0">
+    <div className="w-[296px] flex-shrink-0 z-10">
       {/* Sidebar */}
       <div className="fixed top-4 left-4 bg-zinc-900 text-white w-[260px] rounded-3xl h-[calc(100vh-32px)] overflow-hidden">
         <div className="p-10 h-full overflow-y-auto flex flex-col justify-between">
