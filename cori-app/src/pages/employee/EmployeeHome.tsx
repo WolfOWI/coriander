@@ -14,10 +14,9 @@ import { Gender, PayCycle } from "../../types/common";
 import { useParams } from "react-router-dom";
 import { Spin } from "antd";
 import EmpGatheringBox from "../../components/gathering/EmpGatheringBox";
+import { getFullCurrentUser } from "../../services/authService";
 
 const EmployeeHome: React.FC = () => {
-  const { employeeId = "8" } = useParams();
-
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [leaveBalances, setLeaveBalances] = useState<any>(null); //
   const [empUserRatingMetrics, setEmpUserRatingMetrics] = useState<any>(null); // Replace with actual type if availableReplace with actual type if available
@@ -26,10 +25,27 @@ const EmployeeHome: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
 
+  const [employeeId, setEmployeeId] = useState<number | 0>(0);
+  useEffect(() => {
+    const fetchUserAndSetId = async () => {
+      setLoading(true);
+      const user = await getFullCurrentUser();
+      if (user?.employeeId) {
+        setEmployeeId(user.employeeId);
+        setLoading(false);
+      }
+    };
+    fetchUserAndSetId();
+  }, []);
+
   const fetchEmployeeData = async () => {
     try {
       if (employeeId) {
-        const response = await pageAPI.getAdminEmpDetails(employeeId);
+        setLoading(true);
+        const user = await getFullCurrentUser();
+        const response = await pageAPI.getAdminEmpDetails(
+          user.employeeId.toString()
+        );
         const data: any = response.data;
 
         setEmpUser(data.empUser);
@@ -49,13 +65,16 @@ const EmployeeHome: React.FC = () => {
 
   useEffect(() => {
     const fetchGatherings = async () => {
+      setLoading(true);
       try {
         const response = await gatheringAPI.getAllGatheringsByEmpId(
           Number(employeeId)
         );
         setGatherings(response.data.$values || []);
+        setLoading(false);
       } catch (err) {
         setGatherings([]);
+        setLoading(false);
       }
     };
     fetchGatherings();
@@ -124,7 +143,7 @@ const EmployeeHome: React.FC = () => {
         <Spin size="large" />
       </div>
     );
-  if (!empUser)
+  if (!empUser && !loading)
     return (
       <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
         <h2 className="text-zinc-900 font-bold text-3xl text-center">

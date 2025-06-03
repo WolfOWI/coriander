@@ -18,6 +18,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import CodeIcon from "@mui/icons-material/Code";
 import ApiIcon from "@mui/icons-material/Api";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 
 const Navigation: React.FC = () => {
   const [userStatus, setUserStatus] = useState<number | null>(null); // -1, 0, 1, 2
@@ -124,6 +125,14 @@ const Navigation: React.FC = () => {
                 >
                   <BuildIcon fontSize="small" />
                   Equipment
+                </Link>
+
+                <Link
+                  to="/admin/create-employee"
+                  className="nav-link text-white flex items-center gap-2"
+                >
+                  <PersonAddAltIcon fontSize="small" />
+                  Create Employee
                 </Link>
 
                 <Link

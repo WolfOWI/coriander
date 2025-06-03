@@ -58,7 +58,7 @@ const EmployeeProfile: React.FC = () => {
 
   // const { employeeId } = useParams();
   // TODO Temporary set employee ID (TODO: Fetch from logged in user)
-  const [employeeId, setEmployeeId] = useState<number | null>(null);
+  const [employeeId, setEmployeeId] = useState<number | 0>(0);
   useEffect(() => {
     const fetchUserAndSetId = async () => {
       const user = await getFullCurrentUser();
