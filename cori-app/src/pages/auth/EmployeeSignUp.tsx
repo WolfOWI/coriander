@@ -125,25 +125,6 @@ const EmployeeSignUp: React.FC = () => {
     <>
       {contextHolder}
       <div className="relative">
-        {/* TODO: Remove this later */}
-        <div className="absolute top-0 right-0 flex flex-col gap-2">
-          <CoriBtn
-            type="submit"
-            style="black"
-            onClick={() => navigate("/employee/home")}
-          >
-            Skip Sign Up
-          </CoriBtn>
-          <CoriBtn
-            secondary
-            type="submit"
-            style="black"
-            onClick={() => navigate("/admin/signup")}
-          >
-            Next Auth Page
-          </CoriBtn>
-        </div>
-
         <div className="flex w-full h-screen">
           <div className="w-1/2">
             <img
