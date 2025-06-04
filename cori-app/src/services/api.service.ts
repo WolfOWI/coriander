@@ -568,13 +568,20 @@ export const meetingAPI = {
 // ------------------------------------------------------------
 export const gatheringAPI = {
   /**
+   * Fetches all upcoming & completed gatherings (performance reviews + general meetings) for a specific employee (sorted by startdate)
+   * @param employeeId - The employee's ID
+   * @returns Promise containing the API response
+   */
+  getUpcomingAndCompletedGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
+    apiClient.get(`/Gathering/upcoming-and-completed-by-empId-desc/${employeeId}`),
+
+  /**
    * Fetches all gatherings (performance reviews + general meetings) for a specific employee
    * @param employeeId - The employee's ID
    * @returns Promise containing the API response
    */
   getAllGatheringsByEmpId: (employeeId: number): Promise<AxiosResponse> =>
-    apiClient.get(`/Gathering/upcoming-and-completed-by-empId-desc/${employeeId}`),
-  // apiClient.get(`/Gathering/all-by-empId/${employeeId}`),
+    apiClient.get(`/Gathering/all-by-empId/${employeeId}`),
 
   /**
    * Fetches all upcoming gatherings (performance reviews + general meetings) for a specific employee
