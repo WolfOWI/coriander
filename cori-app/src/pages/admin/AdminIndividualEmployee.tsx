@@ -4,15 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // Import 3rd party components / plugins
 import GaugeComponent from "react-gauge-component";
-import {
-  Avatar,
-  DatePicker,
-  Dropdown,
-  Tooltip,
-  message,
-  Button,
-  Spin,
-} from "antd";
+import { Avatar, DatePicker, Dropdown, Tooltip, message, Button, Spin } from "antd";
 import dayjs from "dayjs"; // For simple date formatting
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
@@ -30,7 +22,7 @@ import EmpGatheringBox from "../../components/gathering/EmpGatheringBox";
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
 import CreateAssignedEquipModal from "../../components/modals/CreateAssignedEquipModal";
-import AssignEmpToOneOrManyEquipsModal from "../../components/modals/AssignEmpToOneOrManyEquipsModal";
+import AssignEquipsToExistEmpModal from "../../components/modals/AssignEquipsToExistEmpModal";
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
 import UnlinkEquipmentModal from "../../components/modals/UnlinkEquipmentModal";
 import DeleteEquipmentModal from "../../components/modals/DeleteEquipmentModal";
@@ -93,29 +85,22 @@ const AdminIndividualEmployee: React.FC = () => {
   const [empUser, setEmpUser] = useState<EmpUser | null>(null);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [leaveBalances, setLeaveBalances] = useState<LeaveBalance[]>([]);
-  const [empUserRatingMetrics, setEmpUserRatingMetrics] =
-    useState<EmpUserRatingMetrics | null>(null);
+  const [empUserRatingMetrics, setEmpUserRatingMetrics] = useState<EmpUserRatingMetrics | null>(
+    null
+  );
   const [gatherings, setGatherings] = useState<Gathering[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextPayDay, setNextPayDay] = useState<string | null>(null);
-  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(
-    null
-  );
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
   // Modal States
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
-  const [showCreateAssignedEquipModal, setShowCreateAssignedEquipModal] =
-    useState(false);
-  const [showAssignExistingEquipModal, setShowAssignExistingEquipModal] =
-    useState(false);
-  const [showManageEquipmentModal, setShowManageEquipmentModal] =
-    useState(false);
-  const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] =
-    useState(false);
-  const [showUnlinkEquipmentModal, setShowUnlinkEquipmentModal] =
-    useState(false);
-  const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] =
-    useState(false);
+  const [showCreateAssignedEquipModal, setShowCreateAssignedEquipModal] = useState(false);
+  const [showAssignExistingEquipModal, setShowAssignExistingEquipModal] = useState(false);
+  const [showManageEquipmentModal, setShowManageEquipmentModal] = useState(false);
+  const [showTerminateEmployeeModal, setShowTerminateEmployeeModal] = useState(false);
+  const [showUnlinkEquipmentModal, setShowUnlinkEquipmentModal] = useState(false);
+  const [showDeleteEquipmentModal, setShowDeleteEquipmentModal] = useState(false);
 
   // Message System
   const [messageApi, ContextHolder] = message.useMessage();
@@ -167,14 +152,10 @@ const AdminIndividualEmployee: React.FC = () => {
     if (empUser) {
       // If the employee has a last paid date, use that to calculate the next pay day
       if (empUser.lastPaidDate) {
-        setNextPayDay(
-          calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate)
-        );
+        setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.lastPaidDate));
       } else {
         // Else, use their employment date to calculate the next pay day
-        setNextPayDay(
-          calculateNextPayDay(empUser.payCycle, empUser.employDate)
-        );
+        setNextPayDay(calculateNextPayDay(empUser.payCycle, empUser.employDate));
       }
     }
   }, [empUser]);
@@ -220,16 +201,10 @@ const AdminIndividualEmployee: React.FC = () => {
       let calcPrevPayday: string;
       if (empUser.lastPaidDate) {
         // Calculate the previous pay day using the last paid date
-        calcPrevPayday = calculatePreviousPayDay(
-          empUser?.payCycle,
-          empUser?.lastPaidDate
-        );
+        calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.lastPaidDate);
       } else {
         // Calculate the previous pay day using the employment date
-        calcPrevPayday = calculatePreviousPayDay(
-          empUser?.payCycle,
-          empUser?.employDate
-        );
+        calcPrevPayday = calculatePreviousPayDay(empUser?.payCycle, empUser?.employDate);
       }
 
       // Format the previous pay day
@@ -317,33 +292,20 @@ const AdminIndividualEmployee: React.FC = () => {
         {/* Top Heading with buttons */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-4 items-center">
-            <CoriBtn
-              style="black"
-              iconOnly
-              onClick={() => navigate("/admin/employees")}
-            >
+            <CoriBtn style="black" iconOnly onClick={() => navigate("/admin/employees")}>
               <Icons.ArrowBack />
             </CoriBtn>
-            <h1 className="text-3xl font-bold text-zinc-900">
-              Employee Details
-            </h1>
+            <h1 className="text-3xl font-bold text-zinc-900">Employee Details</h1>
           </div>
           <div className="flex gap-2">
-            <CoriBtn
-              secondary
-              style="black"
-              onClick={() => setShowEditDetailsModal(true)}
-            >
+            <CoriBtn secondary style="black" onClick={() => setShowEditDetailsModal(true)}>
               <Icons.Edit />
               Edit Details
             </CoriBtn>
             <CoriBtn style="black" onClick={toggleEmpSuspension}>
               {empUser?.isSuspended ? "Unsuspend" : "Suspend"}
             </CoriBtn>
-            <CoriBtn
-              style="red"
-              onClick={() => setShowTerminateEmployeeModal(true)}
-            >
+            <CoriBtn style="red" onClick={() => setShowTerminateEmployeeModal(true)}>
               Terminate
             </CoriBtn>
           </div>
@@ -377,20 +339,12 @@ const AdminIndividualEmployee: React.FC = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-zinc-500">
-                    Employee ID {empUser.employeeId}
-                  </p>
+                  <p className="text-sm text-zinc-500">Employee ID {empUser.employeeId}</p>
                   <div className="flex items-center gap-3">
-                    <h2 className="text-zinc-900 font-bold text-3xl">
-                      {empUser.fullName}
-                    </h2>
+                    <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
                     {empUser.googleId && (
                       <Tooltip title="Signed up with Google">
-                        <img
-                          src={GoogleIcon}
-                          alt="Google"
-                          className="w-5 h-5"
-                        />
+                        <img src={GoogleIcon} alt="Google" className="w-5 h-5" />
                       </Tooltip>
                     )}
                   </div>
@@ -449,9 +403,7 @@ const AdminIndividualEmployee: React.FC = () => {
                   <div className="flex flex-grow flex-col gap-4 w-1/2">
                     <div className="flex gap-2 items-center">
                       <Icons.Phone />
-                      <p className="text-zinc-500">
-                        {formatPhone(empUser.phoneNumber)}
-                      </p>
+                      <p className="text-zinc-500">{formatPhone(empUser.phoneNumber)}</p>
                     </div>
                     <Tooltip
                       title={empUser.email}
@@ -462,9 +414,7 @@ const AdminIndividualEmployee: React.FC = () => {
                     >
                       <div className="flex gap-2 items-center">
                         <Icons.Email />
-                        <p className="text-zinc-500 text-truncate">
-                          {empUser.email}
-                        </p>
+                        <p className="text-zinc-500 text-truncate">{empUser.email}</p>
                       </div>
                     </Tooltip>
                   </div>
@@ -487,9 +437,7 @@ const AdminIndividualEmployee: React.FC = () => {
               <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
                 <p className="text-zinc-500 text-sm mb-1">Salary</p>
                 <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
-                  <p className="text-zinc-900 text-xl">
-                    {formatRandAmount(empUser.salaryAmount)}
-                  </p>
+                  <p className="text-zinc-900 text-xl">{formatRandAmount(empUser.salaryAmount)}</p>
                   <p className="text-zinc-500 text-sm">
                     {empUser.payCycle === PayCycle.Monthly
                       ? "monthly"
@@ -505,15 +453,11 @@ const AdminIndividualEmployee: React.FC = () => {
                       <DatePicker
                         value={dayjs(empUser.lastPaidDate)}
                         format="DD MMM YYYY"
-                        suffixIcon={
-                          <CoriCircleBtn style="black" icon={<Icons.Edit />} />
-                        }
+                        suffixIcon={<CoriCircleBtn style="black" icon={<Icons.Edit />} />}
                         allowClear={false}
                         variant="borderless"
                         className="hover:cursor-pointer"
-                        onChange={(date) =>
-                          updateLastPaidDate(date?.format("YYYY-MM-DD") || "")
-                        }
+                        onChange={(date) => updateLastPaidDate(date?.format("YYYY-MM-DD") || "")}
                         // Only allow dates after the employee's employment date and before today
                         minDate={dayjs(empUser.employDate)}
                         maxDate={dayjs()}
@@ -632,18 +576,12 @@ const AdminIndividualEmployee: React.FC = () => {
               {/* Rating & Performance Reviews */}
               <div className="w-9/12 flex flex-col gap-4 max-w-9/12">
                 <div className="w-full flex flex-col gap-2 items-center">
-                  <h2 className="text-zinc-500 font-semibold">
-                    Average Rating
-                  </h2>
+                  <h2 className="text-zinc-500 font-semibold">Average Rating</h2>
                   <div className="w-full p-4 bg-warmstone-50 rounded-2xl">
                     <GaugeComponent
                       minValue={0}
                       maxValue={500}
-                      value={
-                        empUserRatingMetrics
-                          ? empUserRatingMetrics.averageRating * 100
-                          : 0
-                      }
+                      value={empUserRatingMetrics ? empUserRatingMetrics.averageRating * 100 : 0}
                       type="semicircle"
                       labels={{
                         valueLabel: {
@@ -660,13 +598,7 @@ const AdminIndividualEmployee: React.FC = () => {
                       }}
                       arc={{
                         nbSubArcs: 5,
-                        colorArray: [
-                          "#d32f2f",
-                          "#f57c00",
-                          "#fbc02d",
-                          "#388e3c",
-                          "#1976d2",
-                        ],
+                        colorArray: ["#d32f2f", "#f57c00", "#fbc02d", "#388e3c", "#1976d2"],
                         padding: 0.02,
                         width: 0.2,
                       }}
@@ -679,9 +611,7 @@ const AdminIndividualEmployee: React.FC = () => {
                       <div className="text-center mt-2">
                         <p className="text-zinc-500 text-sm">
                           Based on {empUserRatingMetrics.numberOfRatings} rating
-                          {empUserRatingMetrics.numberOfRatings !== 1
-                            ? "s"
-                            : ""}
+                          {empUserRatingMetrics.numberOfRatings !== 1 ? "s" : ""}
                         </p>
                       </div>
                     )}
@@ -703,9 +633,7 @@ const AdminIndividualEmployee: React.FC = () => {
                     ))}
                     {gatherings.length === 0 && (
                       <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-3">
-                        <p className="text-zinc-500 text-center">
-                          No Meetings Yet
-                        </p>
+                        <p className="text-zinc-500 text-center">No Meetings Yet</p>
                       </div>
                     )}
                     {/* Empty Spacer Overlay (for fade out effect) */}
@@ -730,7 +658,7 @@ const AdminIndividualEmployee: React.FC = () => {
         />
 
         {/* Assign Multiple Existing Equipments Modal */}
-        <AssignEmpToOneOrManyEquipsModal
+        <AssignEquipsToExistEmpModal
           showModal={showAssignExistingEquipModal}
           setShowModal={setShowAssignExistingEquipModal}
           employeeId={empUser?.employeeId}
