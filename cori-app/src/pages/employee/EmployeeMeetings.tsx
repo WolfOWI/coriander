@@ -85,10 +85,12 @@ const EmployeeMeetings: React.FC = () => {
       setFilteredData(sortedGatherings);
     } catch (error) {
       console.error("Error fetching gatherings:", error);
+      messageApi.error("Failed to refresh data. Please try again.");
+      throw error; // Re-throw so calling functions know the refresh failed
     } finally {
       setLoading(false);
     }
-  }, [employeeId]);
+  }, [employeeId, messageApi]);
 
   // Initial data fetch
   useEffect(() => {
@@ -150,7 +152,20 @@ const EmployeeMeetings: React.FC = () => {
       try {
         await meetingAPI.deleteMeetingRequest(meetingId);
         messageApi.success("Meeting request deleted successfully");
-        await fetchAndUpdateData();
+
+        // Add a small delay to ensure backend has processed the deletion
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Ensure data refresh completes
+        try {
+          await fetchAndUpdateData();
+        } catch (refreshError) {
+          // If refresh fails, show a warning but don't override the success message
+          console.error("Failed to refresh data after deletion:", refreshError);
+          messageApi.warning(
+            "Request deleted but failed to refresh data. Please refresh the page."
+          );
+        }
       } catch (error) {
         messageApi.error("Error deleting meeting request");
         console.error("Error deleting meeting request:", error);
