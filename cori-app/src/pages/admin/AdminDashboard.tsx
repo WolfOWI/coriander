@@ -13,11 +13,7 @@ import AdminCalendar from "../../components/calender";
 import AdminGatheringBox from "../../components/gathering/AdminGatheringBox";
 
 //Functionality
-import {
-  empLeaveRequestsAPI,
-  gatheringAPI,
-  pageAPI,
-} from "../../services/api.service";
+import { empLeaveRequestsAPI, gatheringAPI, pageAPI } from "../../services/api.service";
 import { useNavigate } from "react-router-dom";
 
 //Interface
@@ -46,9 +42,7 @@ const AdminDashboard: React.FC = () => {
   const [showCreatePRModal, setShowCreatePRModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [gatherings, setGatherings] = useState<any>({ all: [] });
-  const [currentMonth, setCurrentMonth] = useState<number>(
-    new Date().getMonth() + 1
-  );
+  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
   const [loadingGatherings, setLoadingGatherings] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -67,6 +61,10 @@ const AdminDashboard: React.FC = () => {
 
   // Fetch dashboard data from the API
   const fetchDashboardData = async (adminId: number) => {
+    if (!adminId || adminId === 0) {
+      console.log("No adminId available, skipping fetchDashboardData");
+      return;
+    }
     try {
       const response = await pageAPI.getAdminDashboardData(adminId);
       setDashboardData(response.data);
@@ -79,7 +77,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!adminId) return; // ⛔ Wait until adminId is available
+    if (!adminId || adminId === 0) return; // ⛔ Wait until adminId is available
 
     const fetchData = async () => {
       const initialMonth = selectedDate.getMonth() + 1;
@@ -127,16 +125,19 @@ const AdminDashboard: React.FC = () => {
   }));
 
   const fetchGatherings = async (adminId: number, month: number) => {
+    if (!adminId || adminId === 0) {
+      console.log("No adminId available, skipping fetchGatherings");
+      return;
+    }
     try {
       setLoadingGatherings(true);
       // Clear existing gatherings before fetching new ones
       setGatherings({ all: [] });
 
-      const response =
-        await gatheringAPI.getUpcomingAndCompletedGatheringsByAdminIdAndMonth(
-          adminId,
-          month
-        );
+      const response = await gatheringAPI.getUpcomingAndCompletedGatheringsByAdminIdAndMonth(
+        adminId,
+        month
+      );
 
       // Ensure we're working with a clean array and no duplicates
       const gatheringsData = response.data.$values || [];
@@ -154,36 +155,37 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // If a different month is selected, fetch the gatherings for the new month
-  // useEffect(() => {
-  //   const newMonth = selectedDate.getMonth() + 1;
-  //   // Only fetch if month actually changes
-  //   if (newMonth !== currentMonth) {
-  //     setCurrentMonth(newMonth);
-  //     fetchGatherings(1, newMonth);
-  //   }
-  // }, [selectedDate]);
+  // Fetch gatherings when month changes
+  useEffect(() => {
+    if (!adminId || adminId === 0) return;
+
+    const newMonth = selectedDate.getMonth() + 1;
+    // Only fetch if month actually changes
+    if (newMonth !== currentMonth) {
+      setCurrentMonth(newMonth);
+      fetchGatherings(adminId, newMonth);
+    }
+  }, [selectedDate, currentMonth, adminId]);
 
   // Initial fetch only on component mount
   useEffect(() => {
+    if (!adminId || adminId === 0) return;
     const initialMonth = selectedDate.getMonth() + 1;
     setCurrentMonth(initialMonth);
-    fetchGatherings(1, initialMonth);
-  }, []);
+    fetchGatherings(adminId, initialMonth);
+  }, [adminId]);
 
   //Display gatherings for selected Day
   const gatheringsForSelectedDay = React.useMemo(() => {
-    return (gatherings.all || []).filter(
-      (g: { startDate: string | number | Date }) => {
-        if (!g || !g.startDate) return false;
-        const d = new Date(g.startDate);
-        return (
-          d.getFullYear() === selectedDate.getFullYear() &&
-          d.getMonth() === selectedDate.getMonth() &&
-          d.getDate() === selectedDate.getDate()
-        );
-      }
-    );
+    return (gatherings.all || []).filter((g: { startDate: string | number | Date }) => {
+      if (!g || !g.startDate) return false;
+      const d = new Date(g.startDate);
+      return (
+        d.getFullYear() === selectedDate.getFullYear() &&
+        d.getMonth() === selectedDate.getMonth() &&
+        d.getDate() === selectedDate.getDate()
+      );
+    });
   }, [gatherings.all, selectedDate]);
 
   if (loading)
@@ -195,8 +197,7 @@ const AdminDashboard: React.FC = () => {
   if (error) return <div>Error: {error}</div>;
 
   // Destructure the data from the API response
-  const empUserRatingMetrics =
-    dashboardData?.empUserRatingMetrics?.$values || [];
+  const empUserRatingMetrics = dashboardData?.empUserRatingMetrics?.$values || [];
   //Default values for employee status totals
   // If the API response is empty or undefined
   const employeeStatusTotals = dashboardData?.employeeStatusTotals || {
@@ -216,9 +217,7 @@ const AdminDashboard: React.FC = () => {
       <h1 className="text-3xl font-bold mb-2 text-zinc-900">
         Welcome, {dashboardData?.adminUser?.fullName || "Admin"}
       </h1>
-      <h4 className="text-zinc-900 mb-3">
-        Stay updated on key HR activities and pending tasks.
-      </h4>
+      <h4 className="text-zinc-900 mb-3">Stay updated on key HR activities and pending tasks.</h4>
       <div className="line-horisontal mb-4"></div>
 
       {/* Page Body */}
@@ -247,9 +246,7 @@ const AdminDashboard: React.FC = () => {
                     Employment Overview
                   </div>
                   <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow">
-                    <DoughnutChartCard
-                      employeeStatusTotals={employeeStatusTotals}
-                    />
+                    <DoughnutChartCard employeeStatusTotals={employeeStatusTotals} />
                   </div>
                 </Col>
 
@@ -257,9 +254,7 @@ const AdminDashboard: React.FC = () => {
                 <Col xs={12} md={5}>
                   <div className="w-full flex flex-col items-center">
                     <div className="flex justify-between items-center gap-3 mb-2">
-                      <div className="text-zinc-500 font-semibold">
-                        Leave Requests
-                      </div>
+                      <div className="text-zinc-500 font-semibold">Leave Requests</div>
                       <button
                         className="bg-zinc-600 text-white text-xs font-semibold px-3 py-1 rounded-lg shadow hover:bg-zinc-400 transition"
                         onClick={() => navigate("/admin/leave-requests")}
@@ -275,10 +270,7 @@ const AdminDashboard: React.FC = () => {
                       >
                         {mappedLeaveRequests.length > 0 ? (
                           mappedLeaveRequests.map((leave) => (
-                            <LeaveCardAdminDash
-                              key={leave.leaveRequestId}
-                              leave={leave}
-                            />
+                            <LeaveCardAdminDash key={leave.leaveRequestId} leave={leave} />
                           ))
                         ) : (
                           <div className="text-center text-zinc-500">
@@ -298,15 +290,9 @@ const AdminDashboard: React.FC = () => {
                         className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer"
                         onClick={() => setShowCreatePRModal(true)}
                       >
-                        <p className="text-sm font-bold mb-2">
-                          New Performance Review
-                        </p>
+                        <p className="text-sm font-bold mb-2">New Performance Review</p>
                         <div className="flex justify-end h-full">
-                          <img
-                            src={AdminAddIcon}
-                            alt="Plus Icon"
-                            className="AdminAddIcon"
-                          />
+                          <img src={AdminAddIcon} alt="Plus Icon" className="AdminAddIcon" />
                         </div>
                       </div>
                     </Col>
@@ -317,9 +303,7 @@ const AdminDashboard: React.FC = () => {
                           navigate("/admin/meetings");
                         }}
                       >
-                        <p className="text-zinc-900 text-sm font-bold mb-2">
-                          View All Meetings
-                        </p>
+                        <p className="text-zinc-900 text-sm font-bold mb-2">View All Meetings</p>
                         <div className="flex bg-zinc-900 rounded-full p-2 w-fit align-self-end">
                           <Icons.MeetingRoom className="w-6 h-6" />
                         </div>
@@ -378,14 +362,16 @@ const AdminDashboard: React.FC = () => {
                           gathering={gathering}
                           onEditSuccess={() => {
                             fetchDashboardData(adminId || 0);
-                            fetchGatherings(1, currentMonth);
+                            fetchGatherings(adminId || 0, currentMonth);
                           }}
                           onDeleteSuccess={() => {
                             fetchDashboardData(adminId || 0);
-                            fetchGatherings(1, currentMonth);
+                            fetchGatherings(adminId || 0, currentMonth);
                           }}
                           loggedInAdminId={
-                            dashboardData?.adminUser?.adminId?.toString() || "1"
+                            dashboardData?.adminUser?.adminId?.toString() ||
+                            adminId?.toString() ||
+                            "1"
                           }
                         />
                       ))
@@ -407,11 +393,12 @@ const AdminDashboard: React.FC = () => {
 
         {/* CreatePRModal */}
         <CreatePRModal
+          adminId={adminId}
           showModal={showCreatePRModal}
           setShowModal={setShowCreatePRModal}
           onCreateSuccess={() => {
             fetchDashboardData(adminId || 0); // Refresh dashboard data
-            fetchGatherings(1, currentMonth); // Refresh meetings list
+            fetchGatherings(adminId || 0, currentMonth); // Refresh meetings list
             setShowCreatePRModal(false);
             console.log("Performance Review created successfully!");
           }}

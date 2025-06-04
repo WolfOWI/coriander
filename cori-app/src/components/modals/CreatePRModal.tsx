@@ -27,6 +27,7 @@ interface CreatePRModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   onCreateSuccess: () => void;
+  adminId: number;
 }
 
 // Employee options from dropdown
@@ -51,7 +52,7 @@ interface EmployeeOption {
   isSuspended: boolean;
 }
 
-function CreatePRModal({ showModal, setShowModal, onCreateSuccess }: CreatePRModalProps) {
+function CreatePRModal({ showModal, setShowModal, onCreateSuccess, adminId }: CreatePRModalProps) {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [isOnline, setIsOnline] = useState(false);
@@ -133,6 +134,12 @@ function CreatePRModal({ showModal, setShowModal, onCreateSuccess }: CreatePRMod
 
   // Handle the creation of the performance review
   const handleCreate = async () => {
+    // Check if adminId is valid before proceeding
+    if (!adminId || adminId === 0) {
+      messageApi.error("Admin ID not available. Please try again.");
+      return;
+    }
+
     try {
       const values = await form.validateFields();
 
@@ -153,7 +160,7 @@ function CreatePRModal({ showModal, setShowModal, onCreateSuccess }: CreatePRMod
         .toISOString();
 
       const payload = {
-        adminId: 1, // Replace with actual admin ID (possibly from auth context or props)
+        adminId: adminId,
         employeeId: values.employeeId,
         isOnline: values.isOnline,
         meetLocation: values.meetLocation || null,

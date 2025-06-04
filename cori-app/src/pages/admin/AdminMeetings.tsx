@@ -257,6 +257,7 @@ const AdminMeetings: React.FC = () => {
         showModal={showCreatePRModal}
         setShowModal={setShowCreatePRModal}
         onCreateSuccess={handleGatheringAction}
+        adminId={adminId}
       />
     </div>
   );
