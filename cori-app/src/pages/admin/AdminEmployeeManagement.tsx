@@ -18,13 +18,9 @@ import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 import { Icons } from "../../constants/icons";
 
 // Import Utils
-import { formatRandAmount } from "../../utils/formatUtils";
+import { formatRandAmount, formatShortRandAmount } from "../../utils/formatUtils";
 import { getFullImageUrl } from "../../utils/imageUtils";
-import {
-  isDateInPast,
-  formatTimestampToDate,
-  calculateNextPayDay,
-} from "../../utils/dateUtils";
+import { isDateInPast, formatTimestampToDate, calculateNextPayDay } from "../../utils/dateUtils";
 
 // Import Types / Interfaces
 import { EmployeeListItem } from "../../interfaces/people/employeeListItem";
@@ -35,10 +31,7 @@ import { getFullCurrentUser } from "../../services/authService";
 
 // Types for table
 type ColumnsType<T extends object = object> = TableProps<T>["columns"];
-type TablePaginationConfig = Exclude<
-  GetProp<TableProps, "pagination">,
-  boolean
->;
+type TablePaginationConfig = Exclude<GetProp<TableProps, "pagination">, boolean>;
 
 // Record list interface
 interface DataType {
@@ -101,25 +94,23 @@ const AdminEmployeeManagement: React.FC = () => {
       const response = await pageAPI.getAdminEmpManagement();
 
       // Clean up the data to match DataType
-      const processedData = response.data.$values.map(
-        (item: EmployeeListItem) => ({
-          employeeId: item.empUser.employeeId,
-          fullName: item.empUser.fullName,
-          gender: item.empUser.gender,
-          jobTitle: item.empUser.jobTitle,
-          department: item.empUser.department,
-          profilePicture: item.empUser.profilePicture,
-          employType: item.empUser.employType,
-          salaryAmount: item.empUser.salaryAmount,
-          payCycle: item.empUser.payCycle,
-          lastPaidDate: item.empUser.lastPaidDate,
-          isSuspended: item.empUser.isSuspended,
-          averageRating: item.empUserRatingMetrics?.averageRating,
-          numberOfRatings: item.empUserRatingMetrics?.numberOfRatings,
-          totalRemainingDays: item.totalLeaveBalanceSum?.totalRemainingDays,
-          totalLeaveDays: item.totalLeaveBalanceSum?.totalLeaveDays,
-        })
-      ) as DataType[];
+      const processedData = response.data.$values.map((item: EmployeeListItem) => ({
+        employeeId: item.empUser.employeeId,
+        fullName: item.empUser.fullName,
+        gender: item.empUser.gender,
+        jobTitle: item.empUser.jobTitle,
+        department: item.empUser.department,
+        profilePicture: item.empUser.profilePicture,
+        employType: item.empUser.employType,
+        salaryAmount: item.empUser.salaryAmount,
+        payCycle: item.empUser.payCycle,
+        lastPaidDate: item.empUser.lastPaidDate,
+        isSuspended: item.empUser.isSuspended,
+        averageRating: item.empUserRatingMetrics?.averageRating,
+        numberOfRatings: item.empUserRatingMetrics?.numberOfRatings,
+        totalRemainingDays: item.totalLeaveBalanceSum?.totalRemainingDays,
+        totalLeaveDays: item.totalLeaveBalanceSum?.totalLeaveDays,
+      })) as DataType[];
 
       setAllData(processedData);
     } catch (error) {
@@ -146,9 +137,7 @@ const AdminEmployeeManagement: React.FC = () => {
         filters,
         // Handle both single and multiple column sorting
         sortOrder: Array.isArray(sorter) ? sorter[0]?.order : sorter.order,
-        sortField: Array.isArray(sorter)
-          ? (sorter[0]?.field as string)
-          : (sorter.field as string),
+        sortField: Array.isArray(sorter) ? (sorter[0]?.field as string) : (sorter.field as string),
       });
     },
     []
@@ -167,9 +156,7 @@ const AdminEmployeeManagement: React.FC = () => {
 
     // Apply search filter if there's a search value
     if (searchValue) {
-      data = data.filter((item) =>
-        item.fullName.toLowerCase().includes(searchValue.toLowerCase())
-      );
+      data = data.filter((item) => item.fullName.toLowerCase().includes(searchValue.toLowerCase()));
     }
 
     // If the user wants to sort the data
@@ -255,9 +242,7 @@ const AdminEmployeeManagement: React.FC = () => {
               <div className="flex items-center">
                 <Icons.StarRounded className="text-yellow-500" />
                 <p>{record.averageRating}</p>
-                <p className="text-zinc-500 text-[12px] ml-2">
-                  ({record.numberOfRatings})
-                </p>
+                <p className="text-zinc-500 text-[12px] ml-2">({record.numberOfRatings})</p>
               </div>
             ) : (
               <p className="text-zinc-500 text-[12px]">No Ratings</p>
@@ -327,7 +312,7 @@ const AdminEmployeeManagement: React.FC = () => {
         sorter: true,
         render: (_, record) => (
           <div className="flex flex-col">
-            <p>{formatRandAmount(record.salaryAmount)}</p>
+            <p>{formatShortRandAmount(record.salaryAmount)}</p>
             <p className="text-[12px] text-zinc-500">
               {record.payCycle === PayCycle.Monthly
                 ? "monthly"
@@ -344,10 +329,18 @@ const AdminEmployeeManagement: React.FC = () => {
         sorter: true,
         width: "15%",
         render: (date, record) => {
-          const isLate = isDateInPast(
-            calculateNextPayDay(record.payCycle, date)
-          );
+          const isLate = isDateInPast(calculateNextPayDay(record.payCycle, date));
           const nextPayDate = calculateNextPayDay(record.payCycle, date);
+
+          if (!date) {
+            return (
+              <Tooltip title="Employee has never been paid." placement="topLeft">
+                <div className="flex flex-col">
+                  <p className="text-zinc-500 text-[12px]">---</p>
+                </div>
+              </Tooltip>
+            );
+          }
 
           if (isLate) {
             return (
@@ -370,10 +363,7 @@ const AdminEmployeeManagement: React.FC = () => {
                 <div className="flex flex-col">
                   <p>{formatTimestampToDate(date)}</p>
                   <div className="flex items-center gap-1">
-                    <Icons.WatchLater
-                      className="text-red-500"
-                      fontSize="small"
-                    />
+                    <Icons.WatchLater className="text-red-500" fontSize="small" />
                     <p className="text-red-500 text-[12px]">
                       {dayjs(nextPayDate).fromNow(true)} late
                     </p>
@@ -402,10 +392,7 @@ const AdminEmployeeManagement: React.FC = () => {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1">
                   <p>{formatTimestampToDate(date)}</p>
-                  <Icons.CheckCircle
-                    className="text-corigreen-500"
-                    fontSize="small"
-                  />
+                  <Icons.CheckCircle className="text-corigreen-500" fontSize="small" />
                 </div>
               </div>
             </Tooltip>
@@ -419,11 +406,8 @@ const AdminEmployeeManagement: React.FC = () => {
         render: (_, record) => (
           <div className="flex flex-col items-center">
             <p>{record.totalRemainingDays}</p>
-            <p className="text-zinc-500 text-[12px]">
-              {record.totalLeaveDays} days
-            </p>
+            <p className="text-zinc-500 text-[12px]">{record.totalLeaveDays} days</p>
           </div>
-          // TODO: Possibly add a tooltip that shows if employee made a leave request
         ),
       },
     ],
@@ -445,10 +429,7 @@ const AdminEmployeeManagement: React.FC = () => {
             value={searchValue}
             onChange={(e) => handleSearch(e.target.value)}
           />
-          <CoriBtn
-            style="black"
-            onClick={() => navigate("/admin/create-employee")}
-          >
+          <CoriBtn style="black" onClick={() => navigate("/admin/create-employee")}>
             New
             <Icons.Add />
           </CoriBtn>
@@ -465,8 +446,7 @@ const AdminEmployeeManagement: React.FC = () => {
         loading={loading}
         onChange={handleTableChange}
         onRow={(record) => ({
-          onClick: () =>
-            navigate(`/admin/individual-employee/${record.employeeId}`),
+          onClick: () => navigate(`/admin/individual-employee/${record.employeeId}`),
           className: "cursor-pointer hover:bg-zinc-50",
         })}
       />

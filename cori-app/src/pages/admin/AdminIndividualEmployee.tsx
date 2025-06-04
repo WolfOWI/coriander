@@ -75,9 +75,6 @@ const AdminIndividualEmployee: React.FC = () => {
   // Get the employee ID from the URL params
   const { employeeId } = useParams();
 
-  // TODO Replace with the current admin logged in ID
-  const loggedInAdminId = "1";
-
   // Navigation
   const navigate = useNavigate();
 
@@ -450,33 +447,60 @@ const AdminIndividualEmployee: React.FC = () => {
                   <div className="flex flex-col w-1/2 items-center">
                     <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
                     <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                      <DatePicker
-                        value={dayjs(empUser.lastPaidDate)}
-                        format="DD MMM YYYY"
-                        suffixIcon={<CoriCircleBtn style="black" icon={<Icons.Edit />} />}
-                        allowClear={false}
-                        variant="borderless"
-                        className="hover:cursor-pointer"
-                        onChange={(date) => updateLastPaidDate(date?.format("YYYY-MM-DD") || "")}
-                        // Only allow dates after the employee's employment date and before today
-                        minDate={dayjs(empUser.employDate)}
-                        maxDate={dayjs()}
-                      />
+                      {empUser.lastPaidDate ? (
+                        <DatePicker
+                          value={dayjs(empUser.lastPaidDate)}
+                          format="DD MMM YYYY"
+                          suffixIcon={<CoriCircleBtn style="black" icon={<Icons.Edit />} />}
+                          allowClear={false}
+                          variant="borderless"
+                          className="hover:cursor-pointer"
+                          onChange={(date) => updateLastPaidDate(date?.format("YYYY-MM-DD") || "")}
+                          // Only allow dates after the employee's employment date and before today
+                          minDate={dayjs(empUser.employDate)}
+                          maxDate={dayjs()}
+                        />
+                      ) : (
+                        <DatePicker
+                          placeholder="Set First Payment"
+                          format="DD MMM YYYY"
+                          suffixIcon={<CoriCircleBtn secondary icon={<Icons.Add />} />}
+                          allowClear={false}
+                          variant="borderless"
+                          className="hover:cursor-pointer w-full"
+                          onChange={(date) => updateLastPaidDate(date?.format("YYYY-MM-DD") || "")}
+                          // Only allow dates after the employee's employment date and before today
+                          minDate={dayjs(empUser.employDate)}
+                          maxDate={dayjs()}
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col w-1/2 items-center">
                     <p className="text-zinc-500 text-sm mb-1">Next Pay Day</p>
-                    {nextPayDay && (
-                      <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
-                        <p className="text-zinc-900">{nextPayDay}</p>
-                        {/* <CoriBadge text={`${dayjs(nextPayDay).fromNow()}`} size="x-small" /> */}
-                        <TimeTodayBadge date={nextPayDay} />
-                      </div>
-                    )}
+                    <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
+                      {empUser.lastPaidDate ? (
+                        <>
+                          {nextPayDay && (
+                            <>
+                              <p className="text-zinc-900">{nextPayDay}</p>
+                              <TimeTodayBadge date={nextPayDay} />
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <p className="text-zinc-300 text-2xl font-light">N/A</p>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-between w-full mt-4">
-                  <CoriBtn secondary style="black" onClick={onUndoPayment}>
+                  <CoriBtn
+                    secondary
+                    style="black"
+                    onClick={onUndoPayment}
+                    disabled={!empUser.lastPaidDate}
+                  >
                     <Icons.Undo />
                     Undo Payment
                   </CoriBtn>
@@ -626,7 +650,7 @@ const AdminIndividualEmployee: React.FC = () => {
                         key={gathering.$id}
                         gathering={gathering}
                         withAdminNamesTitle={true}
-                        loggedInAdminId={loggedInAdminId}
+                        loggedInAdminId={adminId?.toString() || ""}
                         onEditSuccess={fetchEmployee}
                         onDeleteSuccess={fetchEmployee}
                       />
