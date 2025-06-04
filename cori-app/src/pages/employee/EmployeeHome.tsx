@@ -28,54 +28,70 @@ const EmployeeHome: React.FC = () => {
   const [employeeId, setEmployeeId] = useState<number | 0>(0);
   useEffect(() => {
     const fetchUserAndSetId = async () => {
-      setLoading(true);
       const user = await getFullCurrentUser();
       if (user?.employeeId) {
         setEmployeeId(user.employeeId);
-        setLoading(false);
       }
     };
     fetchUserAndSetId();
   }, []);
 
   const fetchEmployeeData = async () => {
-    try {
-      if (employeeId) {
-        setLoading(true);
-        const user = await getFullCurrentUser();
-        const response = await pageAPI.getAdminEmpDetails(user.employeeId.toString());
-        const data: any = response.data;
+    if (!employeeId || employeeId === 0) {
+      console.log("No employeeId available, skipping fetchEmployeeData");
+      return;
+    }
 
-        setEmpUser(data.empUser);
-        setLeaveBalances(data.leaveBalances?.$values || []);
-        setEmpUserRatingMetrics(data.empUserRatingMetrics);
+    try {
+      setLoading(true);
+      const user = await getFullCurrentUser();
+      if (!user?.employeeId) {
+        console.log("No user or employeeId found");
+        setEmpUser(null);
+        return;
       }
+
+      const response = await pageAPI.getAdminEmpDetails(user.employeeId.toString());
+      const data: any = response.data;
+
+      setEmpUser(data.empUser);
+      setLeaveBalances(data.leaveBalances?.$values || []);
+      setEmpUserRatingMetrics(data.empUserRatingMetrics);
     } catch (error) {
       console.error("Error fetching employee data:", error);
+      setEmpUser(null);
     } finally {
       setLoading(false); // ✅ Ensure spinner stops
     }
   };
 
+  const fetchGatherings = async () => {
+    if (!employeeId || employeeId === 0) {
+      console.log("No employeeId available, skipping fetchGatherings");
+      return;
+    }
+
+    try {
+      const response = await gatheringAPI.getUpcomingAndCompletedGatheringsByEmpId(
+        Number(employeeId)
+      );
+      setGatherings(response.data.$values || []);
+    } catch (err) {
+      console.error("Error fetching gatherings:", err);
+      setGatherings([]);
+    }
+  };
+
   useEffect(() => {
-    fetchEmployeeData();
+    if (employeeId && employeeId !== 0) {
+      fetchEmployeeData();
+    }
   }, [employeeId]);
 
   useEffect(() => {
-    const fetchGatherings = async () => {
-      setLoading(true);
-      try {
-        const response = await gatheringAPI.getUpcomingAndCompletedGatheringsByEmpId(
-          Number(employeeId)
-        );
-        setGatherings(response.data.$values || []);
-        setLoading(false);
-      } catch (err) {
-        setGatherings([]);
-        setLoading(false);
-      }
-    };
-    fetchGatherings();
+    if (employeeId && employeeId !== 0) {
+      fetchGatherings();
+    }
   }, [employeeId]);
 
   //For the Quote of the day
@@ -239,12 +255,12 @@ const EmployeeHome: React.FC = () => {
                       <p className="text-zinc-500 text-sm mb-1">Salary</p>
                       <div className="flex flex-col items-center p-3 bg-warmstone-200 w-full rounded-2xl">
                         <p className="text-zinc-900 text-xl">
-                          {formatRandAmount(empUser.salaryAmount)}
+                          {empUser ? formatRandAmount(empUser.salaryAmount) : "N/A"}
                         </p>
                         <p className="text-zinc-500 text-sm">
-                          {empUser.payCycle === PayCycle.Monthly
+                          {empUser?.payCycle === PayCycle.Monthly
                             ? "monthly"
-                            : empUser.payCycle === PayCycle.BiWeekly
+                            : empUser?.payCycle === PayCycle.BiWeekly
                             ? "bi-weekly"
                             : "weekly"}
                         </p>
@@ -254,7 +270,7 @@ const EmployeeHome: React.FC = () => {
                           <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
                           <div className="flex justify-center items-center gap-2 p-3 bg-warmstone-200 rounded-2xl h-full w-full">
                             <p className="text-zinc-900">
-                              {empUser.lastPaidDate
+                              {empUser?.lastPaidDate
                                 ? dayjs(empUser.lastPaidDate).format("DD/MM/YYYY")
                                 : "N/A"}
                             </p>

@@ -7,7 +7,7 @@ import { ClockCircleOutlined } from "@ant-design/icons";
 import { Icons } from "../../constants/icons";
 
 // Graphs & Tooltip
-import { Progress, Tooltip } from "antd";
+import { Progress, Tooltip, Spin } from "antd";
 
 // Badge
 import CoriBadge from "../../components/badges/CoriBadge";
@@ -21,18 +21,12 @@ import { getFullCurrentUser } from "../../services/authService";
 import CoriBtn from "../../components/buttons/CoriBtn";
 
 const getLeaveIcon = (type: string) => {
-  if (type.toLowerCase().includes("annual"))
-    return <Icons.BeachAccess fontSize="large" />;
-  if (type.toLowerCase().includes("family"))
-    return <Icons.FamilyRestroom fontSize="large" />;
-  if (type.toLowerCase().includes("sick"))
-    return <Icons.Sick fontSize="large" />;
-  if (type.toLowerCase().includes("compassion"))
-    return <Icons.HeartBroken fontSize="large" />;
-  if (type.toLowerCase().includes("study"))
-    return <Icons.MenuBook fontSize="large" />;
-  if (type.toLowerCase().includes("parental"))
-    return <Icons.ChildFriendly fontSize="large" />;
+  if (type.toLowerCase().includes("annual")) return <Icons.BeachAccess fontSize="large" />;
+  if (type.toLowerCase().includes("family")) return <Icons.FamilyRestroom fontSize="large" />;
+  if (type.toLowerCase().includes("sick")) return <Icons.Sick fontSize="large" />;
+  if (type.toLowerCase().includes("compassion")) return <Icons.HeartBroken fontSize="large" />;
+  if (type.toLowerCase().includes("study")) return <Icons.MenuBook fontSize="large" />;
+  if (type.toLowerCase().includes("parental")) return <Icons.ChildFriendly fontSize="large" />;
   return null;
 };
 
@@ -42,14 +36,18 @@ const EmployeeLeaveOverview: React.FC = () => {
   const [requests, setRequests] = useState<any[]>([]);
   const [balances, setBalances] = useState<any[]>([]);
   const [summary, setSummary] = useState<{
-    totalTaken: number;
+    totalRemaining: number;
     totalAllowed: number;
   }>({
-    totalTaken: 0,
+    totalRemaining: 0,
     totalAllowed: 0,
   });
   const [activeTab, setActiveTab] = useState<TabOption>("All");
   const [showModal, setShowModal] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [contentLoading, setContentLoading] = useState(false);
+  const [employeeId, setEmployeeId] = useState<number | 0>(0);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const tabOptions: TabOption[] = ["All", "Approved", "Pending", "Rejected"];
 
   // Define a palette of Tailwind color classes for balance bars
@@ -62,13 +60,38 @@ const EmployeeLeaveOverview: React.FC = () => {
     "bg-orange-400", // Compassionate Leave
   ];
 
-  // Fetch data from backend
-  const fetchEmployeeData = async () => {
-    try {
+  useEffect(() => {
+    const fetchUserAndSetId = async () => {
       const user = await getFullCurrentUser();
-      const resp = await pageAPI.getEmployeeLeaveData(
-        user?.employeeId?.toString() || ""
-      );
+      if (user?.employeeId) {
+        setEmployeeId(user.employeeId);
+      }
+    };
+    fetchUserAndSetId();
+  }, []);
+
+  // Fetch data from backend
+  const fetchEmployeeData = async (isTabSwitch = false) => {
+    if (!employeeId || employeeId === 0) {
+      console.log("No employeeId available, skipping fetchEmployeeData");
+      return;
+    }
+
+    try {
+      // Use different loading states based on whether it's initial load or tab switch
+      if (hasInitiallyLoaded && isTabSwitch) {
+        setContentLoading(true);
+      } else {
+        setInitialLoading(true);
+      }
+
+      const user = await getFullCurrentUser();
+      if (!user?.employeeId) {
+        console.log("No user or employeeId found");
+        return;
+      }
+
+      const resp = await pageAPI.getEmployeeLeaveData(user.employeeId.toString());
       const leaveRequests = resp.data.leaveRequests?.$values || [];
       const leaveBalances = resp.data.leaveBalances?.$values || [];
 
@@ -81,45 +104,55 @@ const EmployeeLeaveOverview: React.FC = () => {
         }))
       );
 
-      const totalAllowed = leaveBalances.reduce(
-        (sum: number, b: any) => sum + b.defaultDays,
-        0
-      );
+      const totalAllowed = leaveBalances.reduce((sum: number, b: any) => sum + b.defaultDays, 0);
       const totalRemaining = leaveBalances.reduce(
         (sum: number, b: any) => sum + b.remainingDays,
         0
       );
-      setSummary({ totalTaken: totalAllowed - totalRemaining, totalAllowed });
+      setSummary({ totalRemaining: totalRemaining, totalAllowed });
 
       let filtered = leaveRequests;
       if (activeTab === "Approved") {
-        filtered = leaveRequests.filter(
-          (r: any) => r.status === LeaveStatus.Approved
-        );
+        filtered = leaveRequests.filter((r: any) => r.status === LeaveStatus.Approved);
       } else if (activeTab === "Pending") {
-        filtered = leaveRequests.filter(
-          (r: any) => r.status === LeaveStatus.Pending
-        );
+        filtered = leaveRequests.filter((r: any) => r.status === LeaveStatus.Pending);
       } else if (activeTab === "Rejected") {
-        filtered = leaveRequests.filter(
-          (r: any) => r.status === LeaveStatus.Rejected
-        );
+        filtered = leaveRequests.filter((r: any) => r.status === LeaveStatus.Rejected);
       }
       setRequests(filtered);
+
+      if (!hasInitiallyLoaded) {
+        setHasInitiallyLoaded(true);
+      }
     } catch (err) {
       console.error("Error fetching employee leave data:", err);
+      setRequests([]);
+      setBalances([]);
+    } finally {
+      setInitialLoading(false);
+      setContentLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchEmployeeData();
-  }, [activeTab]);
+    if (employeeId && employeeId !== 0) {
+      fetchEmployeeData(hasInitiallyLoaded);
+    }
+  }, [employeeId, activeTab]);
 
   // Read editable policy or fallback
   const policy =
     localStorage.getItem("leavePolicy") ||
     `Employees must submit leave requests in advance for approval. Leave is subject to company policies and availability.
 Unauthorized absences may impact benefits. Check your balance before applying.`;
+
+  // Show full page spinner only on initial load
+  if (initialLoading)
+    return (
+      <div className="w-full h-full flex flex-col justify-center items-center">
+        <Spin size="large" />
+      </div>
+    );
 
   return (
     <>
@@ -130,9 +163,7 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <ClockCircleOutlined className="text-3xl text-zinc-900" />
-                <h1 className="text-3xl font-bold text-zinc-900">
-                  Leave Overview
-                </h1>
+                <h1 className="text-3xl font-bold text-zinc-900">Leave Overview</h1>
               </div>
               <button
                 className="btn cori-btn btn-primary bg-corigreen-500 text-white border-none hover:bg-corigreen-600"
@@ -160,78 +191,84 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
               ))}
             </div>
 
-            {/* Main Content */}
-            <div className="grid gap-4 grid-cols-3">
-              <div
-                className={`grid gap-3 h-fit ${
-                  activeTab === "All"
-                    ? "grid-cols-2 col-span-2"
-                    : "grid-cols-3 col-span-3"
-                }`}
-              >
-                {requests.map((req) => (
-                  <LeaveRequestCard key={req.leaveRequestId} req={req} />
-                ))}
+            {/* Main Content with conditional loading */}
+            {contentLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <Spin size="large" />
               </div>
+            ) : (
+              <div className="grid gap-4 grid-cols-3">
+                <div
+                  className={`grid gap-3 h-fit ${
+                    activeTab === "All" ? "grid-cols-2 col-span-2" : "grid-cols-3 col-span-3"
+                  }`}
+                >
+                  {requests.map((req) => (
+                    <LeaveRequestCard key={req.leaveRequestId} req={req} />
+                  ))}
+                </div>
 
-              {activeTab === "All" && (
-                <div className="flex flex-col gap-2">
-                  <div className="text-zinc-500 font-semibold text-center">
-                    Leave Summary
-                  </div>
-                  <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center">
-                    <Progress
-                      type="circle"
-                      percent={Math.round(
-                        (summary.totalTaken / summary.totalAllowed) * 100
-                      )}
-                      format={() =>
-                        `${summary.totalTaken}/${summary.totalAllowed}`
-                      }
-                      strokeColor={{ "0%": "#3CB4E7", "100%": "#E0F4FD" }}
-                      trailColor="#F4F4F5"
-                      strokeWidth={10}
-                      size={150}
-                    />
-                  </div>
-
-                  <div className="text-zinc-500 font-semibold text-center">
-                    Leave Balances
-                  </div>
-                  <div className="bg-white p-6 rounded-2xl shadow-sm">
-                    <div className="space-y-4 -mt-1">
-                      {balances.map((b, idx) => {
-                        const pct = Math.round(
-                          (b.remainingDays / b.defaultDays) * 100
-                        );
-                        const barColor = barColors[idx % barColors.length];
-                        return (
-                          <Tooltip
-                            key={b.leaveTypeId}
-                            title={`${b.leaveTypeName}: ${b.remainingDays} of ${b.defaultDays} days remaining`}
-                            placement="top"
-                          >
-                            <div>
-                              <p className="text-xs text-zinc-700 mb-1">
-                                {b.leaveTypeName}
+                {activeTab === "All" && (
+                  <div className="flex flex-col gap-2">
+                    <div className="text-zinc-500 font-semibold text-center">Leave Summary</div>
+                    <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center">
+                      <Tooltip
+                        title={`${summary.totalRemaining} days remaining out of ${summary.totalAllowed} total days.`}
+                      >
+                        <Progress
+                          type="circle"
+                          percent={Math.round(
+                            (summary.totalRemaining / summary.totalAllowed) * 100
+                          )}
+                          format={() => (
+                            <div className="flex flex-col items-center">
+                              <p className="text-zinc-800 ">{summary.totalRemaining}</p>
+                              <p className="text-zinc-500 text-sm">
+                                of {summary.totalAllowed} days
                               </p>
-                              <div className="h-5 w-full bg-zinc-300 rounded-full relative">
-                                <div
-                                  className={`h-5 ${barColor} rounded-full relative`}
-                                  style={{ width: `${pct}%` }}
-                                >
-                                  <div className="absolute right-0 top-0 bottom-0 w-2 h-5 rounded-r-full" />
+                            </div>
+                          )}
+                          strokeColor={{ "0%": "#3CB4E7", "100%": "#E0F4FD" }}
+                          trailColor="#F4F4F5"
+                          strokeWidth={10}
+                          size={150}
+                          className="[&_.ant-progress-text]:!text-4xl"
+                        />
+                      </Tooltip>
+                    </div>
+
+                    <div className="text-zinc-500 font-semibold text-center">Leave Balances</div>
+                    <div className="bg-white p-6 rounded-2xl shadow-sm">
+                      <div className="space-y-4 -mt-1">
+                        {balances.map((b, idx) => {
+                          const pct = Math.round((b.remainingDays / b.defaultDays) * 100);
+                          const barColor = barColors[idx % barColors.length];
+                          return (
+                            <Tooltip
+                              key={b.leaveTypeId}
+                              title={`${b.leaveTypeName}: ${b.remainingDays} of ${b.defaultDays} days remaining`}
+                              placement="top"
+                            >
+                              <div>
+                                <p className="text-xs text-zinc-700 mb-1">{b.leaveTypeName}</p>
+                                <div className="h-5 w-full bg-zinc-300 rounded-full relative">
+                                  <div
+                                    className={`h-5 ${barColor} rounded-full relative`}
+                                    style={{ width: `${pct}%` }}
+                                  >
+                                    <div className="absolute right-0 top-0 bottom-0 w-2 h-5 rounded-r-full" />
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </Tooltip>
-                        );
-                      })}
+                            </Tooltip>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Editable policy text */}
@@ -249,7 +286,7 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
       <ApplyForLeaveModal
         showModal={showModal}
         setShowModal={setShowModal}
-        onSubmitSuccess={fetchEmployeeData}
+        onSubmitSuccess={() => fetchEmployeeData(true)}
       />
     </>
   );
