@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Drawer, message } from "antd";
 import MeetRequestCard from "../cards/meetingCards/MeetRequestCard";
 import { MeetingRequestCard } from "../../interfaces/meetings/meetingRequestCard";
@@ -24,35 +24,47 @@ function MeetRequestsDrawer({
   const [selectedMeetingRequest, setSelectedMeetingRequest] = useState<MeetingRequestCard | null>(
     null
   );
-  const fetchMeetRequests = async () => {
+
+  const fetchMeetRequests = useCallback(async () => {
+    if (!adminId || adminId === 0) {
+      console.log("No adminId available, skipping fetchMeetRequests in drawer");
+      return;
+    }
     try {
       const response = await meetingAPI.getAllPendingRequestsByAdminId(adminId);
-      setMeetRequests(response.data.$values);
+      setMeetRequests(response.data.$values || []);
       // console.log(response.data.$values);
     } catch (error) {
       console.error("Error fetching meet requests:", error);
+      setMeetRequests([]);
     }
-  };
+  }, [adminId]);
 
   useEffect(() => {
-    fetchMeetRequests();
-  }, []);
-
-  const handleReject = async (meetingId: number) => {
-    try {
-      await meetingAPI.rejectMeetingRequest(meetingId);
-      messageApi.success("Meeting request rejected successfully");
-    } catch (error) {
-      messageApi.error("Failed to reject meeting request");
-      console.error("Error rejecting meeting request:", error);
+    if (adminId && adminId !== 0) {
+      fetchMeetRequests();
     }
-    fetchMeetRequests(); // Refresh the meeting requests
-  };
+  }, [adminId, fetchMeetRequests]);
 
-  const handleApprove = async (meetingRequest: MeetingRequestCard) => {
+  const handleReject = useCallback(
+    async (meetingId: number) => {
+      try {
+        await meetingAPI.rejectMeetingRequest(meetingId);
+        messageApi.success("Meeting request rejected successfully");
+        await fetchMeetRequests(); // Refresh the meeting requests
+        onApprove(); // Notify parent to refresh data
+      } catch (error) {
+        messageApi.error("Failed to reject meeting request");
+        console.error("Error rejecting meeting request:", error);
+      }
+    },
+    [fetchMeetRequests, messageApi, onApprove]
+  );
+
+  const handleApprove = useCallback(async (meetingRequest: MeetingRequestCard) => {
     setSelectedMeetingRequest(meetingRequest);
     setShowScheduleMeetingModal(true);
-  };
+  }, []);
 
   return (
     <>
@@ -85,7 +97,10 @@ function MeetRequestsDrawer({
       <AcceptScheduleMeetingModal
         showModal={showScheduleMeetingModal}
         setShowModal={setShowScheduleMeetingModal}
-        onSubmitSuccess={fetchMeetRequests}
+        onSubmitSuccess={() => {
+          fetchMeetRequests();
+          onApprove();
+        }}
         meetingRequest={selectedMeetingRequest}
       />
     </>

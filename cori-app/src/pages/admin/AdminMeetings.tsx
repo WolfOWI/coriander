@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Icons } from "../../constants/icons";
 import CoriBtn from "../../components/buttons/CoriBtn";
 import MeetRequestsBadge from "../../components/badges/MeetRequestsBadge";
@@ -14,25 +14,15 @@ import { Spin } from "antd";
 // Authentication
 import { getFullCurrentUser } from "../../services/authService";
 
-type TabOption =
-  | "All Upcoming"
-  | "General Meetings"
-  | "Performance Reviews"
-  | "Completed";
+type TabOption = "All Upcoming" | "General Meetings" | "Performance Reviews" | "Completed";
 
 const AdminMeetings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabOption>("All Upcoming");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [allUpcomingGatherings, setAllUpcomingGatherings] = useState<
-    Gathering[]
-  >([]);
-  const [completedGatherings, setCompletedGatherings] = useState<Gathering[]>(
-    []
-  );
-  const [displayedGatherings, setDisplayedGatherings] = useState<Gathering[]>(
-    []
-  );
+  const [allUpcomingGatherings, setAllUpcomingGatherings] = useState<Gathering[]>([]);
+  const [completedGatherings, setCompletedGatherings] = useState<Gathering[]>([]);
+  const [displayedGatherings, setDisplayedGatherings] = useState<Gathering[]>([]);
   const [meetRequests, setMeetRequests] = useState<MeetingRequestCard[]>([]);
   const [showCreatePRModal, setShowCreatePRModal] = useState(false);
 
@@ -61,8 +51,16 @@ const AdminMeetings: React.FC = () => {
     fetchUserAndSetId();
   }, []);
 
+  useEffect(() => {
+    console.log("adminId", adminId);
+  }, [adminId]);
+
   // Fetch meeting requests (in drawer)
-  const fetchMeetRequests = async () => {
+  const fetchMeetRequests = useCallback(async () => {
+    if (!adminId || adminId === 0) {
+      console.log("No adminId available, skipping fetchMeetRequests");
+      return;
+    }
     try {
       const response = await meetingAPI.getAllPendingRequestsByAdminId(adminId);
       setMeetRequests(response.data.$values || []);
@@ -70,15 +68,17 @@ const AdminMeetings: React.FC = () => {
       console.error("Error fetching meet requests:", error);
       setMeetRequests([]);
     }
-  };
+  }, [adminId]);
 
   // Fetch all upcoming gatherings
-  const fetchUpcomingGatherings = async () => {
+  const fetchUpcomingGatherings = useCallback(async () => {
+    if (!adminId || adminId === 0) {
+      console.log("No adminId available, skipping fetchUpcomingGatherings");
+      return;
+    }
     try {
       setLoading(true);
-      const response = await gatheringAPI.getAllUpcomingGatheringsByAdminId(
-        adminId
-      );
+      const response = await gatheringAPI.getAllUpcomingGatheringsByAdminId(adminId);
       setAllUpcomingGatherings(response.data.$values || []);
     } catch (error) {
       console.error("Error fetching upcoming gatherings:", error);
@@ -86,15 +86,17 @@ const AdminMeetings: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminId]);
 
   // Fetch completed gatherings
-  const fetchCompletedGatherings = async () => {
+  const fetchCompletedGatherings = useCallback(async () => {
+    if (!adminId || adminId === 0) {
+      console.log("No adminId available, skipping fetchCompletedGatherings");
+      return;
+    }
     try {
       setLoading(true);
-      const response = await gatheringAPI.getAllCompletedGatheringsByAdminId(
-        adminId
-      );
+      const response = await gatheringAPI.getAllCompletedGatheringsByAdminId(adminId);
       setCompletedGatherings(response.data.$values || []);
     } catch (error) {
       console.error("Error fetching completed gatherings:", error);
@@ -102,7 +104,7 @@ const AdminMeetings: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminId]);
 
   // Filter gatherings based on active tab
   const filterGatheringsByTab = (tab: TabOption): Gathering[] => {
@@ -132,16 +134,18 @@ const AdminMeetings: React.FC = () => {
 
   // Initial data fetch
   useEffect(() => {
-    fetchMeetRequests();
-    fetchUpcomingGatherings();
-  }, []);
+    if (adminId && adminId !== 0) {
+      fetchMeetRequests();
+      fetchUpcomingGatherings();
+    }
+  }, [adminId, fetchMeetRequests, fetchUpcomingGatherings]);
 
   // Fetch completed gatherings when Completed tab is first accessed
   useEffect(() => {
-    if (activeTab === "Completed" && completedGatherings.length === 0) {
+    if (activeTab === "Completed" && completedGatherings.length === 0 && adminId && adminId !== 0) {
       fetchCompletedGatherings();
     }
-  }, [activeTab, completedGatherings.length]);
+  }, [activeTab, completedGatherings.length, adminId, fetchCompletedGatherings]);
 
   // Handle tab change
   const handleTabChange = (tab: TabOption) => {
@@ -159,7 +163,11 @@ const AdminMeetings: React.FC = () => {
   };
 
   // Handle data refresh after operations
-  const handleDataRefresh = () => {
+  const handleDataRefresh = useCallback(() => {
+    if (!adminId || adminId === 0) {
+      console.log("No adminId available, skipping data refresh");
+      return;
+    }
     fetchMeetRequests();
     if (activeTab === "Completed") {
       fetchCompletedGatherings();
@@ -168,13 +176,13 @@ const AdminMeetings: React.FC = () => {
     }
     // Mark that data has changed so other tabs will refresh when opened
     setHasDataChanged(true);
-  };
+  }, [adminId, activeTab, fetchMeetRequests, fetchCompletedGatherings, fetchUpcomingGatherings]);
 
   // Handle actions that affect gatherings (edit, delete, create)
-  const handleGatheringAction = () => {
+  const handleGatheringAction = useCallback(() => {
     // Refresh current tab data immediately
     handleDataRefresh();
-  };
+  }, [handleDataRefresh]);
 
   return (
     <div className="max-w-7xl mx-auto m-4">
@@ -188,9 +196,7 @@ const AdminMeetings: React.FC = () => {
           <MeetRequestsBadge requests={meetRequests.length} />
         </div>
         <div className="flex items-center gap-2">
-          <CoriBtn onClick={() => setShowCreatePRModal(true)}>
-            New Review Meet
-          </CoriBtn>
+          <CoriBtn onClick={() => setShowCreatePRModal(true)}>New Review Meet</CoriBtn>
           <CoriBtn secondary onClick={() => setDrawerOpen(true)}>
             View Requests
             <Icons.MarkChatUnread />
@@ -233,9 +239,7 @@ const AdminMeetings: React.FC = () => {
             />
           ))}
           {displayedGatherings.length === 0 && (
-            <div className="col-span-3 text-center text-zinc-500 py-8">
-              No meetings found.
-            </div>
+            <div className="col-span-3 text-center text-zinc-500 py-8">No meetings found.</div>
           )}
         </div>
       )}

@@ -29,7 +29,11 @@ function MeetRequestCard({ meetRequest, onApprove, onReject }: MeetRequestCardPr
             </p>
           </div>
         </div>
-        <p className="text-zinc-500 text-sm mt-3">{meetRequest.purpose}</p>
+        {meetRequest.purpose ? (
+          <p className="text-zinc-500 text-sm mt-3">{meetRequest.purpose}</p>
+        ) : (
+          <p className="text-zinc-500 text-sm mt-3">No purpose provided</p>
+        )}
         <div className="flex gap-2 w-full max-h-0 overflow-hidden group-hover:max-h-20 group-hover:mt-3 transition-all duration-300">
           <CoriBtn secondary style="red" className="w-full" onClick={onReject}>
             Reject
