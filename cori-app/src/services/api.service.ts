@@ -80,7 +80,7 @@ apiClient.interceptors.request.use(
 /**
  * Response Interceptor
  * Handles common response scenarios:
- * - 401 Unauthorized: Redirects to login page and clears token (unless already on login page)
+ * - 401 Unauthorised: Redirects to login page and clears token (unless already on login page)
  * - Other errors: Passes through for component-level handling
  */
 apiClient.interceptors.response.use(
@@ -88,11 +88,10 @@ apiClient.interceptors.response.use(
   (error) => {
     // Check if the error is a 401 Unauthorized response
     if (error.response?.status === 401) {
-      // If user is unauthorized, remove their token
+      // If user is unauthorised, remove their token
       localStorage.removeItem("authToken");
 
       // Only redirect if we're not already on the login page
-      // This prevents redirect loops during login attempts with wrong credentials
       const currentPath = window.location.pathname;
       const isOnLoginPage = currentPath === "/" || currentPath === "/login";
 
