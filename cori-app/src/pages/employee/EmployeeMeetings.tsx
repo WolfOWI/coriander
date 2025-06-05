@@ -154,7 +154,7 @@ const EmployeeMeetings: React.FC = () => {
         messageApi.success("Meeting request deleted successfully");
 
         // Add a small delay to ensure backend has processed the deletion
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         // Ensure data refresh completes
         try {
