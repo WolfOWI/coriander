@@ -17,10 +17,10 @@ import LeaveBalanceBlock from "../../components/leave/LeaveBalanceBlock";
 import EmployTypeBadge from "../../components/badges/EmployTypeBadge";
 import TimeTodayBadge from "../../components/badges/TimeTodayBadge";
 import ProfilePicUploadBtn from "../../components/uploading/ProfilePicUploadBtn";
-import EmpGatheringBox from "../../components/gathering/EmpGatheringBox";
 
 // Modals
 import AdminEditEmpDetailsModal from "../../components/modals/AdminEditEmpDetailsModal";
+import AdminEditEmpPayrollModal from "../../components/modals/AdminEditEmpPayrollModal";
 import CreateAssignedEquipModal from "../../components/modals/CreateAssignedEquipModal";
 import AssignEquipsToExistEmpModal from "../../components/modals/AssignEquipsToExistEmpModal";
 import EditEquipDetailsModal from "../../components/modals/EditEquipDetailsModal";
@@ -92,6 +92,7 @@ const AdminIndividualEmployee: React.FC = () => {
 
   // Modal States
   const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
+  const [showEditPayrollModal, setShowEditPayrollModal] = useState(false);
   const [showCreateAssignedEquipModal, setShowCreateAssignedEquipModal] = useState(false);
   const [showAssignExistingEquipModal, setShowAssignExistingEquipModal] = useState(false);
   const [showManageEquipmentModal, setShowManageEquipmentModal] = useState(false);
@@ -431,17 +432,27 @@ const AdminIndividualEmployee: React.FC = () => {
             {/* Payroll Information */}
             <div className="w-full flex flex-col gap-2 items-center">
               <h2 className="text-zinc-500 font-semibold">Payroll</h2>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center shadow-sm">
+              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center shadow-sm group">
                 <p className="text-zinc-500 text-sm mb-1">Salary</p>
-                <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
-                  <p className="text-zinc-900 text-xl">{formatRandAmount(empUser.salaryAmount)}</p>
-                  <p className="text-zinc-500 text-sm">
-                    {empUser.payCycle === PayCycle.Monthly
-                      ? "monthly"
-                      : empUser.payCycle === PayCycle.BiWeekly
-                      ? "bi-weekly"
-                      : "weekly"}
-                  </p>
+                <div className="flex justify-center items-center gap-4 p-4 bg-warmstone-200 w-full rounded-2xl">
+                  <div className="h-8 w-8 opacity-0">Spacer</div>
+                  <div className="flex flex-col items-center ">
+                    <p className="text-zinc-900 text-xl">
+                      {formatRandAmount(empUser.salaryAmount)}
+                    </p>
+                    <p className="text-zinc-500 text-sm">
+                      {empUser.payCycle === PayCycle.Monthly
+                        ? "monthly"
+                        : empUser.payCycle === PayCycle.BiWeekly
+                        ? "bi-weekly"
+                        : "weekly"}
+                    </p>
+                  </div>
+                  <CoriCircleBtn
+                    secondary
+                    icon={<Icons.Edit />}
+                    onClick={() => setShowEditPayrollModal(true)}
+                  />
                 </div>
                 <div className="flex w-full mt-2 gap-2 h-fit">
                   <div className="flex flex-col w-1/2 items-center">
@@ -451,7 +462,7 @@ const AdminIndividualEmployee: React.FC = () => {
                         <DatePicker
                           value={dayjs(empUser.lastPaidDate)}
                           format="DD MMM YYYY"
-                          suffixIcon={<CoriCircleBtn style="black" icon={<Icons.Edit />} />}
+                          suffixIcon={<CoriCircleBtn secondary icon={<Icons.Edit />} />}
                           allowClear={false}
                           variant="borderless"
                           className="hover:cursor-pointer"
@@ -494,19 +505,30 @@ const AdminIndividualEmployee: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-between w-full mt-4">
-                  <CoriBtn
-                    secondary
-                    style="black"
-                    onClick={onUndoPayment}
-                    disabled={!empUser.lastPaidDate}
+                <div className="flex w-full gap-2 group-hover:mt-4 h-0 group-hover:h-10 transition-all duration-300 overflow-hidden">
+                  <Tooltip
+                    title={`Undo Payment by ${
+                      empUser.payCycle === PayCycle.Monthly
+                        ? "a Month"
+                        : empUser.payCycle === PayCycle.BiWeekly
+                        ? "2 Weeks"
+                        : "a Week"
+                    }`}
                   >
-                    <Icons.Undo />
-                    Undo Payment
-                  </CoriBtn>
-                  <CoriBtn secondary style="black" onClick={onPayNow}>
-                    Pay Now
-                    <Icons.Pay />
+                    <div>
+                      <CoriBtn
+                        secondary
+                        style="black"
+                        onClick={onUndoPayment}
+                        disabled={!empUser.lastPaidDate}
+                        iconOnly
+                      >
+                        <Icons.Undo />
+                      </CoriBtn>
+                    </div>
+                  </Tooltip>
+                  <CoriBtn style="black" onClick={onPayNow}>
+                    Pay Today
                   </CoriBtn>
                 </div>
               </div>
@@ -514,7 +536,7 @@ const AdminIndividualEmployee: React.FC = () => {
 
             {/* Equipment */}
             <div className="w-full flex flex-col gap-2 items-center relative">
-              <div className="flex gap-2 items-center shadow-sm">
+              <div className="flex gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Equipment</h2>
                 <Dropdown
                   menu={{
@@ -545,7 +567,7 @@ const AdminIndividualEmployee: React.FC = () => {
                 </Dropdown>
               </div>
               <div
-                className={`bg-warmstone-50 px-4 pt-4 rounded-2xl w-full flex flex-col items-center gap-4 overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden
+                className={`bg-warmstone-50 px-4 pt-4 shadow-sm rounded-2xl w-full flex flex-col items-center gap-4 overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden
                 ${equipment.length > 3 ? "h-[224px] pb-20" : "h-fit pb-4"}`}
               >
                 {equipment.map((item) => (
@@ -720,6 +742,14 @@ const AdminIndividualEmployee: React.FC = () => {
         <AdminEditEmpDetailsModal
           showModal={showEditDetailsModal}
           setShowModal={setShowEditDetailsModal}
+          employee={empUser}
+          onUpdate={fetchEmployee}
+        />
+
+        {/* Edit Employee Payroll Modal */}
+        <AdminEditEmpPayrollModal
+          showModal={showEditPayrollModal}
+          setShowModal={setShowEditPayrollModal}
           employee={empUser}
           onUpdate={fetchEmployee}
         />
