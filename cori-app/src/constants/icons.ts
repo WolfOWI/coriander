@@ -58,6 +58,13 @@ import TextSnippetIcon from "@mui/icons-material/TextSnippetRounded";
 import LiveHelpIcon from "@mui/icons-material/LiveHelpRounded";
 import PlaceIcon from "@mui/icons-material/PlaceRounded";
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
+import DashboardIcon from "@mui/icons-material/DashboardRounded";
+import GroupIcon from "@mui/icons-material/GroupRounded";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAltRounded";
+import AssignmentIcon from "@mui/icons-material/AssignmentRounded";
+import HomeIcon from "@mui/icons-material/HomeRounded";
+import EventNoteIcon from "@mui/icons-material/EventNoteRounded";
+import AccountCircleIcon from "@mui/icons-material/AccountCircleRounded";
 
 export const Icons = {
   ArrowBack: ArrowBackIcon,
@@ -120,4 +127,11 @@ export const Icons = {
   LiveHelp: LiveHelpIcon,
   Place: PlaceIcon,
   MoreVert: MoreVertIcon,
+  Dashboard: DashboardIcon,
+  Group: GroupIcon,
+  PersonAddAlt: PersonAddAltIcon,
+  Assignment: AssignmentIcon,
+  Home: HomeIcon,
+  EventNote: EventNoteIcon,
+  AccountCircle: AccountCircleIcon,
 };

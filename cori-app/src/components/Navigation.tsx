@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import CoriBtn from "./buttons/CoriBtn";
 import { Icons } from "../constants/icons";
 import { logout, navbarUserStatus } from "../services/authService";
@@ -23,6 +23,18 @@ import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 const Navigation: React.FC = () => {
   const [userStatus, setUserStatus] = useState<number | null>(null); // -1, 0, 1, 2
   const [devMode, setDevMode] = useState<boolean>(false);
+  const location = useLocation();
+
+  const isActiveLink = (path: string) => location.pathname === path;
+
+  const getLinkClassName = (path: string, hasIcon = true) => {
+    const baseClasses = hasIcon
+      ? "nav-link flex items-center gap-2 hover:text-sakura-300"
+      : "nav-link";
+    return isActiveLink(path)
+      ? `${baseClasses} text-sakura-500 font-semibold focus:text-sakura-500`
+      : `${baseClasses} text-white font-light focus:text-white`;
+  };
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -41,17 +53,15 @@ const Navigation: React.FC = () => {
             <img src={logo} alt="Coriander" className="mb-4 w-full" />
             {/* Auth Links */}
             {userStatus === -1 || userStatus === 0 ? (
-              <div className="mb-4 flex flex-col gap-2">
-                <small className="text-corigreen-500 text-uppercase">
-                  Authentication
-                </small>
-                <Link to="/" className="nav-link text-white">
+              <div className="mt-4 flex flex-col gap-4">
+                <small className="text-corigreen-500 text-uppercase">Authentication</small>
+                <Link to="/" className={getLinkClassName("/", false)}>
                   Login
                 </Link>
-                <Link to="/employee/signup" className="nav-link text-white">
+                <Link to="/employee/signup" className={getLinkClassName("/employee/signup", false)}>
                   Employee Sign Up
                 </Link>
-                <Link to="/admin/signup" className="nav-link text-white">
+                <Link to="/admin/signup" className={getLinkClassName("/admin/signup", false)}>
                   Admin Sign Up
                 </Link>
               </div>
@@ -59,95 +69,68 @@ const Navigation: React.FC = () => {
 
             {/* Employee Links */}
             {userStatus === 1 && (
-              <div className="mb-4 flex flex-col gap-1">
-                <small className="text-corigreen-500 text-uppercase">
-                  Employee
-                </small>
-                <Link
-                  to="/employee/home"
-                  className="nav-link text-white flex items-center gap-2"
-                >
-                  <HomeIcon fontSize="small" />
+              <div className="flex flex-col gap-4 mt-4">
+                <Link to="/employee/home" className={getLinkClassName("/employee/home")}>
+                  <Icons.Home fontSize="small" />
                   Home
                 </Link>
 
                 <Link
                   to="/employee/leave-overview"
-                  className="nav-link text-white flex items-center gap-2"
+                  className={getLinkClassName("/employee/leave-overview")}
                 >
-                  <EventNoteIcon fontSize="small" />
+                  <Icons.EventNote fontSize="small" />
                   My Leave
                 </Link>
 
-                <Link
-                  to="/employee/meetings"
-                  className="nav-link text-white flex items-center gap-2"
-                >
-                  <MeetingRoomIcon fontSize="small" />
+                <Link to="/employee/meetings" className={getLinkClassName("/employee/meetings")}>
+                  <Icons.MeetingRoom fontSize="small" />
                   My Meetings
                 </Link>
 
-                <Link
-                  to="/employee/profile"
-                  className="nav-link text-white flex items-center gap-2"
-                >
-                  <AccountCircleIcon fontSize="small" />
-                  Your Profile
+                <Link to="/employee/profile" className={getLinkClassName("/employee/profile")}>
+                  <Icons.AccountCircle fontSize="small" />
+                  Profile
                 </Link>
               </div>
             )}
 
             {/* Admin Links */}
             {userStatus === 2 && (
-              <div className="mb-4 flex flex-col gap-2">
-                <small className="text-corigreen-500 text-uppercase">
-                  Admin
-                </small>
-                <Link
-                  to="/admin/dashboard"
-                  className="nav-link text-white flex items-center gap-2"
-                >
-                  <AdminPanelSettingsIcon fontSize="small" />
-                  Admin Dashboard
+              <div className="mb-4 flex flex-col gap-4">
+                <Link to="/admin/dashboard" className={getLinkClassName("/admin/dashboard")}>
+                  <Icons.Dashboard fontSize="small" />
+                  Dashboard
                 </Link>
 
-                <Link
-                  to="/admin/employees"
-                  className="nav-link text-white flex  gap-2"
-                >
-                  <GroupsIcon fontSize="small" />
-                  Employee Management
-                </Link>
-
-                <Link
-                  to="/admin/equipment"
-                  className="nav-link text-white flex items-center gap-2"
-                >
-                  <BuildIcon fontSize="small" />
-                  Equipment
+                <Link to="/admin/employees" className={getLinkClassName("/admin/employees")}>
+                  <Icons.Group fontSize="small" />
+                  Employees
                 </Link>
 
                 <Link
                   to="/admin/create-employee"
-                  className="nav-link text-white flex items-center gap-2"
+                  className={getLinkClassName("/admin/create-employee")}
                 >
-                  <PersonAddAltIcon fontSize="small" />
+                  <Icons.PersonAddAlt fontSize="small" />
                   Create Employee
+                </Link>
+
+                <Link to="/admin/equipment" className={getLinkClassName("/admin/equipment")}>
+                  <Icons.Construction fontSize="small" />
+                  Equipment
                 </Link>
 
                 <Link
                   to="/admin/leave-requests"
-                  className="nav-link text-white flex items-center gap-2"
+                  className={getLinkClassName("/admin/leave-requests")}
                 >
-                  <AssignmentIcon fontSize="small" />
+                  <Icons.Assignment fontSize="small" />
                   Leave Requests
                 </Link>
 
-                <Link
-                  to="/admin/meetings"
-                  className="nav-link text-white flex items-center gap-2"
-                >
-                  <MeetingRoomIcon fontSize="small" />
+                <Link to="/admin/meetings" className={getLinkClassName("/admin/meetings")}>
+                  <Icons.MeetingRoom fontSize="small" />
                   Meetings
                 </Link>
                 {/* <Link to="/admin/individual-employee" className="nav-link text-white">
@@ -158,31 +141,29 @@ const Navigation: React.FC = () => {
 
             {/* Reference links only if dev mode is enabled */}
             {devMode && (
-              <div className="mb-4">
-                <small className="text-corigreen-500 text-uppercase">
-                  Reference
-                </small>
-                <Link to="/reference" className="nav-link text-white">
+              <div className="mt-4">
+                <small className="text-corigreen-500 text-uppercase">Reference</small>
+                <Link to="/reference" className={getLinkClassName("/reference", false)}>
                   Custom Stuffies
                 </Link>
                 <Link
                   to="/temp-modals/leave-overview"
-                  className="nav-link text-white"
+                  className={getLinkClassName("/temp-modals/leave-overview", false)}
                 >
                   Modals: Leave Overv
                 </Link>
                 <Link
                   to="/temp-modals/admin-dash"
-                  className="nav-link text-white"
+                  className={getLinkClassName("/temp-modals/admin-dash", false)}
                 >
                   Modals: Admin Dash
                 </Link>
-                <Link to="/apiplayground" className="nav-link text-white">
+                <Link to="/apiplayground" className={getLinkClassName("/apiplayground", false)}>
                   API Playground - do not remove
                 </Link>
                 <Link
                   to="/temp-new-gathering-box"
-                  className="nav-link text-white"
+                  className={getLinkClassName("/temp-new-gathering-box", false)}
                 >
                   New Meeting / Gathering Box
                 </Link>
