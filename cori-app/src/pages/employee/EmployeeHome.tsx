@@ -179,8 +179,8 @@ const EmployeeHome: React.FC = () => {
               {/* Ratings */}
               <Col xs={12} md={5}>
                 <div className="text-zinc-500 font-semibold text-center mb-2">Your Ratings</div>
-                <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow">
-                  <div className="w-full py-4 flex flex-col gap-2 items-center">
+                <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow-sm">
+                  <div className="w-full py-4 flex flex-col gap-2 items-center" style={{ minHeight: 239 }}>
                     <GaugeComponent
                       minValue={0}
                       maxValue={500}
@@ -210,12 +210,20 @@ const EmployeeHome: React.FC = () => {
                         animationDuration: 1000,
                       }}
                     />
-                    {empUserRatingMetrics && (
+                    {empUserRatingMetrics ? (
                       <div className="text-center mt-2">
-                        <p className="text-zinc-500 text-sm">
-                          Based on {empUserRatingMetrics.numberOfRatings} rating
-                          {empUserRatingMetrics.numberOfRatings !== 1 ? "s" : ""}
-                        </p>
+                        {empUserRatingMetrics.numberOfRatings > 0 ? (
+                          <p className="text-zinc-500 text-sm">
+                            Based on {empUserRatingMetrics.numberOfRatings} rating
+                            {empUserRatingMetrics.numberOfRatings !== 1 ? "s" : ""}
+                          </p>
+                        ) : (
+                          <p className="text-zinc-500 text-sm">No ratings yet</p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center mt-2">
+                        <p className="text-zinc-500 text-sm">You have not been rated yet</p>
                       </div>
                     )}
                   </div>
@@ -236,7 +244,6 @@ const EmployeeHome: React.FC = () => {
                         remainingDays={balance.remainingDays}
                         totalDays={balance.defaultDays}
                         description={balance.description}
-                        shadow
                       />
                     ))}
                   </div>
@@ -249,7 +256,7 @@ const EmployeeHome: React.FC = () => {
                 <div className="text-zinc-500 font-semibold text-center mb-2">
                   Your Payroll Information
                 </div>
-                <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow">
+                <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow-sm">
                   <div className="w-full flex flex-col gap-2 items-center">
                     <div className="bg-warmstone-50 p-2 rounded-2xl w-full flex flex-col items-center">
                       <p className="text-zinc-500 text-sm mb-1">Salary</p>
@@ -303,7 +310,7 @@ const EmployeeHome: React.FC = () => {
             </Row>
             <Row className="g-3 pt-4 mb-4">
               <Col xs={12} md={12}>
-                <div className="bg-corigreen-500 p-4 rounded-2xl shadow justify-center text-white text-center">
+                <div className="bg-corigreen-500 p-4 rounded-2xl justify-center text-white text-center shadow-sm">
                   <p>"{quote}"</p>
                   <p className="italic"> - {quoteAuthor}</p>
                 </div>
@@ -313,19 +320,25 @@ const EmployeeHome: React.FC = () => {
 
           <Col md={4}>
             <Col xs={12} md={12}>
-              <div className="text-zinc-500 font-semibold text-center mb-2">Meetings Overview</div>
+              <div className="text-zinc-500 font-semibold text-center mb-2">Meetings with HR: Overview</div>
               <div className="relative">
                 <div
                   className="grid gap-3 pr-2"
                   style={{
                     maxHeight: 700,
                     overflowY: "auto",
-                    paddingBottom: 32, // space for fade
+                    paddingBottom: 32, 
                   }}
                 >
-                  {gatherings.map((gathering) => (
-                    <EmpGatheringBox key={gathering.$id} gathering={gathering} />
-                  ))}
+                  {gatherings.length > 0 ? (
+                    gatherings.map((gathering) => (
+                      <EmpGatheringBox key={gathering.$id} gathering={gathering} />
+                    ))
+                  ) : (
+                    <div className="text-center text-zinc-400 py-8">
+                      No meetings or reviews to show.
+                    </div>
+                  )}
                 </div>
                 {/* Fade overlay at the bottom */}
                 <div

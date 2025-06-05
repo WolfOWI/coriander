@@ -257,12 +257,27 @@ function AdminGatheringBox({
     if (!gatheringType.isPerformanceReview) return null;
 
     return (
-      <div className="w-full flex flex-col gap-3">
+      <div className="w-full gap-2">
         {/* Comment */}
         {gathering.comment ? (
           <p className="text-zinc-500 text-[12px]">{gathering.comment}</p>
         ) : (
-          <p className="text-zinc-500 text-[12px]">No comment</p>
+          <>
+            <CoriBtn
+              primary
+              style="default"
+              onClick={() => setShowEditPRModal(true)}
+            >
+              Review Employee
+              <Icons.StarRounded />
+            </CoriBtn>
+            <EditPRModal
+              showModal={showEditPRModal}
+              setShowModal={setShowEditPRModal}
+              onEditSuccess={handleEditSuccess}
+              performanceReview={convertToPerformanceReviewDTO()}
+            />
+          </>
         )}
         <div className="flex w-full items-center gap-4">
           {/* Rating */}
@@ -395,7 +410,7 @@ function AdminGatheringBox({
     const displayText = gathering.isOnline ? gathering.meetLink : gathering.meetLocation;
 
     return (
-      <div className="w-full h-10 flex items-center justify-center bg-warmstone-100 rounded-xl overflow-hidden">
+      <div className="w-full h-10 flex items-center justify-center bg-warmstone-200 rounded-xl overflow-hidden">
         <Tooltip title={displayText}>
           <p className="text-zinc-500 text-[12px] truncate mx-4">{displayText}</p>
         </Tooltip>
@@ -404,7 +419,7 @@ function AdminGatheringBox({
   };
 
   return (
-    <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col justify-between gap-3">
+    <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col justify-between gap-3 shadow-sm">
       {/* Heading & Body */}
       <div className="w-full flex flex-col gap-3">
         {/* Heading Section */}

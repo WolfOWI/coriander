@@ -48,7 +48,7 @@ function LeaveBalanceBlock({
   return (
     <Tooltip placement="right" title={description}>
       <div 
-        className={`bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 ${shadow ? "shadow" : ""}`}
+        className={`bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 shadow-sm`}
         
       >
         <div className="flex items-center gap-1 mb-2">
