@@ -255,18 +255,21 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                           return (
                             <Tooltip
                               key={b.leaveTypeId}
-                              title={`${b.leaveTypeName}: ${b.remainingDays} of ${b.defaultDays} days remaining`}
+                              title={`${b.leaveTypeName} Leave: ${b.remainingDays} of ${b.defaultDays} days remaining`}
                               placement="top"
                             >
                               <div>
                                 <p className="text-xs text-zinc-700 mb-1">{b.leaveTypeName}</p>
                                 <div className="h-5 w-full bg-zinc-300 rounded-full relative">
                                   <div
-                                    className={`h-5 ${barColor} rounded-full relative`}
+                                    className={`h-5 ${barColor} rounded-full`}
                                     style={{ width: `${pct}%` }}
-                                  >
-                                    <div className="absolute right-0 top-0 bottom-0 w-2 h-5 rounded-r-full" />
-                                  </div>
+                                  ></div>
+                                  {pct === 0 && (
+                                    <p className="text-zinc-500 text-[9px] min-w-full flex items-center pl-2 text-nowrap absolute top-0 bottom-0 left-0">
+                                      No Remaining Days
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </Tooltip>

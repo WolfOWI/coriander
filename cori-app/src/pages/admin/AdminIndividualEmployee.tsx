@@ -607,7 +607,7 @@ const AdminIndividualEmployee: React.FC = () => {
               {/* Leave Balances */}
               <div className="w-3/12 flex flex-col items-center gap-2">
                 <h2 className="text-zinc-500 font-semibold">Leave</h2>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 w-full">
                   {leaveBalances.map((balance) => (
                     <LeaveBalanceBlock
                       key={balance.leaveBalanceId}

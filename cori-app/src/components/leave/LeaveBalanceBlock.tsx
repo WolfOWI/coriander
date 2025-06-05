@@ -14,7 +14,7 @@ interface LeaveBalanceBlockProps {
   remainingDays: number;
   totalDays: number;
   description: string;
-  width?: string | number;
+  className?: string;
 }
 
 function LeaveBalanceBlock({
@@ -22,7 +22,7 @@ function LeaveBalanceBlock({
   remainingDays,
   totalDays,
   description,
-  width,
+  className,
 }: LeaveBalanceBlockProps) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -101,7 +101,7 @@ function LeaveBalanceBlock({
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 shadow-sm border-2 border-warmstone-50 hover:bg-sakura-200 hover:border-sakura-500 transition-all duration-300 group cursor-default select-none`}
+        className={`bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 shadow-sm border-2 border-warmstone-50 hover:bg-sakura-200 hover:border-sakura-500 transition-all duration-300 group cursor-default select-none ${className}`}
       >
         <div className="flex items-center gap-1">
           {isEmpty ? (
