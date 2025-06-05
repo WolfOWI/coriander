@@ -21,6 +21,9 @@ import { Table } from "antd";
 // Edit Policy Modal
 import EditPolicyModal from "../../components/modals/EditPolicyModal";
 
+// Over Balance Confirm Modal
+import OverBalanceConfirmModal from "../../components/modals/OverBalanceConfirmModal";
+
 // Authentication
 import { getFullCurrentUser } from "../../services/authService";
 
@@ -31,6 +34,8 @@ const AdminLeaveRequests: React.FC = () => {
   const [displayingLeaveRequests, setDisplayingLeaveRequests] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<"Pending" | "Approved" | "Rejected">("Pending");
   const [showPolicyModal, setShowPolicyModal] = useState(false);
+  const [showOverBalanceModal, setShowOverBalanceModal] = useState(false);
+  const [selectedLeaveRequest, setSelectedLeaveRequest] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -84,6 +89,24 @@ const AdminLeaveRequests: React.FC = () => {
 
   // Action handlers
   const handleApprove = async (id: number) => {
+    // Find the leave request to check if it's over balance
+    const leaveRequest = displayingLeaveRequests.find((req) => req.leaveRequestId === id);
+    if (leaveRequest) {
+      const requestedDays = calculateDurationInDays(leaveRequest.startDate, leaveRequest.endDate);
+      const isOverBalance = leaveRequest.remainingDays < requestedDays;
+
+      if (isOverBalance) {
+        setSelectedLeaveRequest(leaveRequest);
+        setShowOverBalanceModal(true);
+        return;
+      }
+    }
+
+    // Proceed with normal approval if not over balance
+    await performApproval(id);
+  };
+
+  const performApproval = async (id: number) => {
     try {
       setLoading(true);
       await empLeaveRequestsAPI.approveLeaveRequestById(id);
@@ -94,6 +117,18 @@ const AdminLeaveRequests: React.FC = () => {
       messageApi.error("Error approving leave request");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOverBalanceApprove = () => {
+    if (selectedLeaveRequest) {
+      performApproval(selectedLeaveRequest.leaveRequestId);
+    }
+  };
+
+  const handleOverBalanceReject = () => {
+    if (selectedLeaveRequest) {
+      handleReject(selectedLeaveRequest.leaveRequestId);
     }
   };
 
@@ -305,6 +340,22 @@ const AdminLeaveRequests: React.FC = () => {
 
       {/* Edit Policy Modal */}
       <EditPolicyModal showModal={showPolicyModal} setShowModal={setShowPolicyModal} />
+
+      {/* Over Balance Confirm Modal */}
+      {selectedLeaveRequest && (
+        <OverBalanceConfirmModal
+          showModal={showOverBalanceModal}
+          setShowModal={setShowOverBalanceModal}
+          employeeName={selectedLeaveRequest.fullName}
+          requestedDays={calculateDurationInDays(
+            selectedLeaveRequest.startDate,
+            selectedLeaveRequest.endDate
+          )}
+          availableDays={selectedLeaveRequest.remainingDays}
+          onApprove={handleOverBalanceApprove}
+          onReject={handleOverBalanceReject}
+        />
+      )}
     </>
   );
 };
