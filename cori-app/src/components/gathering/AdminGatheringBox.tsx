@@ -143,7 +143,7 @@ function AdminGatheringBox({
     return result;
   };
 
-  // Gathering icon (Pink Performance Review, Green Standard Meeting)
+  // Gathering icon (Pink Performance Review, Pink Standard Meeting)
   const GatheringIcon = () => {
     if (gatheringType.isPerformanceReview) {
       return (
@@ -256,48 +256,57 @@ function AdminGatheringBox({
   const PerformanceReviewBody = () => {
     if (!gatheringType.isPerformanceReview) return null;
 
+    const shouldShowReviewBtn =
+    adminPermissions.isOwner &&
+    !gathering.comment &&
+    (!gathering.rating || gathering.rating <= 0) &&
+    !gathering.docUrl;
+
     return (
       <div className="w-full gap-2">
         {/* Comment */}
-        {gathering.comment ? (
-          <p className="text-zinc-500 text-[12px]">{gathering.comment}</p>
-        ) : (
-          <>
-            <CoriBtn
-              primary
-              style="default"
-              onClick={() => setShowEditPRModal(true)}
-            >
-              Review Employee
-              <Icons.StarRounded />
-            </CoriBtn>
-            <EditPRModal
-              showModal={showEditPRModal}
-              setShowModal={setShowEditPRModal}
-              onEditSuccess={handleEditSuccess}
-              performanceReview={convertToPerformanceReviewDTO()}
-            />
-          </>
+       {gathering.comment && (
+        <p className="text-zinc-500 text-[12px]">{gathering.comment}</p>
+      )}
+
+      <div className="flex w-full items-center gap-4">
+        {/* Rating */}
+        {gathering.rating && gathering.rating > 0 && (
+          <div className="flex items-center gap-1">
+            <StarRoundedIcon className="text-amber-300" />
+            <p className="text-zinc-800 font-bold">{gathering.rating}</p>
+          </div>
         )}
-        <div className="flex w-full items-center gap-4">
-          {/* Rating */}
-          {gathering.rating && gathering.rating > 0 && (
-            <div className="flex items-center gap-1">
-              <StarRoundedIcon className="text-amber-300" />
-              <p className="text-zinc-800 font-bold">{gathering.rating}</p>
-            </div>
-          )}
-          {/* PDF Attachment */}
-          {gathering.docUrl && (
-            <div className="flex items-center gap-1">
-              <p className="text-zinc-500 text-[12px]">PDF Attached</p>
-              <TextSnippetRoundedIcon className="text-zinc-500" />
-            </div>
-          )}
-        </div>
+        {/* PDF Attachment */}
+        {gathering.docUrl && (
+          <div className="flex items-center gap-1">
+            <p className="text-zinc-500 text-[12px]">PDF Attached</p>
+            <TextSnippetRoundedIcon className="text-zinc-500" />
+          </div>
+        )}
       </div>
-    );
-  };
+
+      {shouldShowReviewBtn && (
+        <>
+          <CoriBtn
+            primary
+            style="default"
+            onClick={() => setShowEditPRModal(true)}
+          >
+            Review Employee
+            <Icons.StarRounded />
+          </CoriBtn>
+          <EditPRModal
+            showModal={showEditPRModal}
+            setShowModal={setShowEditPRModal}
+            onEditSuccess={handleEditSuccess}
+            performanceReview={convertToPerformanceReviewDTO()}
+          />
+        </>
+      )}
+    </div>
+  );
+};
 
   // Meet Body (Purpose)
   const MeetingBody = () => {
