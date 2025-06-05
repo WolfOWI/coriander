@@ -210,7 +210,7 @@ const EmployeeProfile: React.FC = () => {
             </div>
 
             {/* Personal Details */}
-            <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col w-full">
+            <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col w-full shadow-sm">
               <div className="flex">
                 {/* Left Side */}
                 <div className="flex flex-grow flex-col gap-4 w-1/2">
@@ -259,7 +259,7 @@ const EmployeeProfile: React.FC = () => {
               <div className="flex gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Employment & Payroll</h2>
               </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col w-full">
+              <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col w-full shadow-sm">
                 <div className="flex flex-col gap-4">
                   <div className="flex">
                     {/* Left Side */}
@@ -312,7 +312,7 @@ const EmployeeProfile: React.FC = () => {
               <div className="flex gap-2 items-center">
                 <h2 className="text-zinc-500 font-semibold">Equipment</h2>
               </div>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4">
+              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center gap-4 shadow-sm">
                 {equipment.$values.map((item) => (
                   <EquipmentListItem key={item.equipmentId} item={item} />
                 ))}

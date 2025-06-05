@@ -223,9 +223,9 @@ const AdminDashboard: React.FC = () => {
       {/* Page Body */}
       {/* Container 1 */}
 
-      <div className="">
+      <div className="mb-3">
         {/* Column 1 */}
-        <Container>
+        <Container className="mb-3">
           <Row>
             {/* Left Cards */}
             <Col lg="8" md="8">
@@ -235,7 +235,7 @@ const AdminDashboard: React.FC = () => {
                   <div className="text-zinc-500 font-semibold text-center mb-2">
                     Employee Ratings: Top 5
                   </div>
-                  <div className="bg-warmstone-50 pt-2 rounded-2xl shadow">
+                  <div className="bg-warmstone-50 pt-2 rounded-2xl shadow-sm">
                     <BarChartCard empUserRatingMetrics={empUserRatingMetrics} />
                   </div>
                 </Col>
@@ -245,7 +245,7 @@ const AdminDashboard: React.FC = () => {
                   <div className="text-zinc-500 font-semibold text-center mb-2">
                     Employment Overview
                   </div>
-                  <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow">
+                  <div className="bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow-sm">
                     <DoughnutChartCard employeeStatusTotals={employeeStatusTotals} />
                   </div>
                 </Col>
@@ -256,7 +256,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="flex justify-between items-center gap-3 mb-2">
                       <div className="text-zinc-500 font-semibold">Leave Requests</div>
                       <button
-                        className="bg-zinc-600 text-white text-xs font-semibold px-3 py-1 rounded-lg shadow hover:bg-zinc-400 transition"
+                        className="bg-zinc-600 text-white text-xs font-semibold px-3 py-1 rounded-lg shadow-sm hover:bg-zinc-400 transition"
                         onClick={() => navigate("/admin/leave-requests")}
                         type="button"
                       >
@@ -265,8 +265,8 @@ const AdminDashboard: React.FC = () => {
                     </div>
                     <div className="relative w-full">
                       <div
-                        className="h-[335px] overflow-y-auto bg-warmstone-50 p-3 rounded-2xl flex flex-col shadow gap-2"
-                        style={{ paddingBottom: 32 /* space for fade */ }}
+                        className="h-[335px] bg-warmstone-50 p-3 overflow-y-auto rounded-2xl flex flex-col shadow-sm gap-2 [&::-webkit-scrollbar]:hidden"
+                        style={{ paddingBottom: 32 }}
                       >
                         {mappedLeaveRequests.length > 0 ? (
                           mappedLeaveRequests.map((leave) => (
@@ -287,7 +287,7 @@ const AdminDashboard: React.FC = () => {
                   <Row className="g-3">
                     <Col md={6}>
                       <div
-                        className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer"
+                        className="bg-corigreen-500 text-warmstone-200 p-3 rounded-2xl shadow-sm h-full hover:cursor-pointer"
                         onClick={() => setShowCreatePRModal(true)}
                       >
                         <p className="text-sm font-bold mb-2">New Performance Review</p>
@@ -298,7 +298,7 @@ const AdminDashboard: React.FC = () => {
                     </Col>
                     <Col md={6}>
                       <div
-                        className="flex flex-col bg-sakura-500 text-warmstone-200 p-3 rounded-2xl shadow h-full hover:cursor-pointer"
+                        className="flex flex-col bg-sakura-500 text-warmstone-200 p-3 rounded-2xl shadow-sm h-full hover:cursor-pointer"
                         onClick={() => {
                           navigate("/admin/meetings");
                         }}
@@ -316,7 +316,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="text-zinc-500 font-semibold text-center mb-2 mt-3">
                       Top 3 Employees
                     </div>
-                    <div className="bg-warmstone-50 p-2 rounded-2xl flex flex-col shadow">
+                    <div className="bg-warmstone-50 p-2 rounded-2xl flex flex-col shadow-sm">
                       {topRatedEmployees.map((employee: any) => {
                         const employeeData = employee.employees?.$values[0];
                         const ratingData = employee.ratings?.$values[0];
@@ -347,7 +347,7 @@ const AdminDashboard: React.FC = () => {
               </div>
               <div className="relative">
                 <div
-                  className="meetings w-full h-[390px] flex flex-col rounded-2xl overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden"
+                  className="meetings w-full max-h-[352px] flex flex-col rounded-md overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden"
                   style={{ position: "relative" }}
                 >
                   <div className="grid gap-3 flex-1">

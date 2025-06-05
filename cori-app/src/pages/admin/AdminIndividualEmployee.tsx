@@ -311,7 +311,7 @@ const AdminIndividualEmployee: React.FC = () => {
         <div className="flex gap-4">
           <div className="max-w-1/2 min-w-1/2 w-1/2 flex flex-col gap-4">
             {/* Employee Details */}
-            <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col">
+            <div className="bg-warmstone-50 p-4 rounded-2xl flex flex-col shadow-sm">
               <div className="flex gap-4">
                 <div className="relative">
                   {empUser.profilePicture ? (
@@ -431,7 +431,7 @@ const AdminIndividualEmployee: React.FC = () => {
             {/* Payroll Information */}
             <div className="w-full flex flex-col gap-2 items-center">
               <h2 className="text-zinc-500 font-semibold">Payroll</h2>
-              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center">
+              <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col items-center shadow-sm">
                 <p className="text-zinc-500 text-sm mb-1">Salary</p>
                 <div className="flex flex-col items-center p-4 bg-warmstone-200 w-full rounded-2xl">
                   <p className="text-zinc-900 text-xl">{formatRandAmount(empUser.salaryAmount)}</p>
@@ -514,7 +514,7 @@ const AdminIndividualEmployee: React.FC = () => {
 
             {/* Equipment */}
             <div className="w-full flex flex-col gap-2 items-center relative">
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center shadow-sm">
                 <h2 className="text-zinc-500 font-semibold">Equipment</h2>
                 <Dropdown
                   menu={{
@@ -599,9 +599,9 @@ const AdminIndividualEmployee: React.FC = () => {
               </div>
               {/* Rating & Performance Reviews */}
               <div className="w-9/12 flex flex-col gap-4 max-w-9/12">
-                <div className="w-full flex flex-col gap-2 items-center">
+                <div className="w-full flex flex-col gap-2 items-center ">
                   <h2 className="text-zinc-500 font-semibold">Average Rating</h2>
-                  <div className="w-full p-4 bg-warmstone-50 rounded-2xl">
+                  <div className="w-full p-4 bg-warmstone-50 rounded-2xl shadow-sm">
                     <GaugeComponent
                       minValue={0}
                       maxValue={500}

@@ -42,7 +42,7 @@ function EmpGatheringBox({ gathering }: GatheringBoxProps) {
   //   : gathering.meetingStatus === 4; // MeetStatus.Completed = 4
 
   return (
-    <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col justify-between gap-3">
+    <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col justify-between gap-3 shadow-sm">
       {/* Heading & Body */}
       <div className="w-full flex flex-col gap-3">
         {/* Heading Section */}
