@@ -95,8 +95,8 @@ const isDateInPast = (date: string): boolean => {
 const calculateDurationInDays = (startDate: string, endDate: string): number => {
   const start = dayjs(startDate);
   const end = dayjs(endDate);
-  return end.diff(start, "day");
-}
+  return end.diff(start, "day") + 1;
+};
 
 export {
   formatEmploymentDuration,
@@ -106,5 +106,5 @@ export {
   formatTimestampToTime,
   combineDateTimeToTimestamp,
   isDateInPast,
-  calculateDurationInDays
+  calculateDurationInDays,
 };

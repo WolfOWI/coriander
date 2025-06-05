@@ -181,7 +181,9 @@ const AdminLeaveRequests: React.FC = () => {
           {getLeaveIcon(r.leaveTypeName)}
           <div className="flex flex-col">
             <p className="font-medium">
-              {calculateDurationInDays(r.startDate, r.endDate)} Days {r.leaveTypeName} Leave
+              {calculateDurationInDays(r.startDate, r.endDate)} Day
+              {calculateDurationInDays(r.startDate, r.endDate) > 1 ? "s" : ""} {r.leaveTypeName}{" "}
+              Leave
             </p>
             <p className="text-xs text-zinc-500">
               {dayjs(r.startDate).format("DD MMM YYYY")} – {dayjs(r.endDate).format("DD MMM YYYY")}
