@@ -34,31 +34,51 @@ const EmployeeMeetings: React.FC = () => {
   const [showEditMeetingRequestModal, setShowEditMeetingRequestModal] = useState(false);
 
   const [employeeId, setEmployeeId] = useState<number | null>(null);
+
+  const fetchUserAndSetId = async () => {
+    const user = await getFullCurrentUser();
+    if (user?.employeeId) {
+      setEmployeeId(user.employeeId);
+    }
+  };
+
   useEffect(() => {
-    const fetchUserAndSetId = async () => {
-      const user = await getFullCurrentUser();
-      if (user?.employeeId) {
-        setEmployeeId(user.employeeId);
-      }
-    };
     fetchUserAndSetId();
   }, []);
+
+  useEffect(() => {
+    if (employeeId) {
+      fetchAndUpdateData();
+    }
+  }, [employeeId]);
 
   useEffect(() => {
     console.log("employeeId", employeeId);
   }, [employeeId]);
 
   // Function to fetch and update data
-  const fetchAndUpdateData = useCallback(async () => {
-    if (!employeeId) {
-      console.log("No employeeId available, skipping fetch");
-      return;
+  const fetchAndUpdateData = async () => {
+    console.log("EmployeeId right now is: ", employeeId);
+
+    let currentEmployeeId = employeeId;
+
+    // If employeeId is null, fetch it directly
+    if (!currentEmployeeId) {
+      console.log("EmployeeId is null, fetching from current user");
+      const user = await getFullCurrentUser();
+      currentEmployeeId = user?.employeeId || null;
+
+      if (!currentEmployeeId) {
+        console.log("Unable to get employeeId, skipping fetch");
+        return;
+      }
     }
 
     setLoading(true);
+
     try {
-      console.log("Current employeeId", employeeId);
-      const response = await gatheringAPI.getAllGatheringsByEmpId(employeeId);
+      console.log("Current employeeId", currentEmployeeId);
+      const response = await gatheringAPI.getAllGatheringsByEmpId(currentEmployeeId);
       const gatherings = response.data.$values;
 
       // Sort the gatherings: null dates first, then most recent to oldest
@@ -90,19 +110,10 @@ const EmployeeMeetings: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [employeeId, messageApi]);
-
-  // Initial data fetch
-  useEffect(() => {
-    if (employeeId) {
-      fetchAndUpdateData();
-    }
-  }, [employeeId, fetchAndUpdateData]);
+  };
 
   // Filter data when tab changes
   useEffect(() => {
-    console.log(`Tab changed to: ${activeTab}`);
-
     let filtered;
     switch (activeTab) {
       case "All":
@@ -135,8 +146,6 @@ const EmployeeMeetings: React.FC = () => {
       default:
         filtered = allData;
     }
-
-    console.log(`Filtered data for tab "${activeTab}":`, filtered);
     setFilteredData(filtered);
   }, [activeTab, allData]);
 
@@ -147,33 +156,31 @@ const EmployeeMeetings: React.FC = () => {
   };
 
   // Handle the deletion of a meeting request
-  const handleDeleteMeetingRequest = useCallback(
-    async (meetingId: number) => {
+  const handleDeleteMeetingRequest = async (meetingId: number) => {
+    try {
+      console.log("deleting meeting request", meetingId);
+      await meetingAPI.deleteMeetingRequest(meetingId);
+      messageApi.success("Meeting request deleted successfully");
+
+      // Add a small delay to ensure backend has processed the deletion
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Ensure data refresh completes
       try {
-        await meetingAPI.deleteMeetingRequest(meetingId);
-        messageApi.success("Meeting request deleted successfully");
-
-        // Add a small delay to ensure backend has processed the deletion
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Ensure data refresh completes
-        try {
-          await fetchAndUpdateData();
-        } catch (refreshError) {
-          // If refresh fails, show a warning but don't override the success message
-          console.error("Failed to refresh data after deletion:", refreshError);
-          messageApi.warning(
-            "Request deleted but failed to refresh data. Please refresh the page."
-          );
-        }
-      } catch (error) {
-        messageApi.error("Error deleting meeting request");
-        console.error("Error deleting meeting request:", error);
+        console.log("refreshing data");
+        await fetchAndUpdateData();
+      } catch (refreshError) {
+        // If refresh fails, show a warning but don't override the success message
+        console.error("Failed to refresh data after deletion:", refreshError);
+        messageApi.warning("Request deleted but failed to refresh data. Please refresh the page.");
       }
-    },
-    [fetchAndUpdateData, messageApi]
-  );
+    } catch (error) {
+      messageApi.error("Error deleting meeting request");
+      console.error("Error deleting meeting request:", error);
+    }
+  };
 
+  // Handle the joining of a meeting (btn press)
   const handleJoinMeeting = (gathering: Gathering) => {
     if (gathering.meetLink) {
       if (gathering.meetLink.includes("https://")) {
