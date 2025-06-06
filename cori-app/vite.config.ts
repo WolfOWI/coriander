@@ -1,9 +1,14 @@
 import { defineConfig } from "vite";
-res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+
 export default defineConfig({
   assetsInclude: ["**/*.lottie"],
   build: {
     assetsInlineLimit: 0,
+  },
+  server: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
   },
 });

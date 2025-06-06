@@ -1,18 +1,24 @@
-import type { ForgeConfig } from "@electron-forge/shared-types";
-import { MakerSquirrel } from "@electron-forge/maker-squirrel";
-import { MakerZIP } from "@electron-forge/maker-zip";
-import { MakerDeb } from "@electron-forge/maker-deb";
-import { MakerRpm } from "@electron-forge/maker-rpm";
-import { VitePlugin } from "@electron-forge/plugin-vite";
-import { FusesPlugin } from "@electron-forge/plugin-fuses";
-import { FuseV1Options, FuseVersion } from "@electron/fuses";
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/no-commonjs */
+const { MakerSquirrel } = require("@electron-forge/maker-squirrel");
+const { MakerZIP } = require("@electron-forge/maker-zip");
+const { MakerDeb } = require("@electron-forge/maker-deb");
+const { MakerRpm } = require("@electron-forge/maker-rpm");
+const { VitePlugin } = require("@electron-forge/plugin-vite");
+const { FusesPlugin } = require("@electron-forge/plugin-fuses");
+const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 
-const config: ForgeConfig = {
+const config = {
   packagerConfig: {
     asar: true,
   },
   rebuildConfig: {},
-  makers: [new MakerSquirrel({}), new MakerZIP({}, ["darwin"]), new MakerRpm({}), new MakerDeb({})],
+  makers: [
+    new MakerSquirrel({}),
+    new MakerZIP({}, ["darwin"]),
+    new MakerRpm({}),
+    new MakerDeb({}),
+  ],
   plugins: [
     new VitePlugin({
       // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
@@ -37,8 +43,6 @@ const config: ForgeConfig = {
         },
       ],
     }),
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
     new FusesPlugin({
       version: FuseVersion.V1,
       [FuseV1Options.RunAsNode]: false,
@@ -51,4 +55,4 @@ const config: ForgeConfig = {
   ],
 };
 
-export default config;
+module.exports = config;
