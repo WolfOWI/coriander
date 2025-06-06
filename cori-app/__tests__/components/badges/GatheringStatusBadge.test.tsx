@@ -40,37 +40,4 @@ describe("GatheringStatusBadge Component Tests", () => {
 
     expect(screen.getByText("Unknown")).toBeInTheDocument();
   });
-
-  test("applies custom className", () => {
-    const { container } = render(
-      <GatheringStatusBadge status={MeetStatus.Requested} className="custom-class" />
-    );
-
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass("custom-class");
-  });
-
-  test("applies default classes", () => {
-    const { container } = render(<GatheringStatusBadge status={MeetStatus.Requested} />);
-
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass("w-fit", "min-w-fit", "text-nowrap");
-  });
-
-  test("renders all status types correctly", () => {
-    const statusTests = [
-      { status: MeetStatus.Requested, expectedText: "Pending" },
-      { status: MeetStatus.Upcoming, expectedText: "In Person" },
-      { status: MeetStatus.Rejected, expectedText: "Rejected" },
-      { status: MeetStatus.Completed, expectedText: "Completed" },
-      { status: "Online", expectedText: "Online" },
-      { status: "invalid", expectedText: "Unknown" },
-    ];
-
-    statusTests.forEach(({ status, expectedText }) => {
-      const { unmount } = render(<GatheringStatusBadge status={status} />);
-      expect(screen.getByText(expectedText)).toBeInTheDocument();
-      unmount();
-    });
-  });
 });

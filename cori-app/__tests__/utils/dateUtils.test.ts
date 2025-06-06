@@ -114,13 +114,13 @@ describe("dateUtils", () => {
       const startDate = "2024-01-01T00:00:00.000Z";
       const endDate = "2024-01-10T00:00:00.000Z";
       const result = calculateDurationInDays(startDate, endDate);
-      expect(result).toBe(9);
+      expect(result).toBe(10); // 10 days inclusive from Jan 1 to Jan 10
     });
 
-    it("should return 0 for same dates", () => {
+    it("should return 1 for same dates", () => {
       const date = "2024-01-01T00:00:00.000Z";
       const result = calculateDurationInDays(date, date);
-      expect(result).toBe(0);
+      expect(result).toBe(1); // Same date counts as 1 day
     });
   });
 });
