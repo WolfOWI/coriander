@@ -211,6 +211,23 @@ const AdminDashboard: React.FC = () => {
   const leaveRequests = dashboardData?.leaveRequests?.$values || [];
   const topRatedEmployees = dashboardData?.topRatedEmployees?.$values || [];
 
+  const isFullyLoaded =
+    !loading &&
+    !loadingGatherings &&
+    dashboardData &&
+    typeof adminId === "number" &&
+    adminId !== 0;
+
+  if (!isFullyLoaded) {
+    return (
+      <div className="w-full h-full flex flex-col justify-center items-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className="max-w-7xl mx-auto m-4 mb-4">
       {/* Heading */}
