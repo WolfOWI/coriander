@@ -43,6 +43,13 @@ function ApplyForLeaveModal({
       const values = await form.validateFields();
       const user = await getFullCurrentUser();
 
+      // Guard: Ensure `user` exists and has `employeeId`
+      if (!user || !user.employeeId) {
+        messageApi.error("Unable to identify your user account.");
+        setIsSubmitting(false);
+        return;
+      }
+
       // Build payload
       const [startDate, endDate] = values.leaveDateRange;
       const payload = {
