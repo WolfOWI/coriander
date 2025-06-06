@@ -179,12 +179,12 @@ const AdminCreateEmployee: React.FC = () => {
 
       {/* Empty state */}
       {!selectedUser && (
-        <div className="pt-24 text-center text-gray-500">
+        <div className="pt-32 text-center text-gray-500">
           <Icons.PersonAdd
-            className="text-green-500"
+            className="text-corigreen-500"
             style={{ fontSize: 64 }}
           />
-          <h2 className="text-xl font-semibold mt-4">No User Selected</h2>
+          <h2 className="text-xl font-semibold mt-2">No User Selected</h2>
           <p className="mt-2">Please select a user above to begin.</p>
         </div>
       )}
@@ -204,7 +204,9 @@ const AdminCreateEmployee: React.FC = () => {
           {/* Personal Details */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div>
-              <h3 className="font-semibold mb-2">Personal</h3>
+              <div className="text-zinc-500 font-semibold text-center mb-2 text-lg">
+                  Personal
+                </div>
               <Form.Item
                 name="gender"
                 label="Gender"
@@ -216,6 +218,7 @@ const AdminCreateEmployee: React.FC = () => {
                     { label: "Female", value: 1 },
                     { label: "Other", value: 2 },
                   ]}
+                  className="drop-shadow-md"
                 />
               </Form.Item>
               <Form.Item
@@ -223,33 +226,35 @@ const AdminCreateEmployee: React.FC = () => {
                 label="Phone Number"
                 rules={[{ required: true }]}
               >
-                <Input />
+                <Input className="drop-shadow-md" />
               </Form.Item>
               <Form.Item
                 name="dob"
                 label="Date of Birth"
                 rules={[{ required: true }]}
               >
-                <DatePicker style={{ width: "100%" }} />
+                <DatePicker className="w-full h-12 drop-shadow-md" />
               </Form.Item>
             </div>
             <div>
               {/* Employment */}
               <div>
-                <h3 className="font-semibold mb-2">Employment</h3>
+                <div className="text-zinc-500 font-semibold text-center mb-2 text-lg">
+                  Employment
+                </div>
                 <Form.Item
                   name="jobTitle"
                   label="Job Title"
                   rules={[{ required: true }]}
                 >
-                  <Input />
+                  <Input className="drop-shadow-md" />
                 </Form.Item>
                 <Form.Item
                   name="department"
                   label="Department"
                   rules={[{ required: true }]}
                 >
-                  <Input />
+                  <Input className="drop-shadow-md" />
                 </Form.Item>
                 <Form.Item
                   name="employmentType"
@@ -257,6 +262,7 @@ const AdminCreateEmployee: React.FC = () => {
                   rules={[{ required: true }]}
                 >
                   <Select
+                  className="drop-shadow-md"
                     options={[
                       { label: "Full Time", value: 0 },
                       { label: "Part Time", value: 1 },
@@ -270,19 +276,21 @@ const AdminCreateEmployee: React.FC = () => {
                   label="Date of Employment"
                   rules={[{ required: true }]}
                 >
-                  <DatePicker style={{ width: "100%" }} />
+                  <DatePicker className='w-full h-12 drop-shadow-md' />
                 </Form.Item>
               </div>
 
               {/* Payroll */}
-              <div className="pt-4">
-                <h3 className="font-semibold mb-2">Payroll</h3>
+              <div className="pt-2">
+                <div className="text-zinc-500 font-semibold text-center mb-2 text-lg">
+                  Payroll
+                </div>
                 <Form.Item
                   name="salary"
                   label="Salary Amount"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber prefix="R" style={{ width: "100%" }} />
+                  <InputNumber prefix="R" className="w-full h-12 rounded-lg drop-shadow-md" />
                 </Form.Item>
                 <Form.Item
                   name="payCycle"
@@ -290,6 +298,7 @@ const AdminCreateEmployee: React.FC = () => {
                   rules={[{ required: true }]}
                 >
                   <Select
+                  className="drop-shadow-md"
                     options={[
                       { label: "Monthly", value: 0 },
                       { label: "Bi-weekly", value: 1 },
@@ -300,13 +309,15 @@ const AdminCreateEmployee: React.FC = () => {
               </div>
             </div>
             {/* Equipment Section */}
-            <div>
-              <h3 className="font-semibold mb-4">Equipment</h3>
+            <div className="flex flex-col items-center ">
+              <div className="text-zinc-500 font-semibold text-center mb-2 text-lg">
+                Equipment
+              </div>
               {/* If selected equipment ids (equipmentIds) is empty it must show, please add equpment */}
               {/* You have to select the equipment items from the equipments modal */}
-              <div className="space-y-4">
+              <div className="space-y-4 w-full mt-2">
                 {equipmentIds.length === 0 ? (
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center justify-center">
                     <Icons.Warning
                       className="text-yellow-500"
                       style={{ fontSize: 28 }}
@@ -322,16 +333,18 @@ const AdminCreateEmployee: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  selectedEquipments.map((equip) => (
-                    <EquipmentListItem
-                      key={equip.equipmentId}
-                      item={equip}
-                      adminView
-                      onDelete={() => {}}
-                      onEdit={() => {}}
-                      onUnlink={() => {}}
-                    />
-                  ))
+                  <div className="bg-white rounded-lg drop-shadow-md p-4 border border-zinc-500">
+                    {selectedEquipments.map((equip) => (
+                      <EquipmentListItem
+                        key={equip.equipmentId}
+                        item={equip}
+                        adminView
+                        onDelete={() => {}}
+                        onEdit={() => {}}
+                        onUnlink={() => {}}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
 
