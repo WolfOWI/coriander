@@ -337,7 +337,7 @@ const AdminIndividualEmployee: React.FC = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-zinc-500">Employee ID {empUser.employeeId}</p>
+                  <p className="text-sm text-zinc-500">Employee ID 00-{empUser.employeeId}</p>
                   <div className="flex items-center gap-3">
                     <h2 className="text-zinc-900 font-bold text-3xl">{empUser.fullName}</h2>
                     {empUser.googleId && (
@@ -567,7 +567,7 @@ const AdminIndividualEmployee: React.FC = () => {
                 </Dropdown>
               </div>
               <div
-                className={`bg-warmstone-50 px-4 pt-4 shadow-sm rounded-2xl w-full flex flex-col items-center gap-4 overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden
+                className={`bg-warmstone-50 px-4 pt-4 rounded-2xl w-full flex flex-col items-center gap-4 overflow-y-auto scrollbar-hide [&::-webkit-scrollbar]:hidden
                 ${equipment.length > 3 ? "h-[224px] pb-20" : "h-fit pb-4"}`}
               >
                 {equipment.map((item) => (

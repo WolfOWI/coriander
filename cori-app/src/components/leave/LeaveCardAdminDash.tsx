@@ -21,7 +21,7 @@ const LeaveCardAdminDash: React.FC<LeaveCardAdminDashProps> = ({ leave }) => {
 
   return (
     <div className="p-3 rounded-xl flex flex-col border-2 border-zinc-500 group transition-colors duration-200">
-      <h4 className="font-semibold text-md">{leave.fullName}</h4>
+      <h4 className="font-semibold text-md mb-1">{leave.fullName}</h4>
       <p className="text-xs">Submitted on {new Date(leave.createdAt).toLocaleDateString()} </p>
 
       <div className="hidden-0 max-h-0 pointer-events-none overflow-hidden group-hover:hidden-100 group-hover:max-h-96 group-hover:pointer-events-auto group-hover:mt-2 transition-all duration-300 ease-in-out">

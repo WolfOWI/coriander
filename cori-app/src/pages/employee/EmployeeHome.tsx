@@ -180,10 +180,7 @@ const EmployeeHome: React.FC = () => {
               <Col xs={12} md={5}>
                 <div className="text-zinc-500 font-semibold text-center mb-2">Your Ratings</div>
                 <div className="bg-warmstone-50 p-4 pt-2 rounded-2xl shadow-sm">
-                  <div
-                    className="w-full py-4 flex flex-col gap-2 items-center"
-                    style={{ minHeight: 239 }}
-                  >
+                  <div className="w-full py-4 flex flex-col gap-2 items-center" style={{ minHeight: 239 }}>
                     <GaugeComponent
                       minValue={0}
                       maxValue={500}
@@ -275,13 +272,13 @@ const EmployeeHome: React.FC = () => {
                             : "weekly"}
                         </p>
                       </div>
-                      <div className="flex w-full mt-4 gap-2 h-fit">
+                      <div className="flex w-full mt-2 gap-2 h-fit">
                         <div className="flex flex-col w-1/2 items-center">
                           <p className="text-zinc-500 text-sm mb-1">Last Paid</p>
                           <div className="flex justify-center items-center gap-2 p-3 bg-warmstone-200 rounded-2xl h-full w-full">
                             <p className="text-zinc-900">
                               {empUser?.lastPaidDate
-                                ? dayjs(empUser.lastPaidDate).format("D MMMM YYYY")
+                                ? dayjs(empUser.lastPaidDate).format("DD/MM/YYYY")
                                 : "N/A"}
                             </p>
                           </div>
@@ -290,7 +287,7 @@ const EmployeeHome: React.FC = () => {
                           <p className="text-zinc-500 text-sm mb-1">Next Pay Day</p>
                           <div className="flex justify-center items-center gap-2 p-4 bg-warmstone-200 w-full rounded-2xl h-full">
                             <p className="text-zinc-900">
-                              {nextPayDay ? dayjs(nextPayDay).format("D MMMM YYYY") : "N/A"}
+                              {nextPayDay ? dayjs(nextPayDay).format("DD/MM/YYYY") : "N/A"}
                             </p>
                           </div>
                         </div>
@@ -323,16 +320,14 @@ const EmployeeHome: React.FC = () => {
 
           <Col md={4}>
             <Col xs={12} md={12}>
-              <div className="text-zinc-500 font-semibold text-center mb-2">
-                Meetings with HR: Overview
-              </div>
+              <div className="text-zinc-500 font-semibold text-center mb-2">Meetings with HR: Overview</div>
               <div className="relative">
                 <div
                   className="grid gap-3 pr-2"
                   style={{
-                    maxHeight: 715,
+                    maxHeight: 700,
                     overflowY: "auto",
-                    paddingBottom: 32,
+                    paddingBottom: 32, 
                   }}
                 >
                   {gatherings.length > 0 ? (

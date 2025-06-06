@@ -5,7 +5,7 @@ import { EmployType } from "../../../types/common";
 import { Icons } from "../../../constants/icons";
 
 interface TopRatedEmployee {
-  profilePicture: string; // Optional, if you want to use a different image
+  profilePicture: string;
   fullName: string;
   jobTitle: string;
   averageRating: number;
