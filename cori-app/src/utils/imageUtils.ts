@@ -16,6 +16,6 @@ export const getFullImageUrl = (relativePath: string | null): string | null => {
   }
 
   // Get the base URL by removing '/api' from VITE_API_URL
-  const baseUrl = process.env.VITE_API_URL?.replace("/api", "");
+  const baseUrl = import.meta.env.VITE_API_URL?.replace("/api", "");
   return `${baseUrl}${relativePath}`;
 };

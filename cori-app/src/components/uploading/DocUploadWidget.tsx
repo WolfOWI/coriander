@@ -47,8 +47,8 @@ const DocUploadWidget: React.FC<DocUploadWidgetProps> = ({
   const openUploadWidget = () => {
     const widget = window.cloudinary.createUploadWidget(
       {
-        cloudName: process.env.VITE_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: process.env.VITE_CLOUDINARY_FILEUPLOAD_PRESET,
+        cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: import.meta.env.VITE_CLOUDINARY_FILEUPLOAD_PRESET,
         sources: ["local", "url"],
         multiple: false,
         defaultSource: "local",
