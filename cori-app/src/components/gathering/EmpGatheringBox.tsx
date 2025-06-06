@@ -37,9 +37,16 @@ function EmpGatheringBox({ gathering }: GatheringBoxProps) {
     ? gathering.reviewStatus === ReviewStatus.Upcoming
     : gathering.meetingStatus === MeetStatus.Upcoming;
 
-  // const isCompleted = isPerformanceReview
-  //   ? gathering.reviewStatus === 2 // ReviewStatus.Completed = 2
-  //   : gathering.meetingStatus === 4; // MeetStatus.Completed = 4
+  // Handle Join button click
+  const handleJoinClick = () => {
+    if (gathering.meetLink) {
+      if (gathering.meetLink.includes("https://")) {
+        window.open(`${gathering.meetLink}`, "_blank");
+      } else {
+        window.open(`https://${gathering.meetLink}`, "_blank");
+      }
+    }
+  };
 
   return (
     <div className="bg-warmstone-50 p-4 rounded-2xl w-full flex flex-col justify-between gap-3 shadow-sm">
@@ -75,7 +82,9 @@ function EmpGatheringBox({ gathering }: GatheringBoxProps) {
                 </p>
                 <p>
                   {gathering.startDate && gathering.endDate
-                    ? `${formatTimestampToTime(gathering.startDate.toString())} - ${formatTimestampToTime(gathering.endDate.toString())}`
+                    ? `${formatTimestampToTime(
+                        gathering.startDate.toString()
+                      )} - ${formatTimestampToTime(gathering.endDate.toString())}`
                     : "No time"}
                 </p>
               </div>
@@ -143,9 +152,11 @@ function EmpGatheringBox({ gathering }: GatheringBoxProps) {
           <div className="w-full flex h-10 items-center justify-center bg-warmstone-100 rounded-xl ">
             <p className="text-zinc-500 text-[12px]">{gathering.meetLink}</p>
           </div>
-          <CoriBtn primary style="black">
-            Join
-          </CoriBtn>
+          {gathering.meetingStatus === MeetStatus.Upcoming && (
+            <CoriBtn primary style="black" onClick={handleJoinClick}>
+              Join
+            </CoriBtn>
+          )}
         </div>
       ) : (
         // If meet is in person

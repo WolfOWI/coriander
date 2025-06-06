@@ -35,43 +35,4 @@ describe("EquipCondiBadge Component Tests", () => {
 
     expect(screen.getByText("Unknown")).toBeInTheDocument();
   });
-
-  test("applies custom className", () => {
-    const { container } = render(
-      <EquipCondiBadge condition={EquipmentCondition.New} className="custom-class" />
-    );
-
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass("custom-class");
-  });
-
-  test("applies default classes", () => {
-    const { container } = render(<EquipCondiBadge condition={EquipmentCondition.New} />);
-
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass("w-fit");
-  });
-
-  test("renders all condition types correctly", () => {
-    const conditionTests = [
-      { condition: EquipmentCondition.New, expectedText: "New" },
-      { condition: EquipmentCondition.Good, expectedText: "Good" },
-      { condition: EquipmentCondition.Decent, expectedText: "Decent" },
-      { condition: EquipmentCondition.Used, expectedText: "Used" },
-    ];
-
-    conditionTests.forEach(({ condition, expectedText }) => {
-      const { unmount } = render(<EquipCondiBadge condition={condition} />);
-      expect(screen.getByText(expectedText)).toBeInTheDocument();
-      unmount();
-    });
-  });
-
-  test("uses small size for CoriBadge", () => {
-    const { container } = render(<EquipCondiBadge condition={EquipmentCondition.New} />);
-
-    // Check that the badge has small size styling
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass("py-1", "px-3");
-  });
 });

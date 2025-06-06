@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Import icons
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
@@ -14,8 +14,7 @@ interface LeaveBalanceBlockProps {
   remainingDays: number;
   totalDays: number;
   description: string;
-  width?: string | number;
-  shadow?: boolean;
+  className?: string;
 }
 
 function LeaveBalanceBlock({
@@ -23,40 +22,117 @@ function LeaveBalanceBlock({
   remainingDays,
   totalDays,
   description,
-  width,
-  shadow
+  className,
 }: LeaveBalanceBlockProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const isEmpty = remainingDays === 0;
+
   const getLeaveIcon = () => {
     switch (leaveType) {
       case "Annual":
-        return <BeachAccessIcon />;
+        return (
+          <BeachAccessIcon
+            style={{
+              fontSize: isHovered ? "0px" : "24px",
+              transition: "font-size 0.3s ease",
+            }}
+          />
+        );
       case "Sick":
-        return <SickIcon />;
+        return (
+          <SickIcon
+            style={{
+              fontSize: isHovered ? "0px" : "24px",
+              transition: "font-size 0.3s ease",
+            }}
+          />
+        );
       case "Parental":
-        return <ChildFriendlyIcon />;
+        return (
+          <ChildFriendlyIcon
+            style={{
+              fontSize: isHovered ? "0px" : "24px",
+              transition: "font-size 0.3s ease",
+            }}
+          />
+        );
       case "Family Responsibility":
-        return <FamilyRestroomIcon />;
+        return (
+          <FamilyRestroomIcon
+            style={{
+              fontSize: isHovered ? "0px" : "24px",
+              transition: "font-size 0.3s ease",
+            }}
+          />
+        );
       case "Study":
-        return <MenuBookIcon />;
+        return (
+          <MenuBookIcon
+            style={{
+              fontSize: isHovered ? "0px" : "24px",
+              transition: "font-size 0.3s ease",
+            }}
+          />
+        );
       case "Compassionate":
-        return <HeartBrokenIcon />;
+        return (
+          <HeartBrokenIcon
+            style={{
+              fontSize: isHovered ? "0px" : "24px",
+              transition: "font-size 0.3s ease",
+            }}
+          />
+        );
       default:
-        return <BeachAccessIcon />;
+        return (
+          <BeachAccessIcon
+            style={{
+              fontSize: isHovered ? "0px" : "24px",
+              transition: "font-size 0.3s ease",
+            }}
+          />
+        );
     }
   };
 
   return (
     <Tooltip placement="right" title={description}>
-      <div 
-        className={`bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 shadow-sm`}
-        
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`bg-warmstone-50 p-3 rounded-2xl flex flex-col items-center justify-center text-center h-32 shadow-sm border-2 border-warmstone-50 hover:bg-sakura-200 hover:border-sakura-500 transition-all duration-300 group cursor-default select-none ${className}`}
       >
-        <div className="flex items-center gap-1 mb-2">
-          {getLeaveIcon()}
-          <p className="text-zinc-900 text-2xl font-bold">{remainingDays}</p>
+        <div className="flex items-center gap-1">
+          {isEmpty ? (
+            <>
+              <p
+                className={`text-red-800 font-bold text-2xl group-hover:text-4xl transition-all duration-300`}
+              >
+                {isHovered ? 0 : "No"}
+              </p>
+            </>
+          ) : (
+            <>
+              {getLeaveIcon()}
+              <p
+                className={`text-zinc-900 font-bold text-2xl group-hover:text-4xl transition-all duration-300`}
+              >
+                {remainingDays}
+              </p>
+            </>
+          )}
         </div>
+        <p className="text-zinc-900 font-semibold text-[0px] group-hover:text-[12px] transition-all duration-300">
+          out of {totalDays} days
+        </p>
         <p className="text-zinc-500 text-[12px]">
-          {totalDays} {leaveType} Days
+          {leaveType === "Family Responsibility"
+            ? "Family"
+            : leaveType === "Compassionate"
+            ? "Grief"
+            : leaveType}{" "}
+          {isHovered ? "Leave" : `${totalDays === 1 ? "Day" : "Days"}`}
         </p>
       </div>
     </Tooltip>

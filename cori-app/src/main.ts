@@ -25,7 +25,7 @@ function startGoogleOAuth() {
     },
   });
 
-  const clientId = process.env.VITE_GOOGLE_CLIENT_ID!;
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID!;
   const redirectUri = "http://localhost"; // or your redirect URI
 
   // 🔒 Generate a secure nonce (random string)
@@ -72,9 +72,7 @@ const createWindow = () => {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
-    );
+    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
   // Open the DevTools.

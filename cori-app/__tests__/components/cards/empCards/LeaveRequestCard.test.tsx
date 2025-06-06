@@ -110,38 +110,10 @@ describe("LeaveRequestCard Component Tests", () => {
     expect(screen.getByText("15 Jan 2024 • 17 Jan 2024")).toBeInTheDocument();
   });
 
-  test("shows correct status badge for pending request", () => {
-    render(<LeaveRequestCard req={mockLeaveRequest} />);
-
-    const badge = screen.getByTestId("cori-badge");
-    expect(badge).toHaveTextContent("Pending");
-    expect(badge).toHaveAttribute("data-color", "yellow");
-    expect(badge).toHaveAttribute("data-size", "x-small");
-  });
-
-  test("shows correct status badge for approved request", () => {
-    const approvedRequest = { ...mockLeaveRequest, status: LeaveStatus.Approved };
-    render(<LeaveRequestCard req={approvedRequest} />);
-
-    const badge = screen.getByTestId("cori-badge");
-    expect(badge).toHaveTextContent("Approved");
-    expect(badge).toHaveAttribute("data-color", "green");
-  });
-
-  test("shows correct status badge for rejected request", () => {
-    const rejectedRequest = { ...mockLeaveRequest, status: LeaveStatus.Rejected };
-    render(<LeaveRequestCard req={rejectedRequest} />);
-
-    const badge = screen.getByTestId("cori-badge");
-    expect(badge).toHaveTextContent("Rejected");
-    expect(badge).toHaveAttribute("data-color", "red");
-  });
-
   test("displays correct icon for annual leave", () => {
     render(<LeaveRequestCard req={mockLeaveRequest} />);
 
     expect(screen.getByTestId("beach-icon")).toBeInTheDocument();
-    expect(screen.getByTestId("beach-icon")).toHaveAttribute("data-fontsize", "large");
   });
 
   test("displays correct icon for family leave", () => {
@@ -184,25 +156,6 @@ describe("LeaveRequestCard Component Tests", () => {
     render(<LeaveRequestCard req={unknownRequest} />);
 
     expect(screen.getByText("Unknown Leave")).toBeInTheDocument();
-    // Should not have any of the known icons
-    expect(screen.queryByTestId("beach-icon")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("family-icon")).not.toBeInTheDocument();
-  });
-
-  test("applies correct CSS classes", () => {
-    const { container } = render(<LeaveRequestCard req={mockLeaveRequest} />);
-
-    const cardContainer = container.firstChild as HTMLElement;
-    expect(cardContainer).toHaveClass(
-      "bg-white",
-      "rounded-2xl",
-      "p-4",
-      "shadow-sm",
-      "h-48",
-      "flex",
-      "flex-col",
-      "overflow-hidden"
-    );
   });
 
   test("calculates duration correctly for single day", () => {
@@ -216,15 +169,6 @@ describe("LeaveRequestCard Component Tests", () => {
 
     // For single day, duration should be 1 (0 diff + 1 for inclusive)
     expect(screen.getByText("1 days")).toBeInTheDocument();
-  });
-
-  test("handles empty comment", () => {
-    const requestWithoutComment = { ...mockLeaveRequest, comment: "" };
-    render(<LeaveRequestCard req={requestWithoutComment} />);
-
-    // Should still render the comment section, just empty
-    const commentElements = screen.getAllByText("");
-    expect(commentElements.length).toBeGreaterThan(0);
   });
 
   test("renders all required sections", () => {

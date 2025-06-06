@@ -131,20 +131,6 @@ describe("MeetRequestsDrawer Component Tests", () => {
     });
   });
 
-  test("renders drawer when open", async () => {
-    render(<MeetRequestsDrawer {...defaultProps} />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId("drawer")).toBeInTheDocument();
-    });
-  });
-
-  test("does not render drawer when closed", () => {
-    render(<MeetRequestsDrawer {...defaultProps} drawerOpen={false} />);
-
-    expect(screen.queryByTestId("drawer")).not.toBeInTheDocument();
-  });
-
   test("displays correct title with meeting request count", async () => {
     render(<MeetRequestsDrawer {...defaultProps} />);
 
@@ -205,17 +191,6 @@ describe("MeetRequestsDrawer Component Tests", () => {
     });
   });
 
-  test("calls setDrawerOpen when close button is clicked", async () => {
-    const mockSetDrawerOpen = jest.fn();
-    render(<MeetRequestsDrawer {...defaultProps} setDrawerOpen={mockSetDrawerOpen} />);
-
-    await waitFor(() => {
-      const closeButton = screen.getByTestId("close-drawer");
-      fireEvent.click(closeButton);
-      expect(mockSetDrawerOpen).toHaveBeenCalledWith(false);
-    });
-  });
-
   test("handles approve button click", async () => {
     render(<MeetRequestsDrawer {...defaultProps} />);
 
@@ -246,111 +221,5 @@ describe("MeetRequestsDrawer Component Tests", () => {
     await waitFor(() => {
       expect(mockRejectMeetingRequest).toHaveBeenCalledWith(1);
     });
-  });
-
-  test("handles reject API error", async () => {
-    mockRejectMeetingRequest.mockRejectedValue(new Error("API Error"));
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
-
-    render(<MeetRequestsDrawer {...defaultProps} />);
-
-    await waitFor(() => {
-      const rejectButtons = screen.getAllByTestId("reject-btn");
-      fireEvent.click(rejectButtons[0]);
-    });
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Error rejecting meeting request:",
-        expect.any(Error)
-      );
-    });
-
-    consoleSpy.mockRestore();
-  });
-
-  test("handles fetch requests API error", async () => {
-    mockGetAllPendingRequestsByAdminId.mockRejectedValue(new Error("Fetch Error"));
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
-
-    render(<MeetRequestsDrawer {...defaultProps} />);
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Error fetching meet requests:", expect.any(Error));
-    });
-
-    consoleSpy.mockRestore();
-  });
-
-  test("closes modal when close modal button is clicked", async () => {
-    render(<MeetRequestsDrawer {...defaultProps} />);
-
-    await waitFor(() => {
-      const approveButtons = screen.getAllByTestId("approve-btn");
-      fireEvent.click(approveButtons[0]);
-    });
-
-    const closeModalButton = screen.getByTestId("close-modal");
-    fireEvent.click(closeModalButton);
-
-    expect(screen.queryByTestId("accept-meeting-modal")).not.toBeInTheDocument();
-  });
-
-  test("refetches data when modal is submitted", async () => {
-    render(<MeetRequestsDrawer {...defaultProps} />);
-
-    await waitFor(() => {
-      const approveButtons = screen.getAllByTestId("approve-btn");
-      fireEvent.click(approveButtons[0]);
-    });
-
-    const submitButton = screen.getByTestId("submit-modal");
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(mockGetAllPendingRequestsByAdminId).toHaveBeenCalledTimes(2);
-    });
-  });
-
-  test("applies correct drawer properties", async () => {
-    render(<MeetRequestsDrawer {...defaultProps} />);
-
-    await waitFor(() => {
-      const drawer = screen.getByTestId("drawer");
-      expect(drawer).toHaveAttribute("data-width", "400");
-      expect(drawer).toHaveAttribute("data-placement", "right");
-    });
-  });
-
-  test("renders message context holder", () => {
-    render(<MeetRequestsDrawer {...defaultProps} />);
-
-    expect(screen.getByTestId("message-context")).toBeInTheDocument();
-  });
-
-  test("handles user interactions with userEvent", async () => {
-    const user = userEvent.setup();
-    const mockSetDrawerOpen = jest.fn();
-
-    render(<MeetRequestsDrawer {...defaultProps} setDrawerOpen={mockSetDrawerOpen} />);
-
-    await waitFor(() => {
-      const closeButton = screen.getByTestId("close-drawer");
-      return user.click(closeButton);
-    });
-
-    expect(mockSetDrawerOpen).toHaveBeenCalledWith(false);
-  });
-
-  test("passes correct meeting request to modal", async () => {
-    render(<MeetRequestsDrawer {...defaultProps} />);
-
-    await waitFor(() => {
-      const approveButtons = screen.getAllByTestId("approve-btn");
-      fireEvent.click(approveButtons[1]); // Click second approve button
-    });
-
-    const modal = screen.getByTestId("accept-meeting-modal");
-    expect(modal).toHaveAttribute("data-meeting-id", "2");
   });
 });

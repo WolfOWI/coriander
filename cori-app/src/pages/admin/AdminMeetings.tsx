@@ -193,14 +193,23 @@ const AdminMeetings: React.FC = () => {
             <Icons.MeetingRoom fontSize="large" className="text-zinc-900" />
             <h1 className="text-3xl font-bold text-zinc-900">Meetings</h1>
           </div>
-          <MeetRequestsBadge requests={meetRequests.length} />
+          <MeetRequestsBadge requests={meetRequests.length} onClick={() => setDrawerOpen(true)} />
         </div>
         <div className="flex items-center gap-2">
-          <CoriBtn onClick={() => setShowCreatePRModal(true)}>New Review Meet</CoriBtn>
-          <CoriBtn secondary onClick={() => setDrawerOpen(true)}>
-            View Requests
-            <Icons.MarkChatUnread />
+          <CoriBtn secondary onClick={() => setShowCreatePRModal(true)}>
+            New Review Meet
           </CoriBtn>
+          {meetRequests.length > 0 ? (
+            <CoriBtn style="red" onClick={() => setDrawerOpen(true)}>
+              {meetRequests.length} Request{meetRequests.length === 1 ? "" : "s"}
+              <Icons.MarkChatUnread />
+            </CoriBtn>
+          ) : (
+            <CoriBtn onClick={() => setDrawerOpen(true)}>
+              No Requests
+              <Icons.MarkChatUnread />
+            </CoriBtn>
+          )}
         </div>
       </div>
 

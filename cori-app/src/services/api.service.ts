@@ -392,11 +392,11 @@ export const empLeaveRequestsAPI = {
     apiClient.put(`/EmpLeaveRequest/RejectLeaveRequestById/${id}`),
 
   /**
-   * Set to Pendinge Leave Request by its ID
+   * Set Leave Request to Pending by its ID
    * @param requestId - The leaveRequestId
    *  @returns Promise containing the API response
    */
-  setPendingLeaveRequestById: (id: number): Promise<AxiosResponse> =>
+  setLeaveRequestToPendingById: (id: number): Promise<AxiosResponse> =>
     apiClient.put(`/EmpLeaveRequest/SetLeaveRequestToPendingById/${id}`),
 
   /**

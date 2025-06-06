@@ -165,12 +165,7 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                 <ClockCircleOutlined className="text-3xl text-zinc-900" />
                 <h1 className="text-3xl font-bold text-zinc-900">Leave Overview</h1>
               </div>
-              <button
-                className="btn cori-btn btn-primary bg-corigreen-500 text-white border-none hover:bg-corigreen-600"
-                onClick={() => setShowModal(true)}
-              >
-                Apply For Leave
-              </button>
+              <CoriBtn onClick={() => setShowModal(true)}>Apply For Leave</CoriBtn>
             </div>
 
             {/* Tabs */}
@@ -203,14 +198,26 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                     activeTab === "All" ? "grid-cols-2 col-span-2" : "grid-cols-3 col-span-3"
                   }`}
                 >
-                  {requests.map((req) => (
-                    <LeaveRequestCard key={req.leaveRequestId} req={req} />
-                  ))}
+                  {requests.length === 0 ? (
+                    <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                      <Icons.EventNote className="text-zinc-400" style={{ fontSize: "48px" }} />
+                      <div className="text-zinc-500 text-xl mb-2 font-semibold">
+                        No Leave Requests
+                      </div>
+                      <div className="text-zinc-400 text-sm">
+                        {activeTab === "All"
+                          ? "You haven't submitted any leave requests yet."
+                          : `No ${activeTab.toLowerCase()} leave requests to display.`}
+                      </div>
+                    </div>
+                  ) : (
+                    requests.map((req) => <LeaveRequestCard key={req.leaveRequestId} req={req} />)
+                  )}
                 </div>
 
                 {activeTab === "All" && (
                   <div className="flex flex-col gap-2">
-                    <div className="text-zinc-500 font-semibold text-center">Leave Summary</div>
+                    <div className="text-zinc-500 font-semibold text-center">Total Remaining</div>
                     <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col items-center">
                       <Tooltip
                         title={`${summary.totalRemaining} days remaining out of ${summary.totalAllowed} total days.`}
@@ -237,7 +244,9 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                       </Tooltip>
                     </div>
 
-                    <div className="text-zinc-500 font-semibold text-center">Leave Balances</div>
+                    <div className="text-zinc-500 font-semibold text-center mt-4">
+                      Leave Balances
+                    </div>
                     <div className="bg-white p-6 rounded-2xl shadow-sm">
                       <div className="space-y-4 -mt-1">
                         {balances.map((b, idx) => {
@@ -246,18 +255,21 @@ Unauthorized absences may impact benefits. Check your balance before applying.`;
                           return (
                             <Tooltip
                               key={b.leaveTypeId}
-                              title={`${b.leaveTypeName}: ${b.remainingDays} of ${b.defaultDays} days remaining`}
+                              title={`${b.leaveTypeName} Leave: ${b.remainingDays} of ${b.defaultDays} days remaining`}
                               placement="top"
                             >
                               <div>
                                 <p className="text-xs text-zinc-700 mb-1">{b.leaveTypeName}</p>
                                 <div className="h-5 w-full bg-zinc-300 rounded-full relative">
                                   <div
-                                    className={`h-5 ${barColor} rounded-full relative`}
+                                    className={`h-5 ${barColor} rounded-full`}
                                     style={{ width: `${pct}%` }}
-                                  >
-                                    <div className="absolute right-0 top-0 bottom-0 w-2 h-5 rounded-r-full" />
-                                  </div>
+                                  ></div>
+                                  {pct === 0 && (
+                                    <p className="text-zinc-500 text-[9px] min-w-full flex items-center pl-2 text-nowrap absolute top-0 bottom-0 left-0">
+                                      No Remaining Days
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </Tooltip>

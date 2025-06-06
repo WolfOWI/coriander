@@ -257,56 +257,55 @@ function AdminGatheringBox({
     if (!gatheringType.isPerformanceReview) return null;
 
     const shouldShowReviewBtn =
-    adminPermissions.isOwner &&
-    !gathering.comment &&
-    (!gathering.rating || gathering.rating <= 0) &&
-    !gathering.docUrl;
+      adminPermissions.isOwner &&
+      !gathering.comment &&
+      (!gathering.rating || gathering.rating <= 0) &&
+      !gathering.docUrl;
 
     return (
-      <div className="w-full gap-2">
+      <div className="flex flex-col w-full gap-2">
         {/* Comment */}
-       {gathering.comment && (
-        <p className="text-zinc-500 text-[12px]">{gathering.comment}</p>
-      )}
+        {gathering.comment && <p className="text-zinc-500 text-[12px]">{gathering.comment}</p>}
 
-      <div className="flex w-full items-center gap-4">
-        {/* Rating */}
-        {gathering.rating && gathering.rating > 0 && (
-          <div className="flex items-center gap-1">
-            <StarRoundedIcon className="text-amber-300" />
-            <p className="text-zinc-800 font-bold">{gathering.rating}</p>
-          </div>
-        )}
-        {/* PDF Attachment */}
-        {gathering.docUrl && (
-          <div className="flex items-center gap-1">
-            <p className="text-zinc-500 text-[12px]">PDF Attached</p>
-            <TextSnippetRoundedIcon className="text-zinc-500" />
-          </div>
+        <div className="flex w-full items-center gap-4">
+          {/* Rating */}
+          {gathering.rating && gathering.rating > 0 && (
+            <div className="flex items-center gap-1">
+              <StarRoundedIcon className="text-amber-300" />
+              <p className="text-zinc-800 font-bold">{gathering.rating}</p>
+            </div>
+          )}
+          {/* PDF Attachment */}
+          {gathering.docUrl && (
+            <div className="flex items-center gap-1">
+              <p className="text-zinc-500 text-[12px]">PDF Attached</p>
+              <TextSnippetRoundedIcon className="text-zinc-500" />
+            </div>
+          )}
+        </div>
+
+        {shouldShowReviewBtn && (
+          <>
+            <CoriBtn
+              primary
+              style="default"
+              onClick={() => setShowEditPRModal(true)}
+              className="w-fit"
+            >
+              Review Employee
+              <Icons.StarRounded />
+            </CoriBtn>
+            <EditPRModal
+              showModal={showEditPRModal}
+              setShowModal={setShowEditPRModal}
+              onEditSuccess={handleEditSuccess}
+              performanceReview={convertToPerformanceReviewDTO()}
+            />
+          </>
         )}
       </div>
-
-      {shouldShowReviewBtn && (
-        <>
-          <CoriBtn
-            primary
-            style="default"
-            onClick={() => setShowEditPRModal(true)}
-          >
-            Review Employee
-            <Icons.StarRounded />
-          </CoriBtn>
-          <EditPRModal
-            showModal={showEditPRModal}
-            setShowModal={setShowEditPRModal}
-            onEditSuccess={handleEditSuccess}
-            performanceReview={convertToPerformanceReviewDTO()}
-          />
-        </>
-      )}
-    </div>
-  );
-};
+    );
+  };
 
   // Meet Body (Purpose)
   const MeetingBody = () => {

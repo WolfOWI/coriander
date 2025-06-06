@@ -1,6 +1,12 @@
 import React from "react";
+import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import UnlinkedUserDropdown, { UnlinkedUser } from "../../../src/components/dropdown/UnlinkedUserDropdown";
+import UnlinkedUserDropdown, {
+  UnlinkedUser,
+} from "../../../src/components/dropdown/UnlinkedUserDropdown";
+
+// Mock PNG import
+jest.mock("../../../src/assets/icons/no_profile_image.png", () => "mocked-image-url");
 
 // Mock Ant Design icons and Avatar to avoid rendering issues
 jest.mock("@ant-design/icons", () => ({
@@ -53,17 +59,20 @@ describe("UnlinkedUserDropdown", () => {
 
   it("renders selected user info", () => {
     render(<UnlinkedUserDropdown users={users} selectedUser={users[0]} onSelectUser={jest.fn()} />);
-    expect(screen.getByText("Alice Smith")).toBeInTheDocument();
-    expect(screen.getByTestId("google-icon")).toBeInTheDocument();
+    expect(screen.getAllByText("Alice Smith")).toHaveLength(2); // Once in selected, once in dropdown
+    expect(screen.getAllByTestId("google-icon")).toHaveLength(2); // Once in selected, once in dropdown
     expect(screen.getByTestId("down-icon")).toBeInTheDocument();
   });
 
   it("renders fallback avatar when profilePicture is empty", () => {
     render(<UnlinkedUserDropdown users={users} selectedUser={users[1]} onSelectUser={jest.fn()} />);
-    const avatar = screen.getByTestId("avatar");
-    expect(avatar).toHaveAttribute("src", ""); // Should fallback to noUserImage in real component
-    expect(screen.getByText("Bob Johnson")).toBeInTheDocument();
-    expect(screen.getByTestId("mail-icon")).toBeInTheDocument();
+    const avatars = screen.getAllByTestId("avatar");
+    // The selected user avatar (first one) has no src since profilePicture is empty
+    expect(avatars[0]).not.toHaveAttribute("src");
+    // The dropdown item avatar (second one) should use the fallback image
+    expect(avatars[2]).toHaveAttribute("src", "mocked-image-url"); // Bob's avatar in dropdown
+    expect(screen.getAllByText("Bob Johnson")).toHaveLength(2); // Once in selected, once in dropdown
+    expect(screen.getAllByTestId("mail-icon")).toHaveLength(2); // Once in selected, once in dropdown
   });
 
   it("renders nothing for empty users array", () => {
@@ -76,12 +85,16 @@ describe("UnlinkedUserDropdown", () => {
   it("calls onSelectUser with the correct user when multiple users are present", () => {
     const onSelectUser = jest.fn();
     render(<UnlinkedUserDropdown users={users} selectedUser={null} onSelectUser={onSelectUser} />);
-    fireEvent.click(screen.getByText("Alice Smith"));
+
+    const aliceElements = screen.getAllByText("Alice Smith");
+    fireEvent.click(aliceElements[0]);
     expect(onSelectUser).toHaveBeenCalledWith(users[0]);
-    fireEvent.click(screen.getByText("Bob Johnson"));
+
+    const bobElements = screen.getAllByText("Bob Johnson");
+    fireEvent.click(bobElements[0]);
     expect(onSelectUser).toHaveBeenCalledWith(users[1]);
   });
-  
+
   it("shows dropdown items and calls onSelectUser when clicked", () => {
     const onSelectUser = jest.fn();
     render(<UnlinkedUserDropdown users={users} selectedUser={null} onSelectUser={onSelectUser} />);
@@ -89,7 +102,9 @@ describe("UnlinkedUserDropdown", () => {
     expect(screen.getByText("Alice Smith")).toBeInTheDocument();
     expect(screen.getByText("Bob Johnson")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Bob Johnson"));
+    // Find the Bob Johnson text in the dropdown menu and click it
+    const bobElements = screen.getAllByText("Bob Johnson");
+    fireEvent.click(bobElements[0]); // Click the first occurrence
     expect(onSelectUser).toHaveBeenCalledWith(users[1]);
   });
 });

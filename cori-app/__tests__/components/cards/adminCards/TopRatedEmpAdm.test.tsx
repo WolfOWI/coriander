@@ -57,9 +57,9 @@ describe("TopRatedEmpCard Component Tests", () => {
     const employeeWithoutPicture = { ...mockEmployee, profilePicture: "" };
     render(<TopRatedEmpCard {...employeeWithoutPicture} />);
 
-    const image = screen.getByAltText("John Doe");
-    expect(image).toBeInTheDocument();
-    // When profilePicture is empty, getFullImageUrl returns null, so src becomes empty
+    // When profilePicture is empty, should show PersonRounded icon instead of image
+    const icon = screen.getByTestId("PersonRoundedIcon");
+    expect(icon).toBeInTheDocument();
   });
 
   test("displays star rating with correct formatting", () => {
@@ -90,7 +90,7 @@ describe("TopRatedEmpCard Component Tests", () => {
     const cardContainer = container.querySelector(".p-1");
     expect(cardContainer).toBeInTheDocument();
 
-    const cardContent = container.querySelector(".flex.items-center.gap-4");
+    const cardContent = container.querySelector(".flex.items-center.gap-3");
     expect(cardContent).toBeInTheDocument();
     expect(cardContent).toHaveClass("hover:bg-zinc-100", "rounded-xl", "min-h-[56px]");
   });

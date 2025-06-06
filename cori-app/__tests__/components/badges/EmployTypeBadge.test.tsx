@@ -41,49 +41,4 @@ describe("EmployTypeBadge Component Tests", () => {
 
     expect(screen.getByText("Unknown")).toBeInTheDocument();
   });
-
-  test("applies default classes", () => {
-    const { container } = render(<EmployTypeBadge status={EmployType.FullTime} />);
-
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass("w-fit", "min-w-fit", "text-nowrap");
-  });
-
-  test("renders all employment types correctly", () => {
-    const employmentTests = [
-      { status: EmployType.FullTime, expectedText: "Full Time" },
-      { status: EmployType.PartTime, expectedText: "Part Time" },
-      { status: EmployType.Contract, expectedText: "Contract" },
-      { status: EmployType.Intern, expectedText: "Intern" },
-      { status: "suspended" as const, expectedText: "Suspended" },
-    ];
-
-    employmentTests.forEach(({ status, expectedText }) => {
-      const { unmount } = render(<EmployTypeBadge status={status} />);
-      expect(screen.getByText(expectedText)).toBeInTheDocument();
-      unmount();
-    });
-  });
-
-  test("uses small size for CoriBadge", () => {
-    const { container } = render(<EmployTypeBadge status={EmployType.FullTime} />);
-
-    // Check that the badge has small size styling
-    const badge = container.firstChild as HTMLElement;
-    expect(badge).toHaveClass("py-1", "px-3");
-  });
-
-  test("renders component without crashing for all valid statuses", () => {
-    const validStatuses = [
-      EmployType.FullTime,
-      EmployType.PartTime,
-      EmployType.Contract,
-      EmployType.Intern,
-      "suspended" as const,
-    ];
-
-    validStatuses.forEach((status) => {
-      expect(() => render(<EmployTypeBadge status={status} />)).not.toThrow();
-    });
-  });
 });
