@@ -2,6 +2,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import DoughnutChartCard from "../../../src/components/charts/DoughnutChart";
 
+import '@testing-library/jest-dom';
+
 // Mock the PieChart from MUI X Charts to avoid rendering SVGs in tests
 jest.mock("@mui/x-charts/PieChart", () => ({
   PieChart: (props: any) => (
