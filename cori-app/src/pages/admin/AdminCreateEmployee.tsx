@@ -92,6 +92,15 @@ const AdminCreateEmployee: React.FC = () => {
     );
   }
 
+  // …inside AdminCreateEmployee.tsx (add just below the other handlers)
+  const handleRemoveEquipment = (id: number) => {
+    // Remove from the visible list
+    setSelectedEquipments((prev) => prev.filter((eq) => eq.equipmentId !== id));
+
+    // Keep the payload list in sync
+    setEquipmentIds((prev) => prev.filter((equipId) => equipId !== id));
+  };
+
   // AdminCreateEmployee.tsx (excerpt)
   const handleCreateEmployee = async (values: any) => {
     if (!selectedUser) return;
@@ -205,8 +214,8 @@ const AdminCreateEmployee: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div>
               <div className="text-zinc-500 font-semibold text-center mb-2 text-lg">
-                  Personal
-                </div>
+                Personal
+              </div>
               <Form.Item
                 name="gender"
                 label="Gender"
@@ -262,7 +271,7 @@ const AdminCreateEmployee: React.FC = () => {
                   rules={[{ required: true }]}
                 >
                   <Select
-                  className="drop-shadow-md"
+                    className="drop-shadow-md"
                     options={[
                       { label: "Full Time", value: 0 },
                       { label: "Part Time", value: 1 },
@@ -276,7 +285,7 @@ const AdminCreateEmployee: React.FC = () => {
                   label="Date of Employment"
                   rules={[{ required: true }]}
                 >
-                  <DatePicker className='w-full h-12 drop-shadow-md' />
+                  <DatePicker className="w-full h-12 drop-shadow-md" />
                 </Form.Item>
               </div>
 
@@ -290,7 +299,10 @@ const AdminCreateEmployee: React.FC = () => {
                   label="Salary Amount"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber prefix="R" className="w-full h-12 rounded-lg drop-shadow-md" />
+                  <InputNumber
+                    prefix="R"
+                    className="w-full h-12 rounded-lg drop-shadow-md"
+                  />
                 </Form.Item>
                 <Form.Item
                   name="payCycle"
@@ -298,7 +310,7 @@ const AdminCreateEmployee: React.FC = () => {
                   rules={[{ required: true }]}
                 >
                   <Select
-                  className="drop-shadow-md"
+                    className="drop-shadow-md"
                     options={[
                       { label: "Monthly", value: 0 },
                       { label: "Bi-weekly", value: 1 },
@@ -339,7 +351,9 @@ const AdminCreateEmployee: React.FC = () => {
                         key={equip.equipmentId}
                         item={equip}
                         adminView
-                        onDelete={() => {}}
+                        onDelete={() =>
+                          handleRemoveEquipment(equip.equipmentId)
+                        }
                         onEdit={() => {}}
                         onUnlink={() => {}}
                       />
