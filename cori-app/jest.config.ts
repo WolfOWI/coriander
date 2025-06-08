@@ -13,6 +13,7 @@ const config: Config = {
   //   Handle CSS imports
   moduleNameMapper: {
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+    "\\.(png|jpe?g|gif|webp|svg)$": "<rootDir>/__mocks__/fileMock.ts",
   },
   // Coverage configuration
   collectCoverage: true,
@@ -25,6 +26,7 @@ const config: Config = {
     "!src/preload.ts",
     "!**/node_modules/**",
   ],
+  setupFiles: ["<rootDir>/jest.setup.ts"],
 };
 
 export default config;
