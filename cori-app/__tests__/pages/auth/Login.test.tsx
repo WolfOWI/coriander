@@ -1,174 +1,269 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import * as LoginModule from "../../../src/pages/auth/Login"; // fix incorrect default import issue
+import userEvent from "@testing-library/user-event";
+import Login from "../../../src/pages/auth/Login";
 import { BrowserRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 
-const Login = LoginModule.default || LoginModule;
+//==============================================================================
+// MOCKS
+//==============================================================================
 
-// --------- mocks -----------------------------------------------------------
-
-// 1️⃣ Mock auth service functions
-import * as authService from "../../../src/services/authService";
-
+// Mock authService: Isolate the component from actual API calls
 jest.mock("../../../src/services/authService", () => ({
-  __esModule: true,
   fullEmailLogin: jest.fn(),
   handleExistingLoginRedirect: jest.fn(),
+  // fullGoogleSignIn is not directly called by a user action in Login.tsx,
+  // but by an event listener, so we don't need to mock it for these tests.
 }));
-
+import * as authService from "../../../src/services/authService";
 const mockedFullEmailLogin = authService.fullEmailLogin as jest.Mock;
 const mockedExistingRedirect =
   authService.handleExistingLoginRedirect as jest.Mock;
 
-// 2️⃣ Mock Ant Design message API – captures calls for assertion
+// Mock Ant Design components and hooks
+const mockMessageOpen = jest.fn();
 jest.mock("antd", () => {
-  const original = jest.requireActual("antd");
+  const antd = jest.requireActual("antd");
+  // We need a stable mock function for `useMessage` to assert calls against it.
+  const useMessage = () => [mockMessageOpen, <div key="message-context" />];
   return {
-    ...original,
-    message: {
-      useMessage: () => {
-        const open = jest.fn();
-        return [open, <div data-testid="antd-msg" key="ctx" />];
-      },
-    },
-    notification: { open: jest.fn() },
-    Spin: () => <div role="progressbar" />,
-    Input: (props: any) => <input {...props} />, // mock Input without styles
-    Form: Object.assign(
-      (props: any) => <form {...props}>{props.children}</form>,
-      {
-        Item: (props: any) => <div>{props.children}</div>,
-        useForm: () => [{}],
-      }
-    ),
+    ...antd,
+    message: { useMessage },
+    Spin: ({ tip }: { tip: string }) => <div role="progressbar">{tip}</div>,
   };
 });
 
-// 3️⃣ Stub components used in Login
+// Mock child components
 jest.mock("../../../src/components/auth/UnlinkedMessage", () => () => (
   <div data-testid="unlinked-message" />
 ));
 
-jest.mock("../../../src/components/buttons/CoriBtn", () => (props: any) => {
-  const { children, type, ...rest } = props;
-  return (
-    <button
-      type={type === "submit" ? "submit" : "button"}
-      {...rest}
-      data-testid="cori-btn"
-    >
-      {children}
-    </button>
-  );
-});
-
-// Stub image imports so Login.tsx doesn’t crash under Jest
+// Mock assets
 jest.mock("../../../src/assets/images/Auth_Background.png", () => "bg-stub");
 jest.mock("../../../src/assets/logos/cori_logo_green.png", () => "logo-stub");
 
-// 4️⃣ Mock react-router useNavigate
+// Mock react-router's navigate function
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
 }));
 
-// ---------------- helper to render with router -----------------------------
-function renderWithRouter(ui: React.ReactElement) {
-  return render(<BrowserRouter>{ui}</BrowserRouter>);
-}
+// Mock the global electronAPI for Google OAuth
+const mockStartGoogleOAuth = jest.fn();
+beforeAll(() => {
+  // @ts-ignore
+  window.electronAPI = {
+    startGoogleOAuth: mockStartGoogleOAuth,
+  };
+});
 
-// ------------------ tests --------------------------------------------------
+//==============================================================================
+// HELPER FUNCTIONS
+//==============================================================================
 
-describe("Login page", () => {
+const renderLoginComponent = () => {
+  return render(
+    <BrowserRouter>
+      <Login />
+    </BrowserRouter>
+  );
+};
+
+//==============================================================================
+// TESTS
+//==============================================================================
+
+describe("Login Page Functionality", () => {
+  // Reset mocks before each test to ensure isolation
   beforeEach(() => {
     jest.clearAllMocks();
+    // Default mock behavior: resolve the redirect check so the form appears
     mockedExistingRedirect.mockResolvedValue(undefined);
   });
 
-  it("shows spinner while checking existing login", async () => {
-    let resolveRedirect: () => void;
+  // Test 1: Initial Loading State
+  test("should show a loading spinner while checking for an existing session", async () => {
+    // Delay the resolution of the redirect check to see the spinner
+    let resolveRedirectCheck: () => void;
     mockedExistingRedirect.mockImplementation(
-      () => new Promise<void>((res) => (resolveRedirect = res))
+      () => new Promise<void>((resolve) => (resolveRedirectCheck = resolve))
     );
 
-    renderWithRouter(<Login />);
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
-
-    resolveRedirect!();
-    await waitFor(() =>
-      expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+    renderLoginComponent();
+    expect(screen.getByRole("progressbar")).toHaveTextContent(
+      "Fetching user details..."
     );
+
+    // Complete the check
+    resolveRedirectCheck!();
+    await waitFor(() => {
+      expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
   });
 
-  it("logs in successfully with correct credentials", async () => {
-    mockedFullEmailLogin.mockResolvedValue({ errorCode: 200, message: "OK" });
-
-    renderWithRouter(<Login />);
-
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "user@example.com" },
+  // Test 2: Form Rendering
+  test("should render the login form after the session check completes", async () => {
+    renderLoginComponent();
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /welcome back/i })
+      ).toBeInTheDocument();
     });
-    fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: "pass123" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /log in$/i }));
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /log in$/i })
+    ).toBeInTheDocument();
+  });
 
-    await waitFor(() =>
+  describe("Email and Password Login", () => {
+    // Test 3: Successful Login
+    test("should successfully log in with correct credentials", async () => {
+      const user = userEvent.setup();
+      mockedFullEmailLogin.mockResolvedValue({ errorCode: 200, message: "OK" });
+      renderLoginComponent();
+
+      await waitFor(() =>
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+      );
+
+      await user.type(screen.getByLabelText(/email/i), "test@example.com");
+      await user.type(screen.getByLabelText(/password/i), "password123");
+      await user.click(screen.getByRole("button", { name: /log in$/i }));
+
+      // Check for loading message
+      await waitFor(() => {
+        expect(mockMessageOpen).toHaveBeenCalledWith({
+          key: "login",
+          type: "loading",
+          content: "Logging in...",
+        });
+      });
+
+      // Check that the auth service was called correctly
       expect(mockedFullEmailLogin).toHaveBeenCalledWith(
-        "user@example.com",
-        "pass123"
-      )
-    );
+        "test@example.com",
+        "password123"
+      );
 
-    const messageOpen = (require("antd") as any).message.useMessage()[0];
-    expect(messageOpen).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "success" })
-    );
+      // Check for success message
+      await waitFor(() => {
+        expect(mockMessageOpen).toHaveBeenCalledWith({
+          key: "login",
+          type: "success",
+          content: "Login successful! Redirecting...",
+          duration: 2,
+        });
+      });
+    });
+
+    // Test 4: Failed Login
+    test("should show an error message with incorrect credentials", async () => {
+      const user = userEvent.setup();
+      mockedFullEmailLogin.mockResolvedValue({
+        errorCode: 401,
+        message: "Invalid credentials",
+      });
+      renderLoginComponent();
+
+      await waitFor(() =>
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+      );
+
+      await user.type(screen.getByLabelText(/email/i), "test@example.com");
+      await user.type(screen.getByLabelText(/password/i), "wrongpassword");
+      await user.click(screen.getByRole("button", { name: /log in$/i }));
+
+      // Check for error message
+      await waitFor(() => {
+        expect(mockMessageOpen).toHaveBeenCalledWith({
+          key: "login",
+          type: "error",
+          content: "Login failed: Invalid credentials",
+          duration: 3,
+        });
+      });
+    });
+
+    // Test 5: Form Validation
+    test("should not submit the form and show validation errors if fields are empty", async () => {
+      const user = userEvent.setup();
+      renderLoginComponent();
+      await waitFor(() =>
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+      );
+
+      await user.click(screen.getByRole("button", { name: /log in$/i }));
+
+      // Ant Design's Form component will show validation messages.
+      // We are testing that our component correctly uses these rules.
+      expect(
+        await screen.findByText("Please enter an email")
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Please enter a password")
+      ).toBeInTheDocument();
+
+      // Most importantly, ensure the login function was NOT called
+      expect(mockedFullEmailLogin).not.toHaveBeenCalled();
+    });
+
+    // Test 6: Unlinked Account
+    test("should render UnlinkedMessage component for an unlinked account response", async () => {
+      const user = userEvent.setup();
+      mockedFullEmailLogin.mockResolvedValue({
+        errorCode: 300,
+        message: "Account not linked",
+      });
+      renderLoginComponent();
+      await waitFor(() =>
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+      );
+
+      await user.type(screen.getByLabelText(/email/i), "unlinked@example.com");
+      await user.type(screen.getByLabelText(/password/i), "password123");
+      await user.click(screen.getByRole("button", { name: /log in$/i }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId("unlinked-message")).toBeInTheDocument();
+      });
+
+      // The form should be hidden when the UnlinkedMessage is shown
+      expect(
+        screen.queryByRole("heading", { name: /welcome back/i })
+      ).not.toBeInTheDocument();
+    });
   });
 
-  it("shows error when credentials are wrong", async () => {
-    mockedFullEmailLogin.mockResolvedValue({
-      errorCode: 401,
-      message: "Invalid password",
+  describe("Other Login Methods and Links", () => {
+    // Test 7: Google Login
+    test("should call electronAPI when the Google login button is clicked", async () => {
+      const user = userEvent.setup();
+      renderLoginComponent();
+      await waitFor(() =>
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+      );
+
+      const googleButton = screen.getByRole("button", {
+        name: /log in with google/i,
+      });
+      await user.click(googleButton);
+
+      expect(mockStartGoogleOAuth).toHaveBeenCalledTimes(1);
     });
 
-    renderWithRouter(<Login />);
+    // Test 8: Sign Up Link
+    test("should have a link to the employee sign-up page", async () => {
+      renderLoginComponent();
+      await waitFor(() =>
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument()
+      );
 
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "user@example.com" },
+      const signUpLink = screen.getByRole("link", { name: /sign up/i });
+      expect(signUpLink).toBeInTheDocument();
+      expect(signUpLink).toHaveAttribute("href", "/employee/signup");
     });
-    fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: "wrong" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /log in$/i }));
-
-    await waitFor(() => expect(mockedFullEmailLogin).toHaveBeenCalled());
-    const messageOpen = (require("antd") as any).message.useMessage()[0];
-    expect(messageOpen).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "error" })
-    );
-  });
-
-  it("renders UnlinkedMessage when service returns code 300", async () => {
-    mockedFullEmailLogin.mockResolvedValue({
-      errorCode: 300,
-      message: "Not linked",
-    });
-
-    renderWithRouter(<Login />);
-
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "user@example.com" },
-    });
-    fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: "pass" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /log in$/i }));
-
-    await waitFor(() =>
-      expect(screen.getByTestId("unlinked-message")).toBeInTheDocument()
-    );
   });
 });
