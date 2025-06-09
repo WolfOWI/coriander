@@ -67,7 +67,7 @@ beforeEach(() => {
     },
     status: 200,
     statusText: "OK",
-    headers: {},
+    headers: new AxiosHeaders(),
     config: { headers: new AxiosHeaders() },
   });
 
@@ -80,7 +80,7 @@ beforeEach(() => {
     },
     status: 200,
     statusText: "OK",
-    headers: {},
+    headers: new AxiosHeaders(),
     config: { headers: new AxiosHeaders() },
   });
 });

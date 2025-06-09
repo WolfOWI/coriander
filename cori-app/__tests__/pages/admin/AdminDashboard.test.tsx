@@ -4,32 +4,34 @@ import AdminDashboard from "../../../src/pages/admin/AdminDashboard";
 import * as apiService from "../../../src/services/api.service";
 import * as authService from "../../../src/services/authService";
 import { BrowserRouter } from "react-router-dom";
+import { AxiosHeaders } from "axios";
 
 import '@testing-library/jest-dom';
 
 // Mock child components and icons to avoid rendering complexity
-jest.mock("../../src/components/charts/BarChart", () => () => <div data-testid="bar-chart" />);
-jest.mock("../../src/components/charts/DoughnutChart", () => () => <div data-testid="doughnut-chart" />);
-jest.mock("../../src/components/leave/LeaveCardAdminDash", () => (props: unknown) => {
+jest.mock("../../../src/components/charts/BarChart", () => () => <div data-testid="bar-chart" />);
+jest.mock("../../../src/components/charts/DoughnutChart", () => () => <div data-testid="doughnut-chart" />);
+jest.mock("../../../src/components/leave/LeaveCardAdminDash", () => (props: unknown) => {
   const p = props as { leave?: { fullName?: string } };
   return <div data-testid="leave-card">{p.leave?.fullName}</div>;
 });
-jest.mock("../../src/components/cards/adminCards/TopRatedEmpAdm", () => (props: unknown) => {
+jest.mock("../../../src/components/cards/adminCards/TopRatedEmpAdm", () => (props: unknown) => {
   const p = props as { fullName?: string };
   return <div data-testid="top-emp-card">{p.fullName}</div>;
 });
-jest.mock("../../src/components/calender", () => (props: unknown) => {
+jest.mock("../../../src/components/calender", () => (props: unknown) => {
   const p = props as { onChange?: (date: Date) => void };
   return <div data-testid="admin-calendar" onClick={() => p.onChange && p.onChange(new Date("2024-06-01"))} />;
 });
-jest.mock("../../src/components/gathering/AdminGatheringBox", () => (props: unknown) => {
+jest.mock("../../../src/components/gathering/AdminGatheringBox", () => (props: unknown) => {
   const p = props as { gathering?: { id?: string | number } };
   return <div data-testid="gathering-box">{p.gathering?.id}</div>;
 });
-jest.mock("../../src/components/modals/CreatePRModal", () => (props: any) =>
-  props.showModal ? <div data-testid="create-pr-modal" /> : null
-);
-jest.mock("../../src/constants/icons", () => ({
+jest.mock("../../../src/components/modals/CreatePRModal", () => (props: unknown) => {
+  const p = props as { showModal?: boolean };
+  return p.showModal ? <div data-testid="create-pr-modal" /> : null;
+});
+jest.mock("../../../src/constants/icons", () => ({
   Icons: {
     MeetingRoom: () => <span data-testid="meeting-room-icon" />,
     Add: () => <span data-testid="add-icon" />,
@@ -48,9 +50,6 @@ jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
 }));
-
-// Fix config typing for Axios mocks
-import type { AxiosRequestConfig } from "axios";
 
 // Mock API and Auth
 beforeEach(() => {
@@ -74,22 +73,22 @@ beforeEach(() => {
     },
     status: 200,
     statusText: "OK",
-    headers: {},
-    config: { headers: {} } as any,
+    headers: new AxiosHeaders(),
+    config: { headers: new AxiosHeaders() },
   });
   jest.spyOn(apiService.empLeaveRequestsAPI, "getPendingLeaveRequests").mockResolvedValue({
     data: [{ leaveRequestId: 1, fullName: "Bob", employeeId: 2 }],
     status: 200,
     statusText: "OK",
-    headers: {},
-    config: { headers: {} } as any,
+    headers: new AxiosHeaders(),
+    config: { headers: new AxiosHeaders() },
   });
   jest.spyOn(apiService.gatheringAPI, "getUpcomingAndCompletedGatheringsByAdminIdAndMonth").mockResolvedValue({
     data: { $values: [{ id: 1, startDate: new Date().toISOString() }] },
     status: 200,
     statusText: "OK",
-    headers: {},
-    config: { headers: {} } as any,
+    headers: new AxiosHeaders(),
+    config: { headers: new AxiosHeaders() },
   });
 });
 
