@@ -12,14 +12,9 @@ import {
   Modal,
   Button,
   Form,
-  Input,
   Select,
   message,
   DatePicker,
-  TimePicker,
-  Rate,
-  Upload,
-  Switch,
 } from "antd";
 import { getFullCurrentUser } from "../../services/authService";
 
@@ -36,15 +31,26 @@ function ApplyForLeaveModal({
 }: ApplyForLeaveModalProps) {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Handle the submission of the leave request
   const handleSubmit = async () => {
     try {
+      // Disable button and show loading
+      setIsSubmitting(true);
+
       // Validate the form fields
       const values = await form.validateFields();
       const user = await getFullCurrentUser();
-      // Submit the leave request
-      // build payload
+
+      // Guard: Ensure `user` exists and has `employeeId`
+      if (!user || !user.employeeId) {
+        messageApi.error("Unable to identify your user account.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Build payload
       const [startDate, endDate] = values.leaveDateRange;
       const payload = {
         employeeId: user.employeeId?.toString(),
@@ -55,13 +61,9 @@ function ApplyForLeaveModal({
         status: 0,
       };
 
-      // send to backend
-      // this is where you would call your API to create the leave request
+      // Send to backend
       await empLeaveRequestsAPI.createLeaveRequest(payload);
 
-      console.log("Leave request payload:", payload);
-
-      //   await equipmentAPI.createEquipItemOrItems([values]);
       messageApi.success("Leave request was submitted successfully");
 
       // Reset form and close modal
@@ -74,17 +76,20 @@ function ApplyForLeaveModal({
       if (error.errorFields) {
         // Form validation error
         messageApi.error("Please fill out all fields correctly.");
-        return;
+      } else {
+        messageApi.error("Error: The leave request was not submitted.");
+        console.error("Error submitting leave request:", error);
       }
-      messageApi.error("Error: The leave request was not submitted.");
-      console.error("Error submitting leave request:", error);
+    } finally {
+      // Re-enable button regardless of success or failure
+      setIsSubmitting(false);
     }
   };
 
   // Handle the cancellation of the leave request creation
   const handleCancel = () => {
     setShowModal(false);
-    form.resetFields(); // Clear the form fields
+    form.resetFields();
   };
 
   return (
@@ -97,28 +102,17 @@ function ApplyForLeaveModal({
         open={showModal}
         onCancel={handleCancel}
         width={600}
-        styles={{
-          header: {
-            paddingLeft: 40,
-            paddingRight: 40,
-            paddingTop: 40,
-          },
-          body: {
-            paddingTop: 16,
-            paddingBottom: 16,
-            padding: 40,
-          },
-          footer: {
-            paddingLeft: 40,
-            paddingRight: 40,
-            paddingBottom: 40,
-          },
-        }}
         footer={[
           <Button key="cancel" onClick={handleCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" onClick={handleSubmit}>
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleSubmit}
+            loading={isSubmitting}
+            disabled={isSubmitting}
+          >
             Submit Application
           </Button>,
         ]}
@@ -152,11 +146,10 @@ function ApplyForLeaveModal({
           >
             <DatePicker.RangePicker
               className="w-full h-12"
-              minDate={dayjs()} // Cannot select a date before today
+              disabledDate={(current) => current && current < dayjs().startOf("day")}
               format="DD MMM YYYY"
             />
           </Form.Item>
-
           <Form.Item name="comment" label="Comment">
             <div className="flex gap-2">
               <TextArea rows={4} />

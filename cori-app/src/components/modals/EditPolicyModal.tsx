@@ -79,7 +79,10 @@ const EditPolicyModal: React.FC<EditPolicyModalProps> = ({ showModal, setShowMod
             label="Policy"
             rules={[{ required: true, message: "Please enter the policy text" }]}
           >
-            <TextArea rows={6} />
+             <TextArea
+              autoSize={{ minRows: 6 }}
+              style={{ resize: "none" }}
+            />
           </Form.Item>
         </Form>
       </Modal>

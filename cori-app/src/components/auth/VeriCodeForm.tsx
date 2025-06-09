@@ -148,16 +148,9 @@ function VeriCodeForm({
       <div className="flex flex-col items-center w-[300px]">
         <div className="flex flex-col items-center mb-4">
           <p>We've sent a code to</p>
-          <h1 className="text-corigreen-500 font-semibold text-2xl">
-            {userData.email}
-          </h1>
+          <h1 className="text-corigreen-500 font-semibold text-2xl">{userData.email}</h1>
         </div>
-        <Form
-          form={form}
-          layout="vertical"
-          variant="filled"
-          className="flex flex-col w-full"
-        >
+        <Form form={form} layout="vertical" variant="filled" className="flex flex-col w-full">
           <Form.Item
             name="vericode"
             label="Verification Code"
@@ -169,12 +162,7 @@ function VeriCodeForm({
           >
             <Input.OTP size="large" length={6} style={{ width: "100%" }} />
           </Form.Item>
-          <CoriBtn
-            type="submit"
-            style="black"
-            className="mt-2"
-            onClick={handleSubmit}
-          >
+          <CoriBtn type="submit" style="black" className="mt-2" onClick={handleSubmit}>
             Submit
           </CoriBtn>
 
@@ -185,30 +173,8 @@ function VeriCodeForm({
             disabled={isResendDisabled}
             onClick={handleResendCode}
           >
-            {isResendDisabled
-              ? `Resend Code (${resendDisabledTime}s)`
-              : "Resend Code"}
+            {isResendDisabled ? `Resend Code (${resendDisabledTime}s)` : "Resend Code"}
           </CoriBtn>
-          {/* TODO: Delete this button later */}
-          {isResendDisabled && (
-            <>
-              <CoriBtn
-                secondary
-                type="submit"
-                style="red"
-                className="mt-2"
-                onClick={() => {
-                  setIsResendDisabled(false);
-                  setResendDisabledTime(0);
-                }}
-              >
-                Skip Wait
-              </CoriBtn>
-              <p className="mt-2 text-zinc-500">
-                Delete this skip button later
-              </p>
-            </>
-          )}
         </Form>
         <p className="mt-4 text-zinc-500">
           Have another account?{" "}
