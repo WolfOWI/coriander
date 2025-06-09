@@ -1,7 +1,7 @@
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import UnlinkedMessage from "../../../src/components/auth/UnlinkedMessage";
-import { checkIfUserIsLinked } from "../../../src/services/authService";
+import { checkIfUserIsLinked, logout } from "../../../src/services/authService";
 import "@testing-library/jest-dom";
 
 // Mock the auth service
@@ -26,13 +26,14 @@ describe("UnlinkedMessage", () => {
 
   it("renders core content", () => {
     const { getByText } = render(<UnlinkedMessage onLogOut={mockOnLogOut} />);
-    expect(getByText(/Almost there!/i)).toBeInTheDocument();
+    expect(getByText("Almost")).toBeInTheDocument();
+    expect(getByText("there!")).toBeInTheDocument();
     expect(getByText(/Your Coriander account was created successfully/i)).toBeInTheDocument();
   });
 
   it("handles logout button click", () => {
     const { getByText } = render(<UnlinkedMessage onLogOut={mockOnLogOut} />);
-    fireEvent.click(getByText(/Logout/i));
-    expect(mockOnLogOut).toHaveBeenCalled();
+    fireEvent.click(getByText("Logout"));
+    expect(logout).toHaveBeenCalled();
   });
 });
