@@ -3,10 +3,10 @@
 <!-- Repository Information & Links-->
 <br />
 
-![GitHub repo size](https://img.shields.io/github/repo-size/WolfOWI/coriander?color=%000000)
-![GitHub watchers](https://img.shields.io/github/watchers/WolfOWI/coriander?color=%000000)
-![GitHub language count](https://img.shields.io/github/languages/count/WolfOWI/coriander?color=%000000)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/WolfOWI/coriander?color=%000000)
+![GitHub repo size](https://img.shields.io/github/repo-size/WolfOWI/coriander?color=88a764)
+![GitHub watchers](https://img.shields.io/github/watchers/WolfOWI/coriander?color=88a764)
+![GitHub language count](https://img.shields.io/github/languages/count/WolfOWI/coriander?color=88a764)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/WolfOWI/coriander?color=88a764)
 [![LinkedIn][linkedin-shield]][linkedin-url]
 [![Instagram][instagram-shield]][instagram-url]
 [![Behance][behance-shield]][behance-url]
@@ -21,7 +21,7 @@
 <p align="center">
 
   <a href="https://github.com/WolfOWI/coriander">
-    <img src="cori-app/src/assets/logos/cori_logo_green.png" alt="Coriander HR Logo" height="140">
+    <img src="cori-app/src/assets/logos/cori_logo_green.png" alt="Coriander HR Logo" height="70">
   </a>
   
   <h3 align="center">Coriander HR</h3>
