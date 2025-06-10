@@ -13,7 +13,7 @@
 
 <!-- HEADER SECTION -->
 <h5 align="center" style="padding:0;margin:0;">Iné Smith - Student Number</h5>
-<h5 align="center" style="padding:0;margin:0;">Kayla Posthumus - Student Number</h5>
+<h5 align="center" style="padding:0;margin:0;">Kayla Posthumus - 231096</h5>
 <h5 align="center" style="padding:0;margin:0;">Ruan Klopper - 231280</h5>
 <h5 align="center" style="padding:0;margin:0;">Wolf Botha - 21100255</h5>
 <h6 align="center">Interactive Development 300 • 2025</h6>
@@ -687,8 +687,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- MARKDOWN LINKS & IMAGES -->
 
 [image1]: /path/to/dashboard-screenshot.png
-[image2]: /path/to/authentication-screenshot.png
-[image3]: /path/to/employee-management-screenshot.png
+[image2]: /readMe_mockUps/logIn_SignUp_mockUp.png
+[image3]: /readMe_mockUps/adminCombineEmployeeManagmentPages.png
 [image4]: /path/to/leave-management-screenshot.png
 [image5]: /path/to/meeting-management-screenshot.png
 [image6]: /path/to/equipment-management-screenshot.png
