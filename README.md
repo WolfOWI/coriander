@@ -18,9 +18,9 @@
 </br>
 <p align="center">
 
-  <a href="https://github.com/WolfOWI/coriander">
+  <div align="center" href="https://github.com/WolfOWI/coriander">
     <img src="cori-app/src/assets/logos/cori_logo_green.png" alt="Coriander HR Logo" height="70">
-  </a>
+  </div>
   
   <h3 align="center">Coriander HR</h3>
 
@@ -301,22 +301,15 @@ Here are the steps to clone and run this project:
 
 ### Authentication Pages
 
-**Login Page** (`/`)
-
 ![Login Page][image2]
 
+**Login Page** (`/`)
 The Login Page provides a streamlined authentication experience using Google OAuth integration. Users are presented with a clean interface featuring the Coriander HR logo and a prominent "Log in with Google" button. They may also login with their email if they do not wish to use Google. Upon successful authentication, users are automatically directed to their role-specific dashboard. The page includes subtle animations and clear error handling to guide users through the login process.
 
 **Employee Signup** (`/employee/signup`)
-
-![Employee Signup Page][image3]
-
 The Employee Registration page allows new employees to create their user account, by filling in their Full Name, email and password, all of which have real-time validation. Employees may also sign up with Google and link their account to a Google Account. Upon successful sign up, the employee will have to enter a 6-digit verification code sent to their email. Finally, unless an admin has linked the employee's user account to an employee, they will be presented with the Unlinked Screen, which informs the user that the admin must take action before they'll be able to use Coriander.
 
 **Admin Signup** (`/admin/signup`)
-
-![Admin Signup Page][image4]
-
 The Admin Signup Page, is almost identical to the Employee Signup Page, but requires no additional verification, allowing quick setup of administrative accounts. Admins can signup with both the email-password-method or with Google.
 
 ### Employee Pages
@@ -326,12 +319,6 @@ The Admin Signup Page, is almost identical to the Employee Signup Page, but requ
 ![Employee Home][image5]
 
 The Employee Home serves as a central hub for all employee activities. It displays personalised widgets including their current employee performance rating, their remaining leave balances, upcoming meetings, and their payroll information. Employees can export their payroll information as a PDF by clicking the export payroll button. Furthermore, an inspirational quote, as motivation for employees, are automatically changed daily.
-
-**Employee Profile** (`/employee/profile`)
-
-![Employee Profile][image6]
-
-On the Employee Profile Page, employees can view and update their personal information. The page includes sections for personal info, employment & payroll info and assigned equipment. If the user did not sign up with Google, they are able to update their profile picture.
 
 **Leave Overview** (`/employee/leave-overview`)
 
@@ -344,6 +331,12 @@ The Employee Leave Overview Page provides a comprehensive view of an employee's 
 ![Meetings Overview][image8]
 
 A centralised meetings management page where employees can view, request, and track their meetings and performance reviews. The interface includes meeting type and completion filters and a quick request submission functionality. Each meeting list items displays essential information with colour-coding for different meeting types and statuses.
+
+**Employee Profile** (`/employee/profile`)
+
+![Employee Profile][image6]
+
+On the Employee Profile Page, employees can view and update their personal information. The page includes sections for personal info, employment & payroll info and assigned equipment. If the user did not sign up with Google, they are able to update their profile picture.
 
 ### Admin Pages
 
@@ -363,29 +356,29 @@ A powerful interface for managing the entire employee database. The Employee Man
 
 ![Individual Employee][image11]
 
-One of the most detailed screens on the Coriander platform, the Individual Employee Page shows a detailed view of an individual employee record, combining all aspects of employee data in one interface. The page includes sections for personal information, payroll info, equipment assignments, leave balances, rating and meeting history. Admins can edit some details, change payroll info and last pay date, assigned, unlink or delete equipment, edit employee meetings / reviews and suspend or terminate the employee.
+One of the more detailed screens on the Coriander platform, the Individual Employee Page shows a detailed view of an individual employee record, combining all aspects of employee data in one interface. The page includes sections for personal information, payroll info, equipment assignments, leave balances, rating and meeting history. Admins can edit some details, change payroll info and last pay date, assigned, unlink or delete equipment, edit employee meetings / reviews and suspend or terminate the employee.
 
 **Create Employee** (`/admin/employees`)
 
-![Create Employee][image11B]
+![Create Employee][image12]
 
 On the Create Employee Page, admins assign unlinked user accounts (those with an email & password / Google sign up), to an Employee, entering the employment and payroll details, as well as assignment of equipment. After successful creation of an employee, the employee user account will now have access to the Coriander system.
 
 **Equipment Management** (`/admin/equipment`)
 
-![Equipment Management][image12]
+![Equipment Management][image13]
 
 The equipment tracking interface provides a complete overview of all company assets. It features a clean list view of equipment with detailed information about condition, assignment status, and assignment date. The page includes quick actions for creating, assigning, and managing equipment with an intuitive dropdown and modal interface.
 
 **Leave Requests** (`/admin/leave-requests`)
 
-![Leave Requests][image13]
+![Leave Requests][image14]
 
 A comprehensive leave management interface for administrators to handle all employee leave requests. The page features a list of pending, approved and rejected leave requests, which can be filtered at the top of the page. Each request automated checks the employee balance, and if an admin attemps to approve a requests that has most leave than the employee has for that leave type, a warning modal will appear. An admin can decide to approve the request regardless. Approved and rejected requests can also be "undo-ed", setting them back to pending.
 
 **Admin Meetings** (`/admin/meetings`)
 
-![Admin Meetings][image14]
+![Admin Meetings][image15]
 
 The Admin Meetings page provides tools for managing all organisational meetings and reviews with the logged in admin. The list of cards can be filtered by "All Upcoming", by each type or by completed status. Each meeting can be edited, marked as completed/pending and removed. Meeting requests are also accessed on this page, by clicking on either the notification dot next to the page heading, or the Request button at the top right corner of the page. When there are requests pending, the button will be marked as red with the request count visible, and if nothing was requested, the button will returns to its default green state. Furthermore, administrators can also create a new performance review on this page.
 
@@ -455,8 +448,6 @@ The `Conceptual Process` encompasses the research, planning, and design phases t
 
 ### Ideation
 
-![Initial Concept Sketches][concept-sketch]
-
 The project began with extensive research into existing HR management systems, identifying key pain points:
 
 - Fragmented HR processes across multiple platforms / tools
@@ -475,9 +466,7 @@ Our solution focuses on:
 ### Wireframes
 
 Detailed high-fidelity designs were created for all major user flows
-![Authentication Wireframes][wireframe1]
-![Employee Pages Wireframes][wireframe2]
-![Admin Pages Wireframes][wireframe3]
+![Wireframes][wireframes]
 
 ### ER-Diagram
 
@@ -630,10 +619,10 @@ The project maintains a comprehensive testing suite with 218 passing tests acros
 
 ### Mockups
 
-![Mockup A][image12]
+![Mockup A][image16]
 <br>
 
-![Mockup B][image13]
+![Mockup B][image17]
 
 The final application delivers a comprehensive HR management solution with:
 
@@ -719,29 +708,26 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[image1]: /screenshots/dashboard/coriander-hr-main-dashboard.png
-[image2]: /screenshots/auth/login-page-with-google.png
-[image3]: /screenshots/auth/employee-signup-page.png
-[image4]: /screenshots/auth/admin-signup-page.png
-[image5]: /screenshots/employee/employee-home-dashboard.png
-[image6]: /screenshots/employee/employee-profile-page.png
-[image7]: /screenshots/employee/leave-overview-page.png
-[image8]: /screenshots/employee/meetings-overview-page.png
-[image9]: /screenshots/admin/admin-dashboard-analytics.png
-[image10]: /screenshots/admin/employee-management-page.png
-[image11]: /screenshots/admin/individual-employee-view.png
-[image11B]: /screenshots/admin/create-employee-page.png
-[image12]: /screenshots/admin/equipment-management-page.png
-[image13]: /screenshots/admin/leave-requests-page.png
-[image14]: /screenshots/admin/meetings-management-page.png
+[image1]: /docs/Mockup-cori.png
+[image2]: /docs/logIn_SignUp_mockUp.png
+[image5]: /docs/employeeHomePage.png
+[image6]: /docs/employeeProfilePage.png
+[image7]: /docs/employeeLeaveOverviewPage.png
+[image8]: /docs/employeeMeetingsPage.png
+[image9]: /docs/adminDashboardPage.png
+[image10]: /docs/adminEmployeeManagementPage.png
+[image11]: /docs/adminIndividaulEmployeeDetailsPage.png
+[image12]: /docs/adminCreateEmployeePage.png
+[image13]: /docs/adminEquipmentPage.png
+[image14]: /docs/adminLeaveRequestPage.png
+[image15]: /docs/adminMeetingsPage.png
+[image16]: /docs/adminDashboard_mockUp.png
+[image17]: /docs/adminPerformanceReviewSteps.png
 
 <!-- Design & Documentation Images -->
 
-[concept-sketch]: /documentation/design/concept-sketches.png
-[wireframe1]: /documentation/design/wireframe-authentication.png
-[wireframe2]: /documentation/design/wireframe-employee-pages.png
-[wireframe3]: /documentation/design/wireframe-admin-pages.png
-[er-diagram]: /documentation/database/er-diagram-full.png
+[wireframes]: /docs/Wireframes.png
+[er-diagram]: /docs/er-diagram.png
 
 <!-- Refer to https://shields.io/ for more information and options about the shield links at the top of the ReadMe file -->
 
