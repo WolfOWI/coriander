@@ -687,8 +687,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- MARKDOWN LINKS & IMAGES -->
 
 [image1]: /path/to/dashboard-screenshot.png
-[image2]: /readMe_mockUps/logIn_SignUp_mockUp.png
-[image3]: /readMe_mockUps/adminCombineEmployeeManagmentPages.png
+[image2]: /[ath/to/..
+[image3]: /path/to/..
 [image4]: /path/to/leave-management-screenshot.png
 [image5]: /path/to/meeting-management-screenshot.png
 [image6]: /path/to/equipment-management-screenshot.png
