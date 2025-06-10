@@ -36,7 +36,7 @@
     <a href="https://github.com/WolfOWI/coriander/issues">Request Feature</a>
 </p>
 
-<a href="https://github.com/WolfOWI/coriander-backend"><p>Click here to view the backend</p></a>
+<p align="center">Click here to view the [CoriCore backend](https://github.com/WolfOWI/coriander-backend)</p>
 
 <!-- TABLE OF CONTENTS -->
 
