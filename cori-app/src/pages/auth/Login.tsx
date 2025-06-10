@@ -41,7 +41,10 @@ const Login: React.FC = () => {
   useEffect(() => {
     const handleKeyCombo = (e: KeyboardEvent) => {
       const activeElement = document.activeElement as HTMLElement;
-      if (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA") {
+      if (
+        activeElement.tagName === "INPUT" ||
+        activeElement.tagName === "TEXTAREA"
+      ) {
         return;
       }
 
@@ -129,7 +132,10 @@ const Login: React.FC = () => {
   }, [messageApi]);
 
   // Handler for email/password form submission
-  const handleEmailLogin = async (values: { email: string; password: string }) => {
+  const handleEmailLogin = async (values: {
+    email: string;
+    password: string;
+  }) => {
     const { email, password } = values;
     messageApi.open({
       key: messageKey,
@@ -172,6 +178,13 @@ const Login: React.FC = () => {
       });
     }
   };
+
+  // Effect for checking if URL contains /#notlinked
+  useEffect(() => {
+    if (window.location.hash === "#notlinked") {
+      setShowUnlinkedMessage(true);
+    }
+  }, []);
 
   // Main render logic
   if (loading) {
@@ -222,14 +235,18 @@ const Login: React.FC = () => {
                     name="email"
                     label="Email"
                     normalize={(value) => value.toLowerCase().trim()}
-                    rules={[{ required: true, message: "Please enter an email" }]}
+                    rules={[
+                      { required: true, message: "Please enter an email" },
+                    ]}
                   >
                     <Input type="email" />
                   </Form.Item>
                   <Form.Item
                     name="password"
                     label="Password"
-                    rules={[{ required: true, message: "Please enter a password" }]}
+                    rules={[
+                      { required: true, message: "Please enter a password" },
+                    ]}
                   >
                     <Input.Password />
                   </Form.Item>
