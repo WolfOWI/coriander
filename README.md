@@ -685,8 +685,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- MARKDOWN LINKS & IMAGES -->
 
 [image1]: /path/to/dashboard-screenshot.png
-[image2]: /path/to/authentication-screenshot.png
-[image3]: /path/to/employee-management-screenshot.png
+[image2]: /[ath/to/..
+[image3]: /path/to/..
 [image4]: /path/to/leave-management-screenshot.png
 [image5]: /path/to/meeting-management-screenshot.png
 [image6]: /path/to/equipment-management-screenshot.png
