@@ -162,6 +162,13 @@ function AdminGatheringBox({
         </Tooltip>
       );
     }
+
+    // Fallback for unknown gathering types
+    return (
+      <Tooltip title="Unknown">
+        <div className="bg-gray-100 rounded-full h-12 w-12 flex items-center justify-center"></div>
+      </Tooltip>
+    );
   };
 
   // Gathering title (Review by You, Review by Admin, Meet with Employee)
