@@ -53,9 +53,8 @@
   - [Leave Management](#leave-management)
   - [Meeting Management](#meeting-management)
   - [Equipment Management](#equipment-management)
-  - [Performance Reviews](#performance-reviews)
   - [Dashboard \& Analytics](#dashboard--analytics)
-- [Application Pages](#application-pages)
+- [Coriander Pages](#coriander-pages)
   - [Authentication Pages](#authentication-pages)
   - [Employee Pages](#employee-pages)
   - [Admin Pages](#admin-pages)
@@ -66,14 +65,14 @@
 - [Concept Process](#concept-process)
   - [Ideation](#ideation)
   - [Wireframes](#wireframes)
-  - [User-flow](#user-flow)
+  - [ER-Diagram](#er-diagram)
 - [Development Process](#development-process)
   - [Implementation Process](#implementation-process)
-    - [Highlights](#highlights)
-    - [Challenges](#challenges)
+  - [Highlights](#highlights)
+  - [Challenges](#challenges)
   - [Reviews \& Testing](#reviews--testing)
-    - [Feedback from Reviews](#feedback-from-reviews)
-    - [Unit Tests](#unit-tests)
+    - [Test Coverage Overview](#test-coverage-overview)
+    - [Testing Tools \& Framework](#testing-tools--framework)
   - [Future Implementation](#future-implementation)
 - [Final Outcome](#final-outcome)
   - [Mockups](#mockups)
@@ -95,7 +94,7 @@
 
 Coriander HR is a comprehensive HR Management System designed to streamline HR operations for internal use by our client, Coriander - an HR company. Built as a desktop application using Electron, it provides a seamless experience for both employees and administrators to manage various HR functions including leave requests, meeting scheduling, equipment management, and performance reviews.
 
-The application features a dual-role system with distinct interfaces for employees and administrators, ensuring appropriate access control and user experience optimisation. With its modern UI built using React and Ant Design, Coriander HR offers an intuitive and efficient platform for managing human resources.
+The application features a dual-role system with distinct interfaces for employees and administrators. With its modern UI built using React and primarily Ant Design, Coriander HR offers an intuitive and efficient platform for managing human resources.
 
 ### Built With
 
@@ -149,10 +148,21 @@ Here are the steps to clone and run this project:
    ```
 
 4. **Environment Setup**  
-   Create a `.env` file in the `cori-app` directory and configure your API endpoints:
+   Create a `.env` file in the `cori-app` directory and configure the following environment variables:
 
    ```env
-   VITE_API_URL=http://localhost:5121/api
+   # API Configuration
+   VITE_API_URL=http://localhost:5121/api        # Production API URL
+   VITE_API_DEV_URL=http://localhost:5121/api    # Development API URL
+
+   # Google OAuth Configuration
+   VITE_GOOGLE_CLIENT_ID=your_google_client_id   # Google OAuth Client ID
+
+   # Cloudinary Configuration
+   VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name    # Cloudinary Cloud Name
+   VITE_CLOUDINARY_PROFPICS_PRESET=preset_name   # Cloudinary Profile Pictures Preset
+   VITE_CLOUDINARY_API_KEY=your_api_key          # Cloudinary API Key
+   VITE_CLOUDINARY_FILEUPLOAD_PRESET=preset_name # Cloudinary File Upload Preset
    ```
 
 5. **Development Mode**  
@@ -174,202 +184,210 @@ Here are the steps to clone and run this project:
 
 ### Authentication System
 
-![Authentication Interface][image2]
-
 **Secure Multi-Role Authentication**
 
-- Google OAuth integration for secure login
-- Dual registration system (Employee/Admin)
-- Role-based access control
-- Session management with token-based authentication
-- Password reset and account verification
+- **Google OAuth Integration**
+
+  - Secure single sign-on with Google accounts
+  - Token-based authentication with JWT
+  - Automatic session management and refresh
+  - Secure token storage and handling
+
+- **Role-Based Access Control**
+  - Distinct employee and administrator roles
+  - Role-specific permissions and access levels
+  - Protected routes and API endpoints
+  - Session management with token validation
 
 ### Employee Management
 
-![Employee Management Dashboard][image3]
+**Comprehensive Employee Management**
 
-**Comprehensive Employee Lifecycle Management**
+- **Profile Management**
 
-- Employee profile creation and management
-- Personal information tracking (contact details, employment history)
-- Profile picture upload with Cloudinary integration
-- Employment status tracking and termination handling
-- Salary and pay cycle management
-- Employee rating and performance metrics
+  - Detailed employee info
+  - Profile picture upload via Cloudinary
+  - Employement info
+
+- **Employment Status**
+
+  - Suspend / Unsuspend Employees
+  - Employment type classification
+  - Termination
+
+- **Payroll**
+
+  - Salary & pay cycle management
+  - Multiple pay cycles (Monthly, Bi-weekly)
+  - Automated pay date calculations (with late / up-to-date tracking)
+
+- **Performance Tracking**
+  - Calculate average performance rating on past performance reviews
+  - Historical performance data
 
 ### Leave Management
 
-![Leave Management System][image4]
-
 **Advanced Leave Request System**
 
-- Multiple leave types (Annual, Sick, Family Responsibility, Parental, Study, Compassionate)
-- Leave balance tracking and visualization
-- Request submission with approval workflow
-- Admin approval/rejection with comments
-- Leave history and analytics
-- Policy management and customization
-- Automated leave calculations
+- **Leave Types**
+
+  - Annual Leave
+  - Sick Leave
+  - Family Responsibility Leave
+  - Parental Leave
+  - Study Leave
+  - Compassionate Leave
+
+- **Leave Administration**
+  - Automated balance calculations
+  - Duration calculation
+  - Alerts for approving over-balance leave
+  - Approve, Reject and Undo Leave Requests
 
 ### Meeting Management
 
-![Meeting Scheduling Interface][image5]
+**Meetings & Reviews Coordination**
 
-**Intelligent Meeting Coordination**
+- **Meetings**
 
-- Meeting request submission by employees
-- Admin scheduling and confirmation
-- Online meeting integration
-- Meeting status tracking (Requested, Scheduled, Completed, Rejected)
-- Calendar integration
-- Meeting history and analytics
-- Automated notifications and reminders
+  - Filter meetings by type and completion
+  - Quick meeting request submission (as employee)
+  - Approve & schedule meeting requests (as admin)
+
+- **Performance Reviews**
+
+  - Easy creation of performance reviews
+  - Add rating, comment or supporting PDF upload
+  - Edit meeting and quickly set as completed / upcoming
+  - Colour-coded design allows for quick recognition of different meeting types & locations
+
+- **Meeting Lifecycle**
+  - Request → Schedule → Complete
 
 ### Equipment Management
 
-![Equipment Tracking System][image6]
+**Equipment Tracking**
 
-**Complete Equipment Lifecycle Tracking**
-
-- Equipment registration and cataloging
-- Assignment tracking to employees
-- Condition monitoring (New, Good, Fair, Poor, Damaged)
-- Equipment type categorization
-- Maintenance scheduling
-- Equipment transfer and unassignment
-- Cost tracking and depreciation
-
-### Performance Reviews
-
-![Performance Review System][image7]
-
-**Structured Performance Evaluation**
-
-- Performance review scheduling
-- Rating system with multiple criteria
-- Review history tracking
-- Performance analytics and trends
-- Goal setting and tracking
-- 360-degree feedback support
+- **Equipment Registry**
+  - Clean list of equipment, with info
+  - Condition monitoring (New → Used)
+  - Assign / Unlink from Employee
+  - Create Assigned / Unassigned Equipment
+  - Edit Equipment Details
+  - Deletion of Equipment
+  - Change Assignment Date
 
 ### Dashboard & Analytics
 
-![Analytics Dashboard][image8]
+**Admin Dashboard**
 
-**Comprehensive Business Intelligence**
+- **HR Metrics**
 
-- Real-time HR metrics and KPIs
-- Employee performance analytics
-- Leave utilization reports
-- Equipment utilization tracking
-- Meeting efficiency metrics
-- Custom reporting capabilities
-- Data visualization with charts and graphs
+  - Top 5 Employee rating comparison (average vs recent)
+  - Employment Status Overview
+  - Top 3 Employees with status info
 
-## Application Pages
+- **At A Glance View**
+
+  - Calendar of upcoming/completed meetings/reviews per day
+  - Pending Leave Requests
+
+- **Quick Actions**
+  - Create New Performance Review
+  - View All Leave Requests
+  - View All Meetings
+
+## Coriander Pages
 
 ### Authentication Pages
 
 **Login Page** (`/`)
 
-- Secure login with Google OAuth
-- Role selection and validation
-- Password reset functionality
-- Account verification
+![Login Page][image2]
+
+The Login Page provides a streamlined authentication experience using Google OAuth integration. Users are presented with a clean interface featuring the Coriander HR logo and a prominent "Log in with Google" button. They may also login with their email if they do not wish to use Google. Upon successful authentication, users are automatically directed to their role-specific dashboard. The page includes subtle animations and clear error handling to guide users through the login process.
 
 **Employee Signup** (`/employee/signup`)
 
-- Employee registration form
-- Profile information collection
-- Account verification process
+![Employee Signup Page][image3]
+
+The Employee Registration page allows new employees to create their user account, by filling in their Full Name, email and password, all of which have real-time validation. Employees may also sign up with Google and link their account to a Google Account. Upon successful sign up, the employee will have to enter a 6-digit verification code sent to their email. Finally, unless an admin has linked the employee's user account to an employee, they will be presented with the Unlinked Screen, which informs the user that the admin must take action before they'll be able to use Coriander.
 
 **Admin Signup** (`/admin/signup`)
 
-- Administrator registration
-- Enhanced security verification
-- Admin privilege assignment
+![Admin Signup Page][image4]
+
+The Admin Signup Page, is almost identical to the Employee Signup Page, but requires no additional verification, allowing quick setup of administrative accounts. Admins can signup with both the email-password-method or with Google.
 
 ### Employee Pages
 
 **Employee Home** (`/employee/home`)
 
-- Personal dashboard with key metrics
-- Quick access to common functions
-- Recent activity overview
-- Upcoming meetings and deadlines
+![Employee Home][image5]
+
+The Employee Home serves as a central hub for all employee activities. It displays personalised widgets including their current employee performance rating, their remaining leave balances, upcoming meetings, and their payroll information. Employees can export their payroll information as a PDF by clicking the export payroll button. Furthermore, an inspirational quote, as motivation for employees, are automatically changed daily.
 
 **Employee Profile** (`/employee/profile`)
 
-- Personal information management
-- Profile picture upload
-- Contact details editing
-- Employment history view
+![Employee Profile][image6]
+
+On the Employee Profile Page, employees can view and update their personal information. The page includes sections for personal info, employment & payroll info and assigned equipment. If the user did not sign up with Google, they are able to update their profile picture.
 
 **Leave Overview** (`/employee/leave-overview`)
 
-- Leave balance visualization
-- Leave request submission
-- Request history and status
-- Leave policy information
+![Employee Leave Overview][image7]
+
+The Employee Leave Overview Page provides a comprehensive view of an employee's leave status. It includes visual representations of each leave balance type, as well as a total summary of all leave remaining in days. Alongside this, employees are able to view all their leave requests, their status, and filter them by approved, pending or rejected. Additionally, the employee can create a new application for leave on this page. The page features icon-based leave types, automated duration calculations, and clear colour-coded status indicators for the request statuses.
 
 **Employee Meetings** (`/employee/meetings`)
 
-- Meeting request submission
-- Upcoming meetings view
-- Meeting history
-- Online meeting access
+![Meetings Overview][image8]
+
+A centralised meetings management page where employees can view, request, and track their meetings and performance reviews. The interface includes meeting type and completion filters and a quick request submission functionality. Each meeting list items displays essential information with colour-coding for different meeting types and statuses.
 
 ### Admin Pages
 
 **Admin Dashboard** (`/admin/dashboard`)
 
-- Comprehensive HR analytics
-- Key performance indicators
-- Recent activity monitoring
-- Quick action buttons
+![Admin Dashboard][image9]
+
+The Administrative Control Center or Dashboard provides a comprehensive overview of the organisation's HR metrics. It features interactive charts showing the top 5 employee's performance (with average and most recent ratings), employment status distribution, and top performers. The dashboard includes quick action buttons for common tasks and an at-a-glance calendar view of upcoming events.
 
 **Employee Management** (`/admin/employees`)
 
-- Employee directory
-- Bulk employee operations
-- Employee search and filtering
-- Performance overview
+![Employee Management][image10]
+
+A powerful interface for managing the entire employee database. The Employee Management Page lists the critical information of each employee, such as whether salary payments are on time. The page features quick actions like quick-suspend and search-by-name filtering.
 
 **Individual Employee** (`/admin/individual-employee/:id`)
 
-- Detailed employee profile
-- Equipment assignments
-- Leave history
-- Performance reviews
-- Meeting history
+![Individual Employee][image11]
 
-**Create Employee** (`/admin/create-employee`)
+One of the most detailed screens on the Coriander platform, the Individual Employee Page shows a detailed view of an individual employee record, combining all aspects of employee data in one interface. The page includes sections for personal information, payroll info, equipment assignments, leave balances, rating and meeting history. Admins can edit some details, change payroll info and last pay date, assigned, unlink or delete equipment, edit employee meetings / reviews and suspend or terminate the employee.
 
-- New employee registration
-- Bulk employee import
-- Equipment assignment
-- Initial setup configuration
+**Create Employee** (`/admin/employees`)
+
+![Create Employee][image11B]
+
+On the Create Employee Page, admins assign unlinked user accounts (those with an email & password / Google sign up), to an Employee, entering the employment and payroll details, as well as assignment of equipment. After successful creation of an employee, the employee user account will now have access to the Coriander system.
 
 **Equipment Management** (`/admin/equipment`)
 
-- Equipment inventory
-- Assignment tracking
-- Maintenance scheduling
-- Cost management
+![Equipment Management][image12]
+
+The equipment tracking interface provides a complete overview of all company assets. It features a clean list view of equipment with detailed information about condition, assignment status, and assignment date. The page includes quick actions for creating, assigning, and managing equipment with an intuitive dropdown and modal interface.
 
 **Leave Requests** (`/admin/leave-requests`)
 
-- Pending request review
-- Approval/rejection workflow
-- Leave analytics
-- Policy management
+![Leave Requests][image13]
+
+A comprehensive leave management interface for administrators to handle all employee leave requests. The page features a list of pending, approved and rejected leave requests, which can be filtered at the top of the page. Each request automated checks the employee balance, and if an admin attemps to approve a requests that has most leave than the employee has for that leave type, a warning modal will appear. An admin can decide to approve the request regardless. Approved and rejected requests can also be "undo-ed", setting them back to pending.
 
 **Admin Meetings** (`/admin/meetings`)
 
-- Meeting request management
-- Schedule coordination
-- Meeting analytics
-- Resource allocation
+![Admin Meetings][image14]
+
+The Admin Meetings page provides tools for managing all organisational meetings and reviews with the logged in admin. The list of cards can be filtered by "All Upcoming", by each type or by completed status. Each meeting can be edited, marked as completed/pending and removed. Meeting requests are also accessed on this page, by clicking on either the notification dot next to the page heading, or the Request button at the top right corner of the page. When there are requests pending, the button will be marked as red with the request count visible, and if nothing was requested, the button will returns to its default green state. Furthermore, administrators can also create a new performance review on this page.
 
 ## Architecture & Components
 
@@ -377,7 +395,7 @@ Here are the steps to clone and run this project:
 
 The application follows a modular component architecture:
 
-**Core Components**
+**Navigational & Loading Components**
 
 - `Navigation.tsx` - Main navigation sidebar
 - `StartupLoadingScreen.tsx` - Application initialization
@@ -389,7 +407,7 @@ The application follows a modular component architecture:
 - **Badges**: Status indicators for various entities
 - **Cards**: Reusable card components for different data types
 - **Modals**: Comprehensive modal system for forms and confirmations
-- **Charts**: Data visualization components
+- **Charts**: Data visualisation components
 - **Avatars**: Profile and entity representation
 
 **Feature-Specific Components**
@@ -408,32 +426,43 @@ The application follows a modular component architecture:
 
 ### API Integration
 
-Comprehensive API service layer with organized endpoints:
+Linked to the Coriander CoriCore Backend API, including:
 
-- **Authentication API**: Login, registration, token management
-- **Employee API**: CRUD operations for employee data
-- **Leave API**: Leave request management
-- **Meeting API**: Meeting scheduling and management
-- **Equipment API**: Equipment tracking and assignment
 - **Admin API**: Administrative functions
+- **Auth API**: Login, registration, token management
+- **Email API**: Emails for 2-factor authentication
+- **EmpLeaveRequest API**: CRUD operations for employee-leave-request combined data
+- **Employee API**: CRUD operations for employee data
+- **EmpUser API**: CRUD operations for employee-user data
+- **Equipment API**: Equipment tracking and assignment & CRUD functionality
+- **EquipmentCategory API**: Functionality relating to equipment categories
+- **Gathering API**: GET requests for Meetings & Performance Reviews combined as "Gatherings"
+- **Health API**: Check server connection and status operations
+- **Image API**: Upload & management of profile pictures functionality
+- **LeaveBalance API**: Leave balance of employees CRUD functionality
+- **LeaveRequest API**: CRUD functionality for leave requests made by employees
+- **LeaveType API**: LeaveType GET requests
+- **Meeting API**: Meeting scheduling and management
+- **Page API**: GET requests for full pages (instead of separate calls)
+- **PerformanceReview API**: Creation, editing, getting and deletion of performance reviews
+- **User API**: CRUD operations for user entities (often accompanied by auth functionality)
 
 <!-- CONCEPT PROCESS -->
 
 ## Concept Process
 
-The `Conceptual Process` encompasses the research, planning, and design phases that shaped Coriander HR.
+The `Conceptual Process` encompasses the research, planning, and design phases that shaped Coriander.
 
 ### Ideation
 
-![Initial Concept Sketches][image9]
+![Initial Concept Sketches][concept-sketch]
 
 The project began with extensive research into existing HR management systems, identifying key pain points:
 
-- Fragmented HR processes across multiple platforms
-- Poor user experience in traditional HR software
+- Fragmented HR processes across multiple platforms / tools
+- Poor user experience in traditional HR software with clunky and outdated designs
 - Lack of real-time analytics and reporting
 - Complex approval workflows
-- Limited mobile and desktop accessibility
 
 Our solution focuses on:
 
@@ -445,27 +474,14 @@ Our solution focuses on:
 
 ### Wireframes
 
-![Application Wireframes][image10]
+Detailed high-fidelity designs were created for all major user flows
+![Authentication Wireframes][wireframe1]
+![Employee Pages Wireframes][wireframe2]
+![Admin Pages Wireframes][wireframe3]
 
-Detailed wireframes were created for all major user flows:
+### ER-Diagram
 
-- Authentication and onboarding
-- Employee self-service portal
-- Administrative dashboards
-- Mobile-responsive layouts
-- Accessibility considerations
-
-### User-flow
-
-![User Flow Diagrams][image11]
-
-Comprehensive user journey mapping covering:
-
-- Employee onboarding process
-- Leave request workflow
-- Meeting scheduling flow
-- Equipment assignment process
-- Performance review cycle
+![Database ER Diagram][er-diagram]
 
 <!-- DEVELOPMENT PROCESS -->
 
@@ -484,102 +500,129 @@ The `Development Process` details the technical implementation and methodologies
 
 **Key Technical Implementations**
 
-- **Role-Based Access Control (RBAC)**: Implemented comprehensive permission system
+- **Role-Based Access Control**: Implemented comprehensive permission system
 - **Real-time Updates**: WebSocket integration for live data updates
 - **Offline Capability**: Local storage and sync mechanisms
 - **Security**: JWT token authentication and secure API communication
 - **Testing Strategy**: Unit tests with Jest and React Testing Library
 - **CI/CD Pipeline**: Automated testing and deployment workflows
 
-#### Highlights
+### Highlights
 
-**Technical Achievements**
+**Calendar System**
 
-- Successfully implemented a complex multi-role application with distinct user experiences
-- Created a comprehensive component library with 100% test coverage for core components
-- Integrated multiple third-party services (Google OAuth, Cloudinary, PDF generation)
-- Achieved excellent performance with optimized rendering and state management
-- Implemented robust error handling and user feedback systems
+- Interactive calendar interface for admins
+- Month view with daily meeting breakdowns
+- Click-to-view meeting details
+- Color-coded events (meetings, reviews)
 
-**User Experience Wins**
+**Google OAuth Integration**
 
-- Intuitive navigation with role-based menu systems
-- Responsive design that works across different screen sizes
-- Comprehensive form validation with real-time feedback
-- Smooth animations and transitions using Lottie
-- Accessibility features including keyboard navigation and screen reader support
+- Seamless login with Google accounts
+- Automatic profile creation
+- Profile picture integration
+- Email verification bypass for Google users
 
-#### Challenges
+**Employee Management**
 
-**Technical Challenges**
+- Comprehensive employee profiles with attached equipment tracking, performance review rating calculation and intuitive management of leave.
 
-- **Electron Build Complexity**: Managing the build process for different platforms required extensive configuration
-- **State Management**: Coordinating complex state between multiple components and API calls
-- **Type Safety**: Ensuring type safety across the entire application while maintaining flexibility
-- **Performance Optimization**: Managing large datasets and complex UI updates efficiently
+### Challenges
 
-**Solutions Implemented**
+**Google OAuth Complexity**
 
-- Implemented comprehensive error boundaries and fallback UI components
-- Created custom hooks for complex state management scenarios
-- Established strict TypeScript configurations and linting rules
-- Optimized component rendering with React.memo and useMemo
+- Managing different OAuth flows for registration vs login
+- Handling token refresh and expiration
+- Maintaining session state with OAuth
+
+**Database Evolution**
+
+- Frequent schema changes due to client requirements
+- Managing data migrations without loss
+- Restructuring relationships between entities
+- Maintaining data integrity during updates
 
 ### Reviews & Testing
 
-#### Feedback from Reviews
+#### Test Coverage Overview
 
-**Peer Reviews** conducted by fellow developers and stakeholders provided valuable insights:
+The project maintains a comprehensive testing suite with 218 passing tests across 24 test suites. Key coverage metrics include:
 
-- **UI/UX Feedback**: "The interface is intuitive and modern, with excellent use of color and typography"
-- **Functionality Review**: "The leave management system is comprehensive and handles edge cases well"
-- **Performance Assessment**: "Application loads quickly and responds smoothly to user interactions"
-- **Security Evaluation**: "Authentication system is robust with proper token handling"
+- Overall Coverage: 19.84%
+- Statement Coverage: 19.84%
+- Branch Coverage: 23.34%
+- Function Coverage: 13.79%
 
-#### Unit Tests
+**Component Test Coverage Highlights**
 
-**Comprehensive Testing Suite** with 183 passing tests covering:
+- **Core Components**
 
-**Component Tests**
+  - Navigation Component: 100% coverage
+  - Calendar Component: 100% coverage
+  - UI Components (Badges, Avatars): 90%+ coverage
 
-- Button components (CoriBtn, CoriCircleBtn) - 100% coverage
-- Badge components (EmployTypeBadge, EquipCondiBadge, etc.) - 100% coverage
-- Card components (LeaveRequestCard, MeetRequestCard) - 100% coverage
-- Avatar components (EquipmentTypeAvatar) - 100% coverage
+- **Feature Components**
 
-**Utility Function Tests**
+  - Gathering Components: 91.39% coverage
+  - Leave Management: 93.1% coverage
+  - Equipment Management: 56.6% coverage
 
-- Date formatting and calculation utilities - 95% coverage
-- String formatting functions - 100% coverage
-- Image processing utilities
-- PDF generation utilities
+- **Utility Functions**
+  - Date Utilities: 95.16% coverage
+  - Format Utilities: 41.66% coverage
+  - Common Types: 100% coverage
 
-**Integration Tests**
+**Test Categories**
 
-- API service layer testing
-- Authentication flow testing
-- Form validation testing
-- Navigation and routing tests
+1. **Component Tests**
 
-**Test Coverage Statistics**
+   - UI Component Rendering
+   - User Interaction Handling
+   - State Management
+   - Props Validation
 
-- Overall coverage: 16.75% (with many files excluded from coverage)
-- Core components: 100% coverage
-- Utility functions: 45.27% coverage
-- Critical business logic: 90%+ coverage
+2. **Integration Tests**
+
+   - Component Interactions
+   - API Integration
+   - State Management
+   - Navigation Flows
+
+3. **Utility Function Tests**
+   - Date Formatting and Calculations
+   - Data Formatting
+   - Type Validations
+   - Helper Functions
+
+#### Testing Tools & Framework
+
+- Jest: Primary testing framework
+- React Testing Library: Component testing
+- TypeScript: Type checking and validation
+- Coverage Reporting: Jest built-in coverage
 
 ### Future Implementation
 
-**Planned Enhancements**
+**Multi-Company Support**
 
-- **Mobile Application**: React Native implementation for mobile access
-- **Advanced Analytics**: Machine learning-powered insights and predictions
-- **Integration Ecosystem**: Slack, Microsoft Teams, and calendar integrations
-- **Workflow Automation**: Advanced approval workflows and automated processes
-- **Multi-language Support**: Internationalization for global organizations
-- **Advanced Reporting**: Custom report builder with export capabilities
-- **Audit Trail**: Comprehensive logging and audit functionality
-- **API Gateway**: Public API for third-party integrations
+- Separate database schemas per company
+- Company-specific configurations
+- Isolated data storage
+- Custom branding per company
+
+**Enhanced Authentication**
+
+- Invite-based registration system
+- Admin-generated employee invitations
+- Password reset functionality
+- Two-factor authentication options
+
+**Future Features**
+
+- Document management system
+- Payroll integration
+- Mobile application
+- Advanced reporting tools
 
 <!-- MOCKUPS -->
 
@@ -587,9 +630,10 @@ The `Development Process` details the technical implementation and methodologies
 
 ### Mockups
 
-![Final Application Screenshots][image12]
+![Mockup A][image12]
 <br>
-![Dashboard Analytics View][image13]
+
+![Mockup B][image13]
 
 The final application delivers a comprehensive HR management solution with:
 
@@ -610,15 +654,6 @@ To see a complete walkthrough of the Coriander HR application, click below:
 ## Roadmap
 
 See the [open issues](https://github.com/WolfOWI/coriander/issues) for a list of proposed features and known issues.
-
-**Upcoming Features:**
-
-- [ ] Mobile application development
-- [ ] Advanced reporting and analytics
-- [ ] Third-party integrations (Slack, Teams)
-- [ ] Workflow automation engine
-- [ ] Multi-language support
-- [ ] Advanced security features
 
 <!-- CONTRIBUTING -->
 
@@ -684,19 +719,29 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[image1]: /path/to/dashboard-screenshot.png
-[image2]: /[ath/to/..
-[image3]: /path/to/..
-[image4]: /path/to/leave-management-screenshot.png
-[image5]: /path/to/meeting-management-screenshot.png
-[image6]: /path/to/equipment-management-screenshot.png
-[image7]: /path/to/performance-review-screenshot.png
-[image8]: /path/to/analytics-dashboard-screenshot.png
-[image9]: /path/to/concept-sketches.png
-[image10]: /path/to/wireframes.png
-[image11]: /path/to/user-flow-diagram.png
-[image12]: /path/to/final-mockup-1.png
-[image13]: /path/to/final-mockup-2.png
+[image1]: /screenshots/dashboard/coriander-hr-main-dashboard.png
+[image2]: /screenshots/auth/login-page-with-google.png
+[image3]: /screenshots/auth/employee-signup-page.png
+[image4]: /screenshots/auth/admin-signup-page.png
+[image5]: /screenshots/employee/employee-home-dashboard.png
+[image6]: /screenshots/employee/employee-profile-page.png
+[image7]: /screenshots/employee/leave-overview-page.png
+[image8]: /screenshots/employee/meetings-overview-page.png
+[image9]: /screenshots/admin/admin-dashboard-analytics.png
+[image10]: /screenshots/admin/employee-management-page.png
+[image11]: /screenshots/admin/individual-employee-view.png
+[image11B]: /screenshots/admin/create-employee-page.png
+[image12]: /screenshots/admin/equipment-management-page.png
+[image13]: /screenshots/admin/leave-requests-page.png
+[image14]: /screenshots/admin/meetings-management-page.png
+
+<!-- Design & Documentation Images -->
+
+[concept-sketch]: /documentation/design/concept-sketches.png
+[wireframe1]: /documentation/design/wireframe-authentication.png
+[wireframe2]: /documentation/design/wireframe-employee-pages.png
+[wireframe3]: /documentation/design/wireframe-admin-pages.png
+[er-diagram]: /documentation/database/er-diagram-full.png
 
 <!-- Refer to https://shields.io/ for more information and options about the shield links at the top of the ReadMe file -->
 
