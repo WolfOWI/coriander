@@ -1,5 +1,3 @@
-<!-- REPLACE ALL THE [WolfOWI] TEXT WITH YOUR GITHUB PROFILE NAME & THE [coriander] WITH THE NAME OF YOUR GITHUB PROJECT -->
-
 <!-- Repository Information & Links-->
 <br />
 
@@ -12,8 +10,8 @@
 [![Behance][behance-shield]][behance-url]
 
 <!-- HEADER SECTION -->
-<h5 align="center" style="padding:0;margin:0;">Iné Smith - Student Number</h5>
-<h5 align="center" style="padding:0;margin:0;">Kayla Posthumus - Student Number</h5>
+<h5 align="center" style="padding:0;margin:0;">Iné Smith - 221076</h5>
+<h5 align="center" style="padding:0;margin:0;">Kayla Posthumus - 231096</h5>
 <h5 align="center" style="padding:0;margin:0;">Ruan Klopper - 231280</h5>
 <h5 align="center" style="padding:0;margin:0;">Wolf Botha - 21100255</h5>
 <h6 align="center">Interactive Development 300 • 2025</h6>
