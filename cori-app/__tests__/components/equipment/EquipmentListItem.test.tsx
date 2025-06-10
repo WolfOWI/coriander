@@ -1,11 +1,11 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, cleanup } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, fireEvent } from "@testing-library/react";
 import EquipmentListItem from "../../../src/components/equipment/EquipmentListItem";
 import { EquipmentCategory, EquipmentCondition } from "../../../src/types/common";
+import { Equipment } from "../../../src/interfaces/equipment/equipment";
 
-const mockEquipment = {
+const mockEquipment: Equipment = {
   equipmentId: 1,
   employeeId: null,
   equipmentCatId: EquipmentCategory.Laptop,
@@ -15,62 +15,26 @@ const mockEquipment = {
   condition: EquipmentCondition.Good,
 };
 
-describe("Component Tests for EquipmentListItem", () => {
-  test("EquipmentListItem should render correctly with basic props", () => {
+describe("EquipmentListItem Component Tests", () => {
+  const mockHandlers = {
+    onEdit: jest.fn(),
+    onUnlink: jest.fn(),
+    onDelete: jest.fn(),
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("renders basic equipment information", () => {
     render(<EquipmentListItem item={mockEquipment} />);
 
-    // Check if basic information is displayed
     expect(screen.getByText(mockEquipment.equipmentName)).toBeInTheDocument();
     expect(screen.getByText(mockEquipment.equipmentCategoryName)).toBeInTheDocument();
     expect(screen.getByText("20 Mar 2024")).toBeInTheDocument();
   });
 
-  test("EquipmentListItem should render admin buttons when adminView is true", async () => {
-    const mockOnEdit = jest.fn();
-    const mockOnUnlink = jest.fn();
-    const mockOnDelete = jest.fn();
-    const user = userEvent.setup();
-
-    render(
-      <EquipmentListItem
-        item={mockEquipment}
-        adminView={true}
-        onEdit={mockOnEdit}
-        onUnlink={mockOnUnlink}
-        onDelete={mockOnDelete}
-      />
-    );
-
-    // The buttons should be in the document but initially hidden
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    const unlinkButton = screen.getByRole("button", { name: /unlink/i });
-    const deleteButton = screen.getByRole("button", { name: /delete/i });
-
-    expect(editButton).toBeInTheDocument();
-    expect(unlinkButton).toBeInTheDocument();
-    expect(deleteButton).toBeInTheDocument();
-
-    // Click the buttons and verify callbacks
-    await user.click(editButton);
-    expect(mockOnEdit).toHaveBeenCalledTimes(1);
-
-    await user.click(unlinkButton);
-    expect(mockOnUnlink).toHaveBeenCalledTimes(1);
-
-    await user.click(deleteButton);
-    expect(mockOnDelete).toHaveBeenCalledTimes(1);
-  });
-
-  test("EquipmentListItem should not render admin buttons when adminView is false", () => {
-    render(<EquipmentListItem item={mockEquipment} adminView={false} />);
-
-    // Admin buttons should not be present
-    expect(screen.queryByRole("button", { name: /edit/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /unlink/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /delete/i })).not.toBeInTheDocument();
-  });
-
-  test("EquipmentListItem should render correct icon based on equipment category", () => {
+  test("renders correct icon based on equipment category", () => {
     const categories = [
       { category: EquipmentCategory.Cellphone, testId: "phone-icon" },
       { category: EquipmentCategory.Tablet, testId: "tablet-icon" },
@@ -81,24 +45,69 @@ describe("Component Tests for EquipmentListItem", () => {
     ];
 
     categories.forEach(({ category, testId }) => {
-      const equipment = {
-        ...mockEquipment,
-        equipmentCatId: category,
-      };
-
-      render(<EquipmentListItem item={equipment} />);
+      const equipment = { ...mockEquipment, equipmentCatId: category };
+      const { rerender } = render(<EquipmentListItem item={equipment} />);
       expect(screen.getByTestId(testId)).toBeInTheDocument();
-      cleanup();
+      rerender(<></>);
     });
+
+    // Test unknown category
+    const unknownEquipment = { ...mockEquipment, equipmentCatId: 999 };
+    render(<EquipmentListItem item={unknownEquipment} />);
+    expect(screen.getByTestId("unknown-device-icon")).toBeInTheDocument();
   });
 
-  test("EquipmentListItem should render unknown device icon for invalid category", () => {
-    const equipment = {
-      ...mockEquipment,
-      equipmentCatId: 999, // Invalid category
-    };
+  test("shows admin controls when adminView is true", () => {
+    render(
+      <EquipmentListItem
+        item={mockEquipment}
+        adminView={true}
+        onEdit={mockHandlers.onEdit}
+        onUnlink={mockHandlers.onUnlink}
+        onDelete={mockHandlers.onDelete}
+      />
+    );
 
-    render(<EquipmentListItem item={equipment} />);
-    expect(screen.getByTestId("unknown-device-icon")).toBeInTheDocument();
+    const editButton = screen.getByLabelText("edit");
+    const unlinkButton = screen.getByLabelText("unlink");
+    const deleteButton = screen.getByLabelText("delete");
+
+    expect(editButton).toBeInTheDocument();
+    expect(unlinkButton).toBeInTheDocument();
+    expect(deleteButton).toBeInTheDocument();
+  });
+
+  test("calls appropriate handlers when admin buttons are clicked", () => {
+    render(
+      <EquipmentListItem
+        item={mockEquipment}
+        adminView={true}
+        onEdit={mockHandlers.onEdit}
+        onUnlink={mockHandlers.onUnlink}
+        onDelete={mockHandlers.onDelete}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("edit"));
+    expect(mockHandlers.onEdit).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByLabelText("unlink"));
+    expect(mockHandlers.onUnlink).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByLabelText("delete"));
+    expect(mockHandlers.onDelete).toHaveBeenCalledTimes(1);
+  });
+
+  test("does not show admin controls when adminView is false", () => {
+    render(<EquipmentListItem item={mockEquipment} adminView={false} />);
+
+    expect(screen.queryByLabelText("edit")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("unlink")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("delete")).not.toBeInTheDocument();
+  });
+
+  test("returns null when item prop is null", () => {
+    const { container } = render(<EquipmentListItem item={null} />);
+    expect(container.firstChild).toBeNull();
   });
 });
